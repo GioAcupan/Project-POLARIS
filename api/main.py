@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+import api.models  # noqa: F401 — ensures all ORM models are registered on startup
+
 
 def _read_pitch_mode() -> bool:
     return os.getenv("POLARIS_PITCH_MODE", "true").strip().lower() == "true"
