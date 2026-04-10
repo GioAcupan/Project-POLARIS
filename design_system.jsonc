@@ -1,0 +1,106 @@
+{
+  "$schema": "Polaris Design System v1.0",
+  "name": "Polaris Luminous Glass",
+  "description": "A high-density data dashboard system utilizing milky glassmorphism, vibrant gradients, and precision typography.",
+
+  /* COLOR PALETTE
+     Usage: Ground the UI in the brand colors while using signals for data urgency.
+  */
+  "colors": {
+    "brand": {
+      "pink": "#F673DE",        // Primary brand color used in background mesh gradients.
+      "blue": "#1A5EA8",        // Deep brand blue for background and high-level branding elements.
+      "babyPink": "#E9D6E5"     // The 'bridge' color for inactive states and subtle hover effects.
+    },
+    "signals": {
+      "critical": "#E8532A",    // 'Red Orange' - Used for regions or metrics with severe gaps.
+      "warning": "#F5A623",     // 'Yellow' - Indicates areas requiring moderate attention.
+      "good": "#2DBFA0"         // 'Green' - Indicates well-served regions or stable metrics.
+    },
+    "dataViz": {
+      "primary": "#3B9BDD",     // 'Graph Blue' - The hero color for all charts and data paths.
+      "highlight": "#B7DFFF"    // 'Baby Blue' - Used for active tab states and selection rings.
+    },
+    "text": {
+      "primary": "#1B1B1B",     // 'Off Black' - High contrast for all primary headers and values.
+      "secondary": "#1A5EA8"    // 'Subtext Blue' - Used for labels and less crucial info.
+    }
+  },
+
+  /* SURFACE & GLASS RECIPES
+     These define the 'Luminous Glass' effect. Apply these to cards and sidebars.
+  */
+  "surfaces": {
+    "glassCard": {
+      "background": "rgba(255, 255, 255, 0.75)", // The 'Milky' base.
+      "backdropBlur": "24px",                    // backdrop-blur-xl in Tailwind.
+      "border": "1px solid rgba(255, 255, 255, 0.4)", // The 'Light-Catch' edge highlight.
+      "shadow": "0 10px 25px -5px rgba(26, 94, 168, 0.1), 0 8px 10px -6px rgba(26, 94, 168, 0.1)",
+      "radius": "24px"                           // Soft, approachable corners.
+    },
+    "appBackground": "linear-gradient(135deg, #1A5EA8 0%, #F673DE 100%)"
+  },
+
+  /* TYPOGRAPHY
+     Raleway for impact and hierarchy; DM Sans for data readability.
+  */
+  "typography": {
+    "header": {
+      "family": "Raleway, sans-serif",
+      "weight": "800",
+      "tracking": "-0.02em",
+      "sizes": {
+        "title": "36px",      // For 'DASHBOARD'
+        "section": "24px"     // For Regional Names
+      }
+    },
+    "body": {
+      "family": "DM Sans, sans-serif",
+      "weight": {
+        "regular": "400",
+        "medium": "500",
+        "bold": "600"
+      },
+      "sizes": {
+        "metric": "20px",     // For big numbers in the grid.
+        "label": "12px",      // For subtext and chart labels.
+        "content": "14px"     // For report descriptions.
+      }
+    }
+  },
+
+  /* COMPONENT-SPECIFIC RULES
+     Specific logic for the interactive elements discussed.
+  */
+  "components": {
+    "map": {
+      "regionBorder": "rgba(255, 255, 255, 0.4)", // Etched glass look.
+      "fillOpacity": 0.85,
+      "hoverScale": 1.02,
+      "focusZoomSpring": { "stiffness": 100, "damping": 20 }
+    },
+    "charts": {
+      "axisColor": "rgba(27, 27, 27, 0.1)", // Very faint grid lines.
+      "barRadius": [10, 10, 0, 0],          // Fully rounded top caps.
+      "areaGradient": ["rgba(59, 155, 221, 0.6)", "rgba(59, 155, 221, 0)"]
+    },
+    "starbot": {
+      "pulseColor": "#E9D6E5",
+      "glowRadius": "15px",
+      "drawerBlur": "40px" // Extra blur for the AI pane to feel 'deeper'.
+    }
+  },
+
+  /* MOTION & INTERACTION
+     Physics-based animations for Framer Motion.
+  */
+  "animation": {
+    "standardSpring": {
+      "type": "spring",
+      "stiffness": 100,
+      "damping": 20
+    },
+    "entranceStagger": 0.1, // Delay between component reveals (AI -> Map -> Data).
+    "hoverTransition": { "duration": 0.2, "ease": "easeInOut" }
+  }
+}
