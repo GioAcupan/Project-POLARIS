@@ -206,3 +206,9 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 .gitnexus
+
+# POLARIS — Node / OS / generated static
+node_modules/
+.DS_Store
+*.pyc
+api/static/generated/*
