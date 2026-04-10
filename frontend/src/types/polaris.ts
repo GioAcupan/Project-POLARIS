@@ -1,3 +1,4 @@
+// frontend/src/types/polaris.ts
 // THE source of truth. Do not redefine these locally in components.
 
 // ─────────────────────────────────────────────────────────────
@@ -6,13 +7,13 @@
 export type TrafficLight = "green" | "yellow" | "red";
 
 export interface RegionalScore {
-  region: string; // e.g. "Region VIII"
-  region_code: string; // e.g. "R8" (used in filenames)
-  underserved_score: number; // 0–100
+  region: string;                          // e.g. "Region VIII"
+  region_code: string;                     // e.g. "R8" (used in filenames)
+  underserved_score: number;               // 0–100
   traffic_light: TrafficLight;
-  supply_subscore: number; // 0–100
-  impact_subscore: number; // 0–100
-  demand_subscore: number; // 0–100
+  supply_subscore: number;                 // 0–100
+  impact_subscore: number;                 // 0–100
+  demand_subscore: number;                 // 0–100
   teacher_student_ratio: number;
   specialization_pct: number;
   star_coverage_pct: number;
@@ -39,13 +40,13 @@ export interface CriticalPing {
 // STARBOT (simplified — query-only)
 // ─────────────────────────────────────────────────────────────
 export interface ChatRequest {
-  message: string; // max 500 chars
+  message: string;                         // max 500 chars
   region_context: RegionalScore | null;
 }
 
 export interface ChatResponse {
-  response: string; // markdown-formatted
-  sources: string[]; // e.g. ["POLARIS regional_scores — Region VIII"]
+  response: string;                        // markdown-formatted
+  sources: string[];                       // e.g. ["POLARIS regional_scores — Region VIII"]
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -57,14 +58,14 @@ export type ReportType =
   | "executive_summary";
 
 export interface ReportGenerateRequest {
-  region: string; // must match RegionalScore.region
+  region: string;                          // must match RegionalScore.region
   report_type: ReportType;
 }
 
 export interface ReportGenerateResponse {
   markdown: string;
-  filename: string; // e.g. "Quarterly_Report_R8.md"
-  generated_at: string; // ISO 8601
+  filename: string;                        // e.g. "Quarterly_Report_R8.md"
+  generated_at: string;                    // ISO 8601
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -76,13 +77,13 @@ export type CivilStatus = "Single" | "Married" | "Separated" | "Widowed";
 export interface ProfileExtended {
   deped_id: string;
   // Identity
-  name_extension: string | null; // "JR.", "SR.", "III"
+  name_extension: string | null;           // "JR.", "SR.", "III"
   sex: Sex | null;
-  date_of_birth: string | null; // ISO date
+  date_of_birth: string | null;            // ISO date
   civil_status: CivilStatus | null;
   // Unmapped Tier 1 (collected, not yet written to PDS)
   place_of_birth: string | null;
-  citizenship: string | null; // default "Filipino"
+  citizenship: string | null;              // default "Filipino"
   height_cm: number | null;
   weight_kg: number | null;
   blood_type: string | null;
@@ -97,9 +98,9 @@ export interface ProfileExtended {
   addr_barangay: string | null;
   addr_city: string | null;
   addr_province: string | null;
-  addr_zip: string | null; // 4 digits
+  addr_zip: string | null;                 // 4 digits
   // Metadata
-  completeness_score: number; // 0–100, motivational
+  completeness_score: number;              // 0–100, motivational
   last_verified_at: string | null;
   updated_at: string;
 }
@@ -111,15 +112,9 @@ export type ProfileExtendedUpsert = Omit<
 
 // The 9 fields that gate sign-up (must all be non-null)
 export const REQUIRED_FOR_SIGNUP: (keyof ProfileExtended)[] = [
-  "sex",
-  "date_of_birth",
-  "civil_status",
-  "mobile_number",
-  "email",
-  "addr_barangay",
-  "addr_city",
-  "addr_province",
-  "addr_zip",
+  "sex", "date_of_birth", "civil_status",
+  "mobile_number", "email",
+  "addr_barangay", "addr_city", "addr_province", "addr_zip",
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -132,29 +127,25 @@ export interface EventSpecificFieldDef {
   label: string;
   type: EventSpecificFieldType;
   required: boolean;
-  max_length?: number; // for type=text
-  options?: string[]; // for type=select
+  max_length?: number;                     // for type=text
+  options?: string[];                      // for type=select
 }
 
-export type FormKey =
-  | "pds"
-  | "authority_to_travel"
-  | "csc_form_6"
-  | "school_clearance";
+export type FormKey = "pds" | "authority_to_travel" | "csc_form_6" | "school_clearance";
 
 export interface TrainingEvent {
   id: number;
   program_id: number;
-  program_name: string; // joined from programs
-  subject_area: string; // joined from programs
+  program_name: string;                    // joined from programs
+  subject_area: string;                    // joined from programs
 
   title: string;
   organizer: string;
   venue: string | null;
   venue_region: string | null;
-  start_date: string; // ISO date
-  end_date: string; // ISO date
-  registration_deadline: string; // ISO date
+  start_date: string;                      // ISO date
+  end_date: string;                        // ISO date
+  registration_deadline: string;           // ISO date
 
   is_star_partnered: boolean;
   funding_source: string | null;
@@ -167,8 +158,8 @@ export interface TrainingEvent {
 }
 
 export interface RecommendedEvent extends TrainingEvent {
-  reason_chip: string; // e.g. "Closes your Assessment Literacy gap"
-  is_eligible: boolean; // teacher has eligible nomination
+  reason_chip: string;                     // e.g. "Closes your Assessment Literacy gap"
+  is_eligible: boolean;                    // teacher has eligible nomination
   nomination_id: number | null;
 }
 
@@ -207,10 +198,8 @@ export interface ActiveRegistration {
   id: number;
   status: RegistrationStatus;
   next_action: string;
-  event: Pick<
-    TrainingEvent,
-    "id" | "title" | "organizer" | "venue" | "start_date" | "end_date"
-  >;
+  event: Pick<TrainingEvent,
+    "id" | "title" | "organizer" | "venue" | "start_date" | "end_date">;
   submitted_at: string | null;
   approved_at: string | null;
   generated_at: string | null;
@@ -229,8 +218,8 @@ export interface VerifyResponse {
 }
 
 export interface GeneratePDSResponse {
-  download_url: string; // /downloads/{reg_id}_pds.xlsx
-  preview_image_url: string; // /static/forms/demo_pds_preview.png
+  download_url: string;                    // /downloads/{reg_id}_pds.xlsx
+  preview_image_url: string;               // /static/forms/demo_pds_preview.png
   generated_at: string;
   registration: EventRegistration;
 }
@@ -242,15 +231,12 @@ export interface StatusPatchRequest {
 // ─────────────────────────────────────────────────────────────
 // Allowed status transitions (enforce both client + server side)
 // ─────────────────────────────────────────────────────────────
-export const ALLOWED_TRANSITIONS: Record<
-  RegistrationStatus,
-  RegistrationStatus[]
-> = {
-  draft: ["forms_generated", "cancelled"],
+export const ALLOWED_TRANSITIONS: Record<RegistrationStatus, RegistrationStatus[]> = {
+  draft:           ["forms_generated", "cancelled"],
   forms_generated: ["submitted", "cancelled"],
-  submitted: ["approved", "cancelled"],
-  approved: ["attended", "cancelled"],
-  attended: ["completed"],
-  completed: [],
-  cancelled: [],
+  submitted:       ["approved", "cancelled"],
+  approved:        ["attended", "cancelled"],
+  attended:        ["completed"],
+  completed:       [],
+  cancelled:       [],
 };
