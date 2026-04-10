@@ -1,7 +1,6 @@
 ---
 alwaysApply: true
 ---
----
 description: Instructions for using GitNexus for codebase awareness and impact analysis.
 globs: **/*
 ---
