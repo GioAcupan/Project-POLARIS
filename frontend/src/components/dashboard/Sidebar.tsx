@@ -12,7 +12,7 @@ export function Sidebar() {
   const reportsActive = pathname.startsWith("/reports")
 
   return (
-    <aside className="flex w-[72px] shrink-0 flex-col items-center gap-2 border-r border-border py-4">
+    <aside className="polaris-glass-surface flex w-[72px] shrink-0 flex-col items-center gap-2 py-4">
       <NavLink
         to="/"
         end

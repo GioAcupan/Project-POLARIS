@@ -80,7 +80,8 @@
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
+    /* Brand-led primary (design_system.jsonc brand.blue) */
+    --primary: var(--color-brand-blue);
     --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
@@ -115,8 +116,8 @@
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
+    --primary: var(--color-chart-primary);
+    --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.269 0 0);
@@ -159,5 +160,29 @@
   h5,
   h6 {
     @apply font-heading font-extrabold tracking-[-0.02em];
+  }
+}
+
+@layer components {
+  /* design_system.jsonc surfaces.glassCard — shared recipe */
+  .polaris-glass-surface {
+    background: var(--polaris-glass-background);
+    -webkit-backdrop-filter: blur(var(--polaris-glass-backdrop-blur));
+    backdrop-filter: blur(var(--polaris-glass-backdrop-blur));
+    border: var(--polaris-glass-border);
+    box-shadow: var(--polaris-glass-shadow);
+  }
+
+  .polaris-glass-card {
+    background: var(--polaris-glass-background);
+    -webkit-backdrop-filter: blur(var(--polaris-glass-backdrop-blur));
+    backdrop-filter: blur(var(--polaris-glass-backdrop-blur));
+    border: var(--polaris-glass-border);
+    box-shadow: var(--polaris-glass-shadow);
+    border-radius: var(--radius);
+  }
+
+  .polaris-app-shell {
+    background: var(--polaris-app-background);
   }
 }
