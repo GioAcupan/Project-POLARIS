@@ -2,18 +2,24 @@
 -- Additive only: requires v3.1 tables teachers, programs, nominations.
 
 -- DB1
-CREATE TYPE registration_status AS ENUM (
-  'draft',
-  'forms_generated',
-  'submitted',
-  'approved',
-  'attended',
-  'completed',
-  'cancelled'
-);
+DO $$
+BEGIN
+  CREATE TYPE registration_status AS ENUM (
+    'draft',
+    'forms_generated',
+    'submitted',
+    'approved',
+    'attended',
+    'completed',
+    'cancelled'
+  );
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END
+$$;
 
 -- DB2
-CREATE TABLE teacher_profile_extended (
+CREATE TABLE IF NOT EXISTS teacher_profile_extended (
   deped_id VARCHAR(30) PRIMARY KEY REFERENCES teachers (deped_id) ON DELETE CASCADE,
   name_extension VARCHAR(10) NULL,
   sex VARCHAR(10) CHECK (sex IS NULL OR sex IN ('Male', 'Female')),
@@ -45,7 +51,7 @@ CREATE TABLE teacher_profile_extended (
 CREATE INDEX idx_teacher_profile_extended_last_verified_at ON teacher_profile_extended (last_verified_at);
 
 -- DB3
-CREATE TABLE training_events (
+CREATE TABLE IF NOT EXISTS training_events (
   id SERIAL PRIMARY KEY,
   program_id INT NOT NULL REFERENCES programs (id) ON DELETE RESTRICT,
   title VARCHAR(255) NOT NULL,
@@ -72,7 +78,7 @@ CREATE INDEX idx_training_events_is_star_partnered ON training_events (is_star_p
 CREATE INDEX idx_training_events_registration_deadline ON training_events (registration_deadline);
 
 -- DB4
-CREATE TABLE event_registrations (
+CREATE TABLE IF NOT EXISTS event_registrations (
   id SERIAL PRIMARY KEY,
   teacher_id VARCHAR(30) NOT NULL REFERENCES teachers (deped_id) ON DELETE CASCADE,
   event_id INT NOT NULL REFERENCES training_events (id) ON DELETE RESTRICT,
