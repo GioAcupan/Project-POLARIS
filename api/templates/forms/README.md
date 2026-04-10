@@ -10,4 +10,4 @@ Commit these files under `api/templates/forms/` for the blueprint happy path whe
 
 Without all three, pitch-time form copy and UI preview steps may fail or degrade.
 
-**Repo check:** `csc_form_212.xlsx` and `demo_pds_preview.png` are present; add `demo_pds_prefilled.xlsx` when ready.
+**Repo check:** all three assets above should be committed under `api/templates/forms/` for a full pitch path.
