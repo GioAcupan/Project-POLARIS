@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 import api.models  # noqa: F401 — ensures all ORM models are registered on startup
+from api.routers import chat as chat_router
 
 
 def _read_pitch_mode() -> bool:
@@ -14,6 +15,8 @@ def _read_pitch_mode() -> bool:
 
 app = FastAPI(title="POLARIS API")
 app.state.pitch_mode = _read_pitch_mode()
+
+app.include_router(chat_router.router)
 
 app.add_middleware(
     CORSMiddleware,
