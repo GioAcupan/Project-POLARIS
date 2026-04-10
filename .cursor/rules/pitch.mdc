@@ -1,0 +1,17 @@
+---
+alwaysApply: true
+---
+---
+description: Guardrails for the 18-step Happy Path demo script.
+globs: **/*
+---
+
+# POLARIS PITCH: THE HAPPY PATH
+
+The 18-step script in `POLARIS_FINAL_EXECUTION_BLUEPRINT.md` §C is the North Star. 
+
+## CONSTRAINTS
+- **Card Order:** `ActiveRegistrationsList` must always render at the top of the Home Tab.
+- **Map Focus:** Clicking a Critical Ping must trigger a `flyTo` animation to the region centroid.
+- **Form Preview:** The success screen after sign-up MUST show the `demo_pds_preview.png`.
+- **No Deletion:** Never remove "Coming Soon" tooltips or placeholder cards unless explicitly instructed; they are part of the demo narrative.

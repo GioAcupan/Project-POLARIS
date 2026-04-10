@@ -1,0 +1,28 @@
+---
+alwaysApply: false
+---
+---
+description: Visual identity and styling rules based on the Polaris Design System.
+globs: frontend/**/*.{jsx,tsx,css}
+---
+
+# POLARIS UI: LUMINOUS GLASS SYSTEM
+
+Every UI component must adhere to the tokens defined in `@design_system.jsonc`.
+
+## DESIGN TOKENS
+- **Typography:** - Headers: `Raleway`, weight 800.
+  - Data/Body: `DM Sans`.
+- **Colors:** Use brand values (Pink: `#F673DE`, Blue: `#1A5EA8`). 
+- **Signals:** Use `critical` (#E8532A) for Red, `warning` (#F5A623) for Yellow, and `good` (#2DBFA0) for Green.
+
+## GLASS RECIPE (Tailwind Implementation)
+- **Base:** `bg-white/75 backdrop-blur-24` (backdrop-blur-xl).
+- **Border:** `border border-white/40`.
+- **Shadow:** Use the custom shadow defined in `surfaces.glassCard.shadow`.
+- **Radius:** All cards must use `rounded-[24px]`.
+
+## INTERACTIVE BEHAVIOR
+- **Animations:** Use `Framer Motion` for all transitions. 
+- **Stagger:** Component entrances must follow the `entranceStagger: 0.1` rule.
+- **Charts:** Apply `barRadius: [10, 10, 0, 0]` and the `areaGradient` defined in the design system.

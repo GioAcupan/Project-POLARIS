@@ -1,0 +1,21 @@
+---
+alwaysApply: true
+---
+---
+description: Instructions for using GitNexus for codebase awareness and impact analysis.
+globs: **/*
+---
+
+# GITNEXUS: ARCHITECTURAL AWARENESS
+
+GitNexus is the codebase's "Nervous System." Use it to prevent blind edits and breaking dependencies.
+
+## WORKFLOW COMMANDS
+- **Analysis:** Always run `npx gitnexus analyze` after significant structural changes to refresh the index.
+- **Impact Analysis (PRE-EDIT):** Before modifying any symbol (function/class/method), you MUST run `gitnexus_impact({target: "SymbolName", direction: "upstream"})`. 
+- **Change Detection (PRE-COMMIT):** Before committing, run `gitnexus_detect_changes()` to verify that changes only affect intended execution flows.
+
+## DECISION MAKING
+- If `gitnexus_impact` returns **HIGH** or **CRITICAL** risk, stop and explain the blast radius to the user before proceeding.
+- Use `gitnexus_query({query: "concept"})` to find execution flows instead of simple grepping.
+- Use `gitnexus_context({name: "SymbolName"})` for a 360-degree view of a symbol's participation in processes.
