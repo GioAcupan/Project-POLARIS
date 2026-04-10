@@ -2,27 +2,40 @@
 alwaysApply: false
 ---
 ---
-description: Visual identity and styling rules based on the Polaris Design System.
+description: Visual identity, styling rules, and Vibe Coding UI practices for POLARIS.
 globs: frontend/**/*.{jsx,tsx,css}
 ---
 
-# POLARIS UI: LUMINOUS GLASS SYSTEM
+# POLARIS UI: LUMINOUS GLASS & VIBE CODING
 
-Every UI component must adhere to the tokens defined in `@design_system.jsonc`.
+You are a Senior UI Engineer specializing in "Vibe Coding"—prioritizing context, primitives, and high-fidelity polish over boilerplate.
 
-## DESIGN TOKENS
-- **Typography:** - Headers: `Raleway`, weight 800.
-  - Data/Body: `DM Sans`.
-- **Colors:** Use brand values (Pink: `#F673DE`, Blue: `#1A5EA8`). 
-- **Signals:** Use `critical` (#E8532A) for Red, `warning` (#F5A623) for Yellow, and `good` (#2DBFA0) for Green.
+## 🧱 COMPONENT STRATEGY: PRIMITIVES FIRST
+- **Shadcn/ui is the Law:** Always start with a `shadcn` primitive from `@/components/ui`.
+- **Don't Rebuild, Refine:** Instead of building custom components, modify the `className` or local styles of existing shadcn primitives to match the `@design_system.jsonc`.
+- **Functional Components:** Use clean, functional React components with standard Tailwind 4 patterns.
 
-## GLASS RECIPE (Tailwind Implementation)
-- **Base:** `bg-white/75 backdrop-blur-24` (backdrop-blur-xl).
-- **Border:** `border border-white/40`.
-- **Shadow:** Use the custom shadow defined in `surfaces.glassCard.shadow`.
-- **Radius:** All cards must use `rounded-[24px]`.
+## 🥛 THE LUMINOUS GLASS RECIPE
+All surfaces (cards, sidebars, modals) must follow the "Milky Glass" recipe from `@design_system.jsonc`:
+- **Background:** `bg-white/75` (rgba 255, 255, 255, 0.75).
+- **Blur:** `backdrop-blur-[24px]` (backdrop-blur-xl).
+- **Edge:** `border border-white/40` (The "Light-Catch" highlight).
+- **Shadow:** `shadow-[0_10_25px_-5px_rgba(26,94,168,0.1)]`.
+- **Corners:** `rounded-[24px]` (Soft, approachable).
 
-## INTERACTIVE BEHAVIOR
-- **Animations:** Use `Framer Motion` for all transitions. 
-- **Stagger:** Component entrances must follow the `entranceStagger: 0.1` rule.
-- **Charts:** Apply `barRadius: [10, 10, 0, 0]` and the `areaGradient` defined in the design system.
+## 🧪 DESIGN TOKENS (From @design_system.jsonc)
+- **Typography:** - Titles/Headers: Use `Raleway` (800 weight) with `-0.02em` tracking.
+  - Data/Body: Use `DM Sans` (Regular 400, Medium 500, Bold 600).
+- **Color Palette:**
+  - Brand: Pink (`#F673DE`), Blue (`#1A5EA8`), BabyPink (`#E9D6E5`).
+  - Signals: `critical` (#E8532A), `warning` (#F5A623), `good` (#2DBFA0).
+  - Data: Hero Blue (`#3B9BDD`), Highlight (`#B7DFFF`).
+
+## 🌊 MOTION & FEEL
+- **Framer Motion:** Use physics-based springs (stiffness: 100, damping: 20) for all interactions.
+- **Stagger:** Use `entranceStagger: 0.1` for sequences (e.g., Starbot -> Map -> Metrics).
+- **Feedback:** Every button click or hover should have a high-quality transition (`ease-in-out`, 0.2s).
+
+## 📊 DATA VIZ VIBE
+- **Recharts:** Use the `primary` Graph Blue (#3B9BDD) and `axisColor` (rgba 27, 27, 27, 0.1).
+- **Radii:** All bar charts must use `barRadius: [10, 10, 0, 0]` for a modern, soft look.
