@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 
 import { MapContainer, Polygon, TileLayer, useMap } from "react-leaflet"
 
@@ -31,6 +31,7 @@ const knownCentroids: Record<string, LatLngTuple> = {
   NCR: [14.6, 121.0],
   CAR: [16.5, 120.9],
 }
+const canonicalRegions = Object.keys(knownCentroids)
 
 function scoreForLens(region: RegionalScore, lens: "overall" | "supply" | "demand" | "impact"): number {
   if (lens === "supply") return region.supply_subscore
@@ -85,31 +86,43 @@ function FlyToOnSelection({
 export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
   const activeLens = useDashboardStore((snapshot) => snapshot.activeLens)
   const activeRegion = useDashboardStore((snapshot) => snapshot.activeRegion)
+  const regionByName = useMemo(
+    () => new Map(regions.map((region) => [region.region, region])),
+    [regions],
+  )
 
   return (
     <section className="rounded-xl border border-border bg-card p-4 lg:col-span-6">
       <LensSelector />
+      <p
+        className={`mb-2 text-xs font-semibold ${
+          activeLens === "demand" ? "text-red-600" : "text-muted-foreground"
+        }`}
+      >
+        {activeLens === "demand" ? "Red = High Unmet Demand" : "Color scale updates per active lens"}
+      </p>
       <div className="h-[420px] overflow-hidden rounded-lg border border-border">
         <UnsafeMapContainer center={defaultCenter} zoom={5.5} className="h-full w-full" scrollWheelZoom>
           <UnsafeTileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {regions.map((region) => {
-            const centroid = knownCentroids[region.region] ?? defaultCenter
-            const score = scoreForLens(region, activeLens)
+          {canonicalRegions.map((regionName) => {
+            const region = regionByName.get(regionName) ?? null
+            const centroid = knownCentroids[regionName] ?? defaultCenter
+            const score = region ? scoreForLens(region, activeLens) : 50
             return (
               <Polygon
-                key={region.region}
+                key={regionName}
                 positions={polygonForCenter(centroid)}
                 pathOptions={{
                   fillColor: fillForScore(score, activeLens),
                   fillOpacity: 0.65,
-                  color: activeRegion === region.region ? "#0f172a" : "#334155",
-                  weight: activeRegion === region.region ? 2.5 : 1.2,
+                  color: activeRegion === regionName ? "#0f172a" : "#334155",
+                  weight: activeRegion === regionName ? 2.5 : 1.2,
                 }}
                 eventHandlers={{
-                  click: () => dashboardStore.setActiveRegion(region.region),
+                  click: () => dashboardStore.setActiveRegion(regionName),
                 }}
               />
             )
