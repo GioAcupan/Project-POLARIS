@@ -155,18 +155,15 @@ async def generate_report(
     # ── Compute all derived values ────────────────────────────────────────────
     values = _build_values(row, body.report_type)
 
-    # ── PITCH MODE: deterministic render ─────────────────────────────────────
-    if pitch_mode:
-        markdown = template.format_map(SafeDict(values))
-        await asyncio.sleep(1.2)
+    # All report types use SafeDict so missing template placeholders never raise KeyError (§E.2.2).
+    markdown = template.format_map(SafeDict(values))
 
-    # ── HACKATHON MODE ────────────────────────────────────────────────────────
+    if pitch_mode:
+        await asyncio.sleep(1.2)
     else:
         # TODO (polaris_starbot_roadmap.md): call GeminiClient to generate only
-        # {key_insight} and {recommendations_block} using a REPORT_INSIGHT system
-        # prompt, then merge into values before format_map. The deterministic path
-        # below is the production-safe fallback.
-        markdown = template.format_map(SafeDict(values))
+        # {key_insight} and {recommendations_block}, merge into values, then format_map again.
+        pass
 
     # ── Build filename ────────────────────────────────────────────────────────
     filename = _build_filename(body.report_type, body.region)

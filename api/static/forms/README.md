@@ -1,9 +1,8 @@
-# Static forms directory
+# Static forms (HTTP)
 
-Demo form workbooks and previews for the happy path live under **`api/templates/forms/`** (Part B §B.2 BE14), not here:
+`demo_pds_preview.png` in this folder is served at **`/static/forms/demo_pds_preview.png`** (FastAPI `StaticFiles` on `api/static`).
 
-- `csc_form_212.xlsx`
-- `demo_pds_prefilled.xlsx`
-- `demo_pds_preview.png`
+- **Canonical authoring location:** `api/templates/forms/demo_pds_preview.png` (Part B §B.2 BE14). Keep the real screenshot there, then copy into this folder for the demo URL, or maintain both in sync.
+- **Workbook sources:** `csc_form_212.xlsx` and `demo_pds_prefilled.xlsx` live under `api/templates/forms/` (copied by generators, not served as static by default).
 
-This folder is reserved for any future assets served via `GET /static/...`. The mounted static root is `api/static/`.
+Replace any 0-byte placeholder PNGs with the real ~600px wide preview before recording the pitch.
