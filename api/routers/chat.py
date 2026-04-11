@@ -91,7 +91,7 @@ async def chat(body: ChatRequest, request: Request) -> ChatResponse:
                     coverage=round(ctx["star_coverage_pct"]),
                     spec=round(ctx["specialization_pct"]),
                 )
-            except (KeyError, ValueError):
+            except (KeyError, ValueError, TypeError):
                 response_text = _GENERIC_FALLBACK
 
         await asyncio.sleep(0.6)

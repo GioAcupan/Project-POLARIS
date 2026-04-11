@@ -1,4 +1,5 @@
-from datetime import date
+from datetime import date, datetime
+from decimal import Decimal
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
@@ -48,3 +49,33 @@ class ProfileExtendedUpsert(BaseModel):
         if not digits:
             return None
         return f"+{digits}" if leading_plus else digits
+
+
+class ProfileExtendedOut(BaseModel):
+    """Full `teacher_profile_extended` row — mirrors TS ProfileExtended."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    deped_id: str
+    name_extension: str | None = None
+    sex: SexLiteral | None = None
+    date_of_birth: date | None = None
+    civil_status: CivilStatusLiteral | None = None
+    place_of_birth: str | None = None
+    citizenship: str | None = None
+    height_cm: float | Decimal | None = None
+    weight_kg: float | Decimal | None = None
+    blood_type: str | None = None
+    mobile_number: str | None = None
+    telephone_number: str | None = None
+    email: str | None = None
+    addr_house_no: str | None = None
+    addr_street: str | None = None
+    addr_subdivision: str | None = None
+    addr_barangay: str | None = None
+    addr_city: str | None = None
+    addr_province: str | None = None
+    addr_zip: str | None = None
+    completeness_score: int
+    last_verified_at: datetime | None = None
+    updated_at: datetime
