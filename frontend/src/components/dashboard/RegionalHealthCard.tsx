@@ -1,3 +1,8 @@
+import { useState } from "react"
+
+import { DemandView } from "@/components/dashboard/detail-views/DemandView"
+import { ImpactView } from "@/components/dashboard/detail-views/ImpactView"
+import { SummaryView } from "@/components/dashboard/detail-views/SummaryView"
 import type { RegionHealth, RegionalScore } from "@/types/polaris"
 
 function toRegionHealth(region: RegionalScore): RegionHealth {
@@ -47,7 +52,7 @@ function pillClass(trafficLight: RegionHealth["traffic_light"]): string {
 
 export function RegionalHealthCard({ selectedRegion }: { selectedRegion: RegionalScore }) {
   const region = toRegionHealth(selectedRegion)
-  const entries = Object.entries(region.factors)
+  const [activeTab, setActiveTab] = useState<"summary" | "demand" | "impact">("summary")
 
   return (
     <section className="rounded-xl border border-border bg-card p-4 lg:col-span-3">
@@ -59,13 +64,32 @@ export function RegionalHealthCard({ selectedRegion }: { selectedRegion: Regiona
       </div>
       <p className="mt-1 text-lg font-bold text-foreground">Score: {Math.round(region.score)}</p>
       <p className="mt-3 text-sm text-muted-foreground">{keyInsight(region)}</p>
-      <div className="mt-4 space-y-2">
-        {entries.map(([name, value]) => (
-          <div key={name} className="rounded-md border border-border bg-background p-2 text-sm">
-            <span className="font-medium text-foreground">{name.replaceAll("_", " ")}: </span>
-            <span className="text-muted-foreground">{Number(value).toFixed(1)}</span>
-          </div>
-        ))}
+
+      <div className="mt-4 flex gap-2">
+        {(["summary", "demand", "impact"] as const).map((tab) => {
+          const active = activeTab === tab
+          return (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={[
+                "rounded-md border px-2 py-1 text-xs font-semibold uppercase tracking-wide transition",
+                active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-background text-muted-foreground",
+              ].join(" ")}
+            >
+              {tab}
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="mt-3">
+        {activeTab === "summary" ? <SummaryView regionHealth={region} /> : null}
+        {activeTab === "demand" ? <DemandView selectedRegion={selectedRegion} /> : null}
+        {activeTab === "impact" ? <ImpactView selectedRegion={selectedRegion} /> : null}
       </div>
     </section>
   )
