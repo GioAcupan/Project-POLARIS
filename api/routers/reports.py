@@ -58,11 +58,21 @@ def _load_template(report_type: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
+# Filenames align with Part A §A.1 example (e.g. Quarterly_Report_R8.md) and §C Step 10.
+_REPORT_FILENAME_STEM: dict[str, str] = {
+    "quarterly_performance": "Quarterly_Report",
+    "intervention_priority": "Intervention_Priority",
+    "executive_summary": "Executive_Summary",
+}
+
+
 def _build_filename(report_type: str, region: str) -> str:
-    """Build the report filename, e.g. 'Quarterly_Performance_R8.md'."""
-    title_part = report_type.replace("_", " ").title().replace(" ", "_")
+    """Build the report filename, e.g. 'Quarterly_Report_R8.md'."""
+    stem = _REPORT_FILENAME_STEM.get(report_type)
+    if stem is None:
+        stem = report_type.replace("_", " ").title().replace(" ", "_")
     code = region_code(region)
-    return f"{title_part}_{code}.md"
+    return f"{stem}_{code}.md"
 
 
 def _build_values(row: RegionalScore, report_type: str) -> dict[str, object]:
