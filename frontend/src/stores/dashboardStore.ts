@@ -2,8 +2,30 @@ import { useSyncExternalStore } from "react"
 
 import type { RegionalScore } from "@/types/polaris"
 
+export type DashboardLens = "overall" | "supply" | "demand" | "impact"
+
+type NationalRadar = {
+  current: {
+    content_knowledge: number
+    learning_environment: number
+    diversity_of_learners: number
+    curriculum_planning: number
+    assessment_reporting: number
+  }
+  target: {
+    content_knowledge: number
+    learning_environment: number
+    diversity_of_learners: number
+    curriculum_planning: number
+    assessment_reporting: number
+  }
+}
+
 type DashboardState = {
   activeRegion: string | null
+  activeLens: DashboardLens
+  triggerFlyTo: boolean
+  nationalRadar: NationalRadar | null
   regions: RegionalScore[]
 }
 
@@ -13,6 +35,9 @@ const listeners = new Set<Listener>()
 
 let state: DashboardState = {
   activeRegion: null,
+  activeLens: "overall",
+  triggerFlyTo: false,
+  nationalRadar: null,
   regions: [],
 }
 
@@ -39,12 +64,24 @@ export const dashboardStore = {
   setActiveRegion(region: string | null) {
     setState({ activeRegion: region })
   },
+  setActiveLens(lens: DashboardLens) {
+    setState({ activeLens: lens })
+  },
+  setTriggerFlyTo(triggerFlyTo: boolean) {
+    setState({ triggerFlyTo })
+  },
+  setNationalRadar(nationalRadar: NationalRadar | null) {
+    setState({ nationalRadar })
+  },
   setRegions(regions: RegionalScore[]) {
     setState({ regions })
   },
   reset() {
     state = {
       activeRegion: null,
+      activeLens: "overall",
+      triggerFlyTo: false,
+      nationalRadar: null,
       regions: [],
     }
     emitChange()
