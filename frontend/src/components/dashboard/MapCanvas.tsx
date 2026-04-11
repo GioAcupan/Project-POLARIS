@@ -155,11 +155,11 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
   }, [geoData, regions])
 
   return (
-    <section className="absolute inset-0 z-0 overflow-hidden rounded-glass bg-dataViz-highlight">
+    <section className="absolute inset-0 z-0 overflow-hidden">
       <UnsafeMapContainer
         center={defaultCenter}
         zoom={6}
-        className="h-full w-full"
+        className="polaris-map-root h-full w-full"
         scrollWheelZoom
         attributionControl={false}
         zoomControl={false}
