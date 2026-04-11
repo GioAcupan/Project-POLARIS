@@ -184,4 +184,9 @@
   .polaris-app-shell {
     background: var(--polaris-app-background);
   }
+
+  /* Merge vector map with outer glass: Leaflet defaults to a gray pane background */
+  .polaris-map-root.leaflet-container {
+    background: transparent;
+  }
 }
