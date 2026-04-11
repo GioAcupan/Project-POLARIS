@@ -43,11 +43,11 @@ export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) 
   }
 
   return (
-    <section className="rounded-glass p-4 polaris-glass-card">
+    <section className="flex h-full max-h-full min-h-0 flex-col rounded-glass p-4 polaris-glass-card">
       <label className="sr-only" htmlFor="region-search">
         Search by Region
       </label>
-      <div className="flex items-center gap-2 rounded-glass border border-border bg-card px-3 py-2">
+      <div className="flex shrink-0 items-center gap-2 rounded-glass border border-border bg-card px-3 py-2">
         <input
           id="region-search"
           type="text"
@@ -70,23 +70,25 @@ export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) 
           Find
         </button>
       </div>
-      <h2 className="mt-4 font-heading text-section-title font-extrabold text-text-primary">
+      <h2 className="mt-4 shrink-0 font-heading text-section-title font-extrabold text-text-primary">
         National Baseline View
       </h2>
-      <div className="mt-4 flex items-center justify-center">
+      <div className="mt-4 flex shrink-0 items-center justify-center">
         <div className="relative h-32 w-32 rounded-full" style={donutStyle}>
           <div className="absolute inset-4 rounded-full bg-card" />
         </div>
       </div>
-      <div className="mt-5 grid grid-cols-2 gap-2">
-        {factors.map((factor) => (
-          <div key={factor.label} className="rounded-md border border-border bg-background p-2">
-            <p className="text-label font-semibold uppercase tracking-wide text-text-secondary">
-              {factor.label}
-            </p>
-            <p className="mt-1 text-metric font-semibold text-text-primary">{factor.value.toFixed(1)}</p>
-          </div>
-        ))}
+      <div className="mt-element-stack min-h-0 flex-1 overflow-y-auto pr-1">
+        <div className="grid grid-cols-2 gap-2">
+          {factors.map((factor) => (
+            <div key={factor.label} className="rounded-md border border-border bg-background p-2">
+              <p className="text-label font-semibold uppercase tracking-wide text-text-secondary">
+                {factor.label}
+              </p>
+              <p className="mt-1 text-metric font-semibold text-text-primary">{factor.value.toFixed(1)}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   )

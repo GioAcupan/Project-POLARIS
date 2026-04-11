@@ -189,4 +189,13 @@
   .polaris-map-root.leaflet-container {
     background: transparent;
   }
+
+  /* Floating side rails: below header band, bottom aligned to content (screen margin) */
+  .dashboard-floating-rail-vertical {
+    top: calc(
+      var(--ds-spacing-screen-margin) + var(--ds-spacing-section-gap) +
+        var(--ds-spacing-element-stack)
+    );
+    bottom: var(--ds-spacing-screen-margin);
+  }
 }

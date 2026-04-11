@@ -37,11 +37,13 @@ export default function Dashboard() {
           <LensSelector />
         </header>
 
-        <div className="pointer-events-auto absolute bottom-5 left-5 top-28 flex w-80 flex-col gap-4">
-          <PPSTRadarCard radar={nationalRadar} />
-          <section className="flex-1 rounded-glass p-4 polaris-glass-card">
+        <div className="dashboard-floating-rail-vertical pointer-events-auto absolute left-screen-margin flex w-80 min-h-0 flex-col gap-card-gap">
+          <div className="flex min-h-0 flex-[2] flex-col overflow-hidden">
+            <PPSTRadarCard radar={nationalRadar} />
+          </div>
+          <section className="flex min-h-0 flex-[3] flex-col rounded-glass p-4 polaris-glass-card">
             <h2 className="font-heading text-section-title font-extrabold text-text-primary">AI Reports</h2>
-            <div className="mt-3 h-full overflow-auto pr-1">
+            <div className="mt-element-stack min-h-0 flex-1 overflow-y-auto pr-1">
               <CriticalPingsFeed regions={regions} />
             </div>
           </section>
@@ -55,7 +57,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="pointer-events-auto absolute right-5 top-28 w-96"
+              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex h-full min-h-0 w-96 flex-col"
             >
               <RegionalHealthCard selectedRegion={selectedRegion} />
             </motion.div>
@@ -66,7 +68,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="pointer-events-auto absolute right-5 top-28 w-96"
+              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex h-full min-h-0 w-96 flex-col"
             >
               <NationalBaselineCard regions={regions} />
             </motion.div>
