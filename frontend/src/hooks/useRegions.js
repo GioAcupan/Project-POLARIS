@@ -8,5 +8,6 @@ export function useRegions() {
   return useQuery({
     queryKey: regionsQueryKey,
     queryFn: getRegions,
+    staleTime: 60_000,
   })
 }

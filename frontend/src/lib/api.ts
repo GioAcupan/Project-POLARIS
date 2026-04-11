@@ -6,6 +6,7 @@ import type {
   GeneratePDSResponse,
   ProfileExtended,
   ProfileExtendedUpsert,
+  PPSTRadar,
   RecommendedEvent,
   RegionalScore,
   RegisterEventRequest,
@@ -71,6 +72,10 @@ export function chat(req: ChatRequest): Promise<ChatResponse> {
 
 export function getRegions(): Promise<RegionalScore[]> {
   return apiFetch<RegionalScore[]>("/regions/")
+}
+
+export function getNationalRadar(): Promise<PPSTRadar> {
+  return apiFetch<PPSTRadar>("/intelligence/national-skill-radar")
 }
 
 export function generateReport(req: ReportGenerateRequest): Promise<ReportGenerateResponse> {
