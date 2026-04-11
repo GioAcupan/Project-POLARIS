@@ -1,37 +1,19 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { GeoJSON, MapContainer, useMap } from "react-leaflet"
 
-import { MapContainer, Polygon, TileLayer, useMap } from "react-leaflet"
-
-import { LensSelector } from "@/components/dashboard/LensSelector"
 import { dashboardStore, useDashboardStore } from "@/stores/dashboardStore"
 import type { RegionalScore } from "@/types/polaris"
 
 type LatLngTuple = [number, number]
+type RegionFeatureProperties = {
+  region: string
+  adm1_psgc: number
+  source_file: string
+}
 
 const defaultCenter: LatLngTuple = [12.5, 122.5]
 const UnsafeMapContainer: any = MapContainer
-const UnsafeTileLayer: any = TileLayer
-
-const knownCentroids: Record<string, LatLngTuple> = {
-  "Region I": [16.2, 120.4],
-  "Region II": [16.8, 121.8],
-  "Region III": [15.3, 120.8],
-  "Region IV-A": [14.2, 121.2],
-  "Region IV-B": [12.8, 121.1],
-  "Region V": [13.6, 123.2],
-  "Region VI": [10.7, 122.5],
-  "Region VII": [10.1, 123.8],
-  "Region VIII": [11.2, 125.0],
-  "Region IX": [7.9, 123.0],
-  "Region X": [8.5, 124.7],
-  "Region XI": [7.2, 125.8],
-  "Region XII": [6.9, 124.3],
-  "Region XIII": [8.9, 125.9],
-  BARMM: [7.1, 124.2],
-  NCR: [14.6, 121.0],
-  CAR: [16.5, 120.9],
-}
-const canonicalRegions = Object.keys(knownCentroids)
+const UnsafeGeoJSON: any = GeoJSON
 
 function scoreForLens(region: RegionalScore, lens: "overall" | "supply" | "demand" | "impact"): number {
   if (lens === "supply") return region.supply_subscore
@@ -40,96 +22,184 @@ function scoreForLens(region: RegionalScore, lens: "overall" | "supply" | "deman
   return region.underserved_score
 }
 
-function fillForScore(score: number, lens: "overall" | "supply" | "demand" | "impact"): string {
+function fillForScore(score: number): string {
   const normalized = Math.max(0, Math.min(100, score))
-  if (lens === "demand") {
-    if (normalized >= 66) return "#dc2626"
-    if (normalized >= 40) return "#f97316"
-    return "#16a34a"
-  }
-  if (normalized >= 66) return "#0d9488"
-  if (normalized >= 40) return "#14b8a6"
-  return "#5eead4"
+  if (normalized >= 66) return "var(--color-signal-critical)"
+  if (normalized >= 40) return "var(--color-signal-warning)"
+  return "var(--color-signal-good)"
 }
 
-function polygonForCenter([lat, lng]: LatLngTuple): LatLngTuple[] {
-  const delta = 0.7
-  return [
-    [lat + delta, lng - delta],
-    [lat + delta, lng + delta],
-    [lat - delta, lng + delta],
-    [lat - delta, lng - delta],
-  ]
-}
-
-function FlyToOnSelection({
-  regions,
+function MapViewportController({
+  geoLayerRef,
+  activeRegion,
+  triggerFlyTo,
 }: {
-  regions: RegionalScore[]
+  geoLayerRef: { current: any }
+  activeRegion: string | null
+  triggerFlyTo: boolean
 }) {
   const map = useMap()
-  const activeRegion = useDashboardStore((snapshot) => snapshot.activeRegion)
-  const triggerFlyTo = useDashboardStore((snapshot) => snapshot.triggerFlyTo)
+  const initializedBounds = useRef(false)
 
   useEffect(() => {
-    if (!triggerFlyTo || !activeRegion) return
-    const selected = regions.find((region) => region.region === activeRegion)
-    if (!selected) return
-    const center = knownCentroids[selected.region] ?? defaultCenter
-    map.flyTo(center, 6.6, { duration: 0.8, easeLinearity: 0.5 })
+    const layer = geoLayerRef.current
+    if (!layer || initializedBounds.current) return
+
+    const bounds = layer.getBounds()
+    if (!bounds.isValid()) return
+    map.fitBounds(bounds)
+    map.setMaxBounds(bounds)
+    map.setMaxBoundsViscosity(1)
+    map.setMinZoom(map.getZoom())
+    initializedBounds.current = true
+  }, [geoLayerRef, map])
+
+  useEffect(() => {
+    const layer = geoLayerRef.current
+    if (!layer) return
+
+    layer.eachLayer((geoLayer: any) => {
+      const featureRegion = geoLayer.feature?.properties?.region as string | undefined
+      const isActive = activeRegion != null && featureRegion === activeRegion
+      geoLayer.setStyle({
+        color: isActive ? "var(--color-text-primary)" : "var(--polaris-map-region-border)",
+        weight: isActive ? 2.8 : 1.2,
+      })
+      if (isActive && geoLayer.bringToFront) geoLayer.bringToFront()
+    })
+  }, [activeRegion, geoLayerRef])
+
+  useEffect(() => {
+    const layer = geoLayerRef.current
+    if (!layer || !triggerFlyTo || !activeRegion) return
+
+    let selectedLayer: any = null
+    layer.eachLayer((geoLayer: any) => {
+      const featureRegion = geoLayer.feature?.properties?.region as string | undefined
+      if (featureRegion === activeRegion) selectedLayer = geoLayer
+    })
+
+    if (selectedLayer) {
+      map.flyToBounds(selectedLayer.getBounds(), {
+        duration: 0.8,
+        easeLinearity: 0.5,
+        padding: [16, 16],
+      })
+    }
     dashboardStore.setTriggerFlyTo(false)
-  }, [activeRegion, map, regions, triggerFlyTo])
+  }, [activeRegion, geoLayerRef, map, triggerFlyTo])
 
   return null
 }
 
 export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
+  const [geoData, setGeoData] = useState<any>(null)
   const activeLens = useDashboardStore((snapshot) => snapshot.activeLens)
   const activeRegion = useDashboardStore((snapshot) => snapshot.activeRegion)
-  const regionByName = useMemo(
-    () => new Map(regions.map((region) => [region.region, region])),
-    [regions],
-  )
+  const triggerFlyTo = useDashboardStore((snapshot) => snapshot.triggerFlyTo)
+  const geoLayerRef = useRef<any>(null)
+  const mapFillOpacity = useMemo(() => {
+    if (typeof window === "undefined") return 0.85
+    const raw = getComputedStyle(document.documentElement)
+      .getPropertyValue("--ds-component-map-fill-opacity")
+      .trim()
+    const parsed = Number.parseFloat(raw)
+    return Number.isFinite(parsed) ? parsed : 0.85
+  }, [])
+  const regionByName = useMemo(() => new Map(regions.map((region) => [region.region, region])), [regions])
+
+  useEffect(() => {
+    let cancelled = false
+    void fetch("/ph-regions.geojson")
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Failed to load ph-regions.geojson")
+        return response.json()
+      })
+      .then((json) => {
+        if (cancelled) return
+        setGeoData(json)
+      })
+      .catch((error) => {
+        console.error("[MapCanvas] Unable to load PH regions GeoJSON", error)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!geoData || !("features" in geoData)) return
+    const geoRegions = new Set(
+      (geoData.features as Array<{ properties?: Partial<RegionFeatureProperties> }>)
+        .map((feature) => feature.properties?.region)
+        .filter((name): name is string => Boolean(name)),
+    )
+    const backendRegions = new Set(regions.map((region) => region.region))
+    const unmatchedGeo = [...geoRegions].filter((name) => !backendRegions.has(name))
+    const unmatchedBackend = [...backendRegions].filter((name) => !geoRegions.has(name))
+    if (unmatchedGeo.length || unmatchedBackend.length) {
+      console.warn("[MapCanvas] Region join mismatch", {
+        unmatchedGeo,
+        unmatchedBackend,
+      })
+    }
+  }, [geoData, regions])
 
   return (
-    <section className="rounded-xl border border-border bg-card p-4 lg:col-span-6">
-      <LensSelector />
-      <p
-        className={`mb-2 text-xs font-semibold ${
-          activeLens === "demand" ? "text-red-600" : "text-muted-foreground"
-        }`}
-      >
-        {activeLens === "demand" ? "Red = High Unmet Demand" : "Color scale updates per active lens"}
-      </p>
-      <div className="h-[420px] overflow-hidden rounded-lg border border-border">
-        <UnsafeMapContainer center={defaultCenter} zoom={5.5} className="h-full w-full" scrollWheelZoom>
-          <UnsafeTileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    <section className="absolute inset-0 z-0 overflow-hidden rounded-glass bg-dataViz-highlight">
+      <UnsafeMapContainer center={defaultCenter} zoom={6} className="h-full w-full" scrollWheelZoom attributionControl={false}>
+        {geoData ? (
+          <UnsafeGeoJSON
+            ref={geoLayerRef}
+            data={geoData}
+            style={(feature: any) => {
+              const regionName = feature?.properties?.region as string | undefined
+              const regionData = regionName ? regionByName.get(regionName) : null
+              const score = regionData ? scoreForLens(regionData, activeLens) : 50
+              return {
+                fillColor: fillForScore(score),
+                fillOpacity: mapFillOpacity,
+                color:
+                  activeRegion && regionName === activeRegion
+                    ? "var(--color-text-primary)"
+                    : "var(--polaris-map-region-border)",
+                weight: activeRegion && regionName === activeRegion ? 2.8 : 1.2,
+              }
+            }}
+            onEachFeature={(feature: any, layer: any) => {
+              const regionName = feature?.properties?.region as string | undefined
+              layer.on("mouseover", () => {
+                layer.setStyle({
+                  color: "var(--color-text-secondary)",
+                  weight: 2,
+                })
+                if (layer.bringToFront) layer.bringToFront()
+              })
+              layer.on("mouseout", () => {
+                const isActive = activeRegion != null && regionName === activeRegion
+                layer.setStyle({
+                  color: isActive ? "var(--color-text-primary)" : "var(--polaris-map-region-border)",
+                  weight: isActive ? 2.8 : 1.2,
+                })
+              })
+              layer.on("click", () => {
+                if (!regionName) return
+                dashboardStore.setActiveRegion(regionName)
+                dashboardStore.setTriggerFlyTo(!dashboardStore.getState().triggerFlyTo)
+              })
+            }}
           />
-          {canonicalRegions.map((regionName) => {
-            const region = regionByName.get(regionName) ?? null
-            const centroid = knownCentroids[regionName] ?? defaultCenter
-            const score = region ? scoreForLens(region, activeLens) : 50
-            return (
-              <Polygon
-                key={regionName}
-                positions={polygonForCenter(centroid)}
-                pathOptions={{
-                  fillColor: fillForScore(score, activeLens),
-                  fillOpacity: 0.65,
-                  color: activeRegion === regionName ? "#0f172a" : "#334155",
-                  weight: activeRegion === regionName ? 2.5 : 1.2,
-                }}
-                eventHandlers={{
-                  click: () => dashboardStore.setActiveRegion(regionName),
-                }}
-              />
-            )
-          })}
-          <FlyToOnSelection regions={regions} />
-        </UnsafeMapContainer>
-      </div>
+        ) : null}
+        <MapViewportController
+          geoLayerRef={geoLayerRef}
+          activeRegion={activeRegion}
+          triggerFlyTo={triggerFlyTo}
+        />
+      </UnsafeMapContainer>
+      <p className="pointer-events-none absolute bottom-4 right-4 rounded-glass border border-border bg-card px-3 py-2 text-label font-medium text-text-secondary">
+        Boundaries: faeldon/philippines-json-maps (2023)
+      </p>
     </section>
   )
 }
