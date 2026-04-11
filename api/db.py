@@ -29,6 +29,9 @@ engine = create_async_engine(
     pool_size=5,
     max_overflow=10,
     pool_recycle=300,        # recycle connections every 5 min
+    # Supabase pooler (PgBouncer, transaction mode) cannot reuse asyncpg prepared
+    # statements across pooled server connections — disable statement cache.
+    connect_args={"statement_cache_size": 0},
 )
 
 async_session_factory = async_sessionmaker(
