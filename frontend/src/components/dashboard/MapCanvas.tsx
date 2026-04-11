@@ -40,6 +40,14 @@ function MapViewportController({
 }) {
   const map = useMap()
   const initializedBounds = useRef(false)
+  const mapPadding = useMemo(() => {
+    if (typeof window === "undefined") return 16
+    const raw = getComputedStyle(document.documentElement)
+      .getPropertyValue("--ds-spacing-element-stack")
+      .trim()
+    const parsed = Number.parseFloat(raw.replace("px", ""))
+    return Number.isFinite(parsed) ? parsed : 16
+  }, [])
 
   useEffect(() => {
     const layer = geoLayerRef.current
@@ -83,11 +91,11 @@ function MapViewportController({
       map.flyToBounds(selectedLayer.getBounds(), {
         duration: 0.8,
         easeLinearity: 0.5,
-        padding: [16, 16],
+        padding: [mapPadding, mapPadding],
       })
     }
     dashboardStore.setTriggerFlyTo(false)
-  }, [activeRegion, geoLayerRef, map, triggerFlyTo])
+  }, [activeRegion, geoLayerRef, map, mapPadding, triggerFlyTo])
 
   return null
 }
