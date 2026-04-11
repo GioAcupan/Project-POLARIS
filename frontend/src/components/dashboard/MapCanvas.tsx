@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { GeoJSON, MapContainer, useMap } from "react-leaflet"
+import { GeoJSON, MapContainer, useMap, ZoomControl } from "react-leaflet"
 
 import { dashboardStore, useDashboardStore } from "@/stores/dashboardStore"
 import type { RegionalScore } from "@/types/polaris"
@@ -14,6 +14,7 @@ type RegionFeatureProperties = {
 const defaultCenter: LatLngTuple = [12.5, 122.5]
 const UnsafeMapContainer: any = MapContainer
 const UnsafeGeoJSON: any = GeoJSON
+const UnsafeZoomControl: any = ZoomControl
 
 function scoreForLens(region: RegionalScore, lens: "overall" | "supply" | "demand" | "impact"): number {
   if (lens === "supply") return region.supply_subscore
@@ -156,7 +157,15 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
 
   return (
     <section className="absolute inset-0 z-0 overflow-hidden rounded-glass bg-dataViz-highlight">
-      <UnsafeMapContainer center={defaultCenter} zoom={6} className="h-full w-full" scrollWheelZoom attributionControl={false}>
+      <UnsafeMapContainer
+        center={defaultCenter}
+        zoom={6}
+        className="h-full w-full"
+        scrollWheelZoom
+        attributionControl={false}
+        zoomControl={false}
+      >
+        <UnsafeZoomControl position="bottomleft" />
         {geoData ? (
           <UnsafeGeoJSON
             ref={geoLayerRef}
