@@ -56,12 +56,7 @@ export function Sidebar() {
         >
           <LayoutDashboard className="size-5" aria-hidden />
         </NavLink>
-        <span
-          title="Coming soon"
-          className={cn(iconBtn, "pointer-events-none opacity-40")}
-          aria-disabled
-          role="presentation"
-        >
+        <span className={cn(iconBtn, "opacity-80")} role="presentation">
           <Users className="size-5" aria-hidden />
         </span>
         <NavLink
