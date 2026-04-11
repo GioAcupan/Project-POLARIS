@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom"
 
 import { Sidebar } from "@/components/dashboard/Sidebar"
+import Starbot from "@/components/starbot/Starbot"
 
 export function DashboardLayout() {
   return (
@@ -11,6 +12,7 @@ export function DashboardLayout() {
           <Outlet />
         </div>
       </main>
+      <Starbot />
     </div>
   )
 }

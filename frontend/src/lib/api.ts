@@ -7,6 +7,7 @@ import type {
   ProfileExtended,
   ProfileExtendedUpsert,
   RecommendedEvent,
+  RegionalScore,
   RegisterEventRequest,
   RegistrationStatus,
   ReportGenerateRequest,
@@ -66,6 +67,10 @@ export function chat(req: ChatRequest): Promise<ChatResponse> {
     method: "POST",
     body: JSON.stringify(req),
   })
+}
+
+export function getRegions(): Promise<RegionalScore[]> {
+  return apiFetch<RegionalScore[]>("/regions/")
 }
 
 export function generateReport(req: ReportGenerateRequest): Promise<ReportGenerateResponse> {

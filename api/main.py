@@ -12,6 +12,7 @@ from api.routers import chat as chat_router
 from api.routers import downloads as downloads_router
 from api.routers import events as events_router
 from api.routers import profile_extended as profile_extended_router
+from api.routers import regions as regions_router
 from api.routers import registrations as registrations_router
 from api.routers import reports as reports_router
 
@@ -42,6 +43,7 @@ app = FastAPI(title="POLARIS API")
 app.state.pitch_mode = _read_pitch_mode()
 
 app.include_router(chat_router.router)
+app.include_router(regions_router.router)
 app.include_router(reports_router.router)
 app.include_router(events_router.router)
 app.include_router(registrations_router.router)
