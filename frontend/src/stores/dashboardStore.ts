@@ -1,25 +1,10 @@
 import { useSyncExternalStore } from "react"
 
-import type { RegionalScore } from "@/types/polaris"
+import type { PPSTRadar, RegionalScore } from "@/types/polaris"
 
 export type DashboardLens = "overall" | "supply" | "demand" | "impact"
 
-type NationalRadar = {
-  current: {
-    content_knowledge: number
-    learning_environment: number
-    diversity_of_learners: number
-    curriculum_planning: number
-    assessment_reporting: number
-  }
-  target: {
-    content_knowledge: number
-    learning_environment: number
-    diversity_of_learners: number
-    curriculum_planning: number
-    assessment_reporting: number
-  }
-}
+type NationalRadar = PPSTRadar
 
 type DashboardState = {
   activeRegion: string | null

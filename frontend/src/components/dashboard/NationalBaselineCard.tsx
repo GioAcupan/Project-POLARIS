@@ -8,7 +8,6 @@ function average(values: number[]): number {
 export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) {
   const avgSupply = average(regions.map((region) => region.supply_subscore))
   const avgDemand = average(regions.map((region) => region.demand_subscore))
-  const avgImpact = average(regions.map((region) => region.impact_subscore))
 
   const donutStyle = {
     background: `conic-gradient(

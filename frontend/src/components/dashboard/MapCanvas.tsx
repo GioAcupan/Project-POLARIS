@@ -9,6 +9,8 @@ import type { RegionalScore } from "@/types/polaris"
 type LatLngTuple = [number, number]
 
 const defaultCenter: LatLngTuple = [12.5, 122.5]
+const UnsafeMapContainer: any = MapContainer
+const UnsafeTileLayer: any = TileLayer
 
 const knownCentroids: Record<string, LatLngTuple> = {
   "Region I": [16.2, 120.4],
@@ -88,8 +90,8 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
     <section className="rounded-xl border border-border bg-card p-4 lg:col-span-6">
       <LensSelector />
       <div className="h-[420px] overflow-hidden rounded-lg border border-border">
-        <MapContainer center={defaultCenter} zoom={5.5} className="h-full w-full" scrollWheelZoom>
-          <TileLayer
+        <UnsafeMapContainer center={defaultCenter} zoom={5.5} className="h-full w-full" scrollWheelZoom>
+          <UnsafeTileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
@@ -113,7 +115,7 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
             )
           })}
           <FlyToOnSelection regions={regions} />
-        </MapContainer>
+        </UnsafeMapContainer>
       </div>
     </section>
   )
