@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import shutil
 from datetime import datetime, timezone
@@ -30,6 +31,8 @@ from api.schemas.registrations import (
     VerifyResponse,
 )
 from api.tables.nominations import nominations_table
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["registrations"])
 
@@ -259,10 +262,14 @@ async def generate_pds(
         }
         try:
             path_str = await generate_pds_xlsx(reg_id, joined_context)
-        except NotImplementedError as exc:
+        except FileNotFoundError as exc:
+            logger.error("PDS generation failed: %s", exc)
             raise HTTPException(
-                status_code=501,
-                detail="PDS generation is not implemented yet (Prompt B.6).",
+                status_code=500,
+                detail=(
+                    "PDS template is not available on the server "
+                    "(expected api/templates/forms/csc_form_212.xlsx)."
+                ),
             ) from exc
         out_path = Path(path_str)
 
