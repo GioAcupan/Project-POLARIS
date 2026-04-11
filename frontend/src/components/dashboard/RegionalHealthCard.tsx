@@ -45,9 +45,9 @@ function keyInsight(region: RegionHealth): string {
 }
 
 function pillClass(trafficLight: RegionHealth["traffic_light"]): string {
-  if (trafficLight === "red") return "bg-red-100 text-red-700"
-  if (trafficLight === "yellow") return "bg-amber-100 text-amber-700"
-  return "bg-emerald-100 text-emerald-700"
+  if (trafficLight === "red") return "bg-signal-critical text-text-primary"
+  if (trafficLight === "yellow") return "bg-signal-warning text-text-primary"
+  return "bg-signal-good text-text-primary"
 }
 
 export function RegionalHealthCard({ selectedRegion }: { selectedRegion: RegionalScore }) {
@@ -55,15 +55,17 @@ export function RegionalHealthCard({ selectedRegion }: { selectedRegion: Regiona
   const [activeTab, setActiveTab] = useState<"summary" | "demand" | "impact">("summary")
 
   return (
-    <section className="rounded-xl border border-border bg-card p-4 lg:col-span-3">
+    <section className="rounded-glass p-4 polaris-glass-card">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-foreground">{region.region}</h2>
-        <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${pillClass(region.traffic_light)}`}>
+        <h2 className="font-heading text-section-title font-extrabold text-text-primary">{region.region}</h2>
+        <span
+          className={`rounded-full px-2 py-1 text-label font-semibold tracking-wide ${pillClass(region.traffic_light)}`}
+        >
           {region.traffic_light.toUpperCase()}
         </span>
       </div>
-      <p className="mt-1 text-lg font-bold text-foreground">Score: {Math.round(region.score)}</p>
-      <p className="mt-3 text-sm text-muted-foreground">{keyInsight(region)}</p>
+      <p className="mt-1 text-metric font-semibold text-text-primary">Score: {Math.round(region.score)}</p>
+      <p className="mt-3 text-content text-text-secondary">{keyInsight(region)}</p>
 
       <div className="mt-4 flex gap-2">
         {(["summary", "demand", "impact"] as const).map((tab) => {
@@ -74,10 +76,10 @@ export function RegionalHealthCard({ selectedRegion }: { selectedRegion: Regiona
               type="button"
               onClick={() => setActiveTab(tab)}
               className={[
-                "rounded-md border px-2 py-1 text-xs font-semibold uppercase tracking-wide transition",
+                "rounded-full border px-3 py-1 text-label font-semibold uppercase tracking-wide transition",
                 active
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-background text-muted-foreground",
+                  ? "border-brand-blue bg-brand-blue text-text-primary"
+                  : "border-border bg-card text-text-secondary",
               ].join(" ")}
             >
               {tab}

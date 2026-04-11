@@ -38,6 +38,12 @@ function collectPings(regions: RegionalScore[]): PingWithScore[] {
     .slice(0, 6)
 }
 
+function severityClasses(severity: CriticalPing["severity"]): string {
+  if (severity === "CRITICAL") return "bg-signal-critical text-text-primary"
+  if (severity === "WARNING") return "bg-signal-warning text-text-primary"
+  return "bg-signal-good text-text-primary"
+}
+
 export function CriticalPingsFeed({ regions }: { regions: RegionalScore[] }) {
   const pings = collectPings(regions)
 
@@ -51,14 +57,20 @@ export function CriticalPingsFeed({ regions }: { regions: RegionalScore[] }) {
             dashboardStore.setActiveRegion(ping.region)
             dashboardStore.setTriggerFlyTo(!dashboardStore.getState().triggerFlyTo)
           }}
-          className="w-full rounded-lg border border-border bg-background p-3 text-left transition hover:bg-muted/40"
+          className="w-full rounded-glass border border-border bg-card p-3 text-left transition hover:bg-brand-babyPink"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold tracking-wide text-muted-foreground">{ping.severity}</span>
-            <span className="text-xs font-semibold text-foreground">Score: {Math.round(ping.score)}</span>
+            <span
+              className={`rounded-full px-2 py-1 text-label font-semibold uppercase tracking-wide ${severityClasses(
+                ping.severity,
+              )}`}
+            >
+              {ping.severity}
+            </span>
+            <span className="text-label font-semibold text-text-primary">Score: {Math.round(ping.score)}</span>
           </div>
-          <p className="mt-1 text-sm font-semibold text-foreground">{ping.region}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{ping.message}</p>
+          <p className="mt-2 text-content font-semibold text-text-primary">{ping.region}</p>
+          <p className="mt-1 text-label text-text-secondary">{ping.message}</p>
         </button>
       ))}
     </div>

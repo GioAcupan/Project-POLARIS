@@ -10,9 +10,9 @@ export function DemandView({ selectedRegion }: { selectedRegion: RegionalScore }
   return (
     <div className="space-y-2">
       {topics.map((topic) => (
-        <div key={topic.topic} className="rounded-md border border-border bg-background p-2">
-          <p className="text-sm font-medium text-foreground">{topic.topic}</p>
-          <p className="text-xs text-muted-foreground">Signals: {topic.count}</p>
+        <div key={topic.topic} className="rounded-glass border border-border bg-card p-2">
+          <p className="text-content font-medium text-text-primary">{topic.topic}</p>
+          <p className="text-label text-text-secondary">Signals: {topic.count}</p>
         </div>
       ))}
     </div>

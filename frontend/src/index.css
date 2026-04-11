@@ -53,26 +53,25 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 
     /* Polaris Luminous Glass — design_system.jsonc (brand, signals, data viz) */
-    --color-brand-pink: #F673DE;
-    --color-brand-blue: #1A5EA8;
-    --color-brand-baby-pink: #E9D6E5;
-    --color-signal-critical: #E8532A;
-    --color-signal-warning: #F5A623;
-    --color-signal-good: #2DBFA0;
-    --color-chart-primary: #3B9BDD;
-    --color-chart-highlight: #B7DFFF;
+    --color-brand-pink: var(--ds-color-brand-pink);
+    --color-brand-blue: var(--ds-color-brand-blue);
+    --color-brand-baby-pink: var(--ds-color-brand-baby-pink);
+    --color-signal-critical: var(--ds-color-signal-critical);
+    --color-signal-warning: var(--ds-color-signal-warning);
+    --color-signal-good: var(--ds-color-signal-good);
+    --color-chart-primary: var(--ds-color-data-viz-primary);
+    --color-chart-highlight: var(--ds-color-data-viz-highlight);
 }
 
 :root {
     /* Luminous Glass surface recipe + app mesh (design_system.jsonc → surfaces) */
-    --polaris-glass-background: rgba(255, 255, 255, 0.75);
-    --polaris-glass-backdrop-blur: 24px;
-    --polaris-glass-border: 1px solid rgba(255, 255, 255, 0.4);
-    --polaris-glass-shadow: 0 10px 25px -5px rgba(26, 94, 168, 0.1),
-        0 8px 10px -6px rgba(26, 94, 168, 0.1);
-    --polaris-app-background: linear-gradient(135deg, #1a5ea8 0%, #f673de 100%);
-    --polaris-chart-axis: rgba(27, 27, 27, 0.1);
-    --polaris-map-region-border: rgba(255, 255, 255, 0.4);
+    --polaris-glass-background: var(--ds-surface-glass-background);
+    --polaris-glass-backdrop-blur: var(--ds-surface-glass-backdrop-blur);
+    --polaris-glass-border: var(--ds-surface-glass-border);
+    --polaris-glass-shadow: var(--ds-surface-glass-shadow);
+    --polaris-app-background: var(--ds-surface-app-background);
+    --polaris-chart-axis: var(--ds-component-chart-axis-color);
+    --polaris-map-region-border: var(--ds-component-map-region-border);
 
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -98,7 +97,7 @@
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
-    --radius: 24px;
+    --radius: var(--ds-surface-glass-radius);
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);

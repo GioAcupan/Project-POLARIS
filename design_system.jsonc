@@ -94,6 +94,26 @@
   /* MOTION & INTERACTION
      Physics-based animations for Framer Motion.
   */
+  /* SPACING & LAYOUT TOKENS
+     Based on an 8px grid system to ensure "Precisionist" alignment.
+  */
+  "spacing": {
+    "layout": {
+      "screen_margin": "32px",    // Space between the edge of the screen and the dashboard content.
+      "card_gap": "24px",          // The "Gutter" between main glass cards (Tailwind gap-6).
+      "sidebar_width": "280px"     // Fixed width for the primary navigation sidebar.
+    },
+    "containers": {
+      "card_padding": "24px",      // Internal breathing room for data inside cards (Tailwind p-6).
+      "section_gap": "32px",       // Vertical space between major logical sections (e.g., Map vs. Reports).
+      "element_stack": "16px"      // Space between smaller elements inside a card (e.g., Header to Chart).
+    },
+    "logic": [
+      "Use 'card_gap' strictly for the main F-pattern grid to maintain horizontal rhythm.",
+      "Internal card elements should never touch the border; always respect 'card_padding'.",
+      "For the 12-column grid, use 'card_gap' as the column gutter."
+    ]
+  },
   "animation": {
     "standardSpring": {
       "type": "spring",

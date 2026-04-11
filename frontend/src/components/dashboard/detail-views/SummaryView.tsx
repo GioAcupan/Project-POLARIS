@@ -6,9 +6,9 @@ export function SummaryView({ regionHealth }: { regionHealth: RegionHealth }) {
   return (
     <div className="space-y-2">
       {factors.map(([name, value]) => (
-        <div key={name} className="rounded-md border border-border bg-background p-2 text-sm">
-          <span className="font-medium text-foreground">{name.replaceAll("_", " ")}: </span>
-          <span className="text-muted-foreground">{Number(value).toFixed(1)}</span>
+        <div key={name} className="rounded-glass border border-border bg-card p-2 text-content">
+          <span className="font-medium text-text-primary">{name.replaceAll("_", " ")}: </span>
+          <span className="text-text-secondary">{Number(value).toFixed(1)}</span>
         </div>
       ))}
     </div>
