@@ -37,8 +37,8 @@ export default function Dashboard() {
           <LensSelector />
         </header>
 
-        <div className="dashboard-floating-rail-vertical pointer-events-auto absolute left-screen-margin flex w-80 min-h-0 flex-col gap-card-gap">
-          <div className="flex min-h-0 flex-[2] flex-col overflow-hidden">
+        <div className="dashboard-floating-rail-vertical pointer-events-auto absolute left-screen-margin flex min-h-0 w-80 flex-col gap-card-gap">
+          <div className="max-h-[40%] min-h-0 flex-[2]">
             <PPSTRadarCard radar={nationalRadar} />
           </div>
           <section className="flex min-h-0 flex-[3] flex-col rounded-glass p-4 polaris-glass-card">
@@ -57,7 +57,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex h-full min-h-0 w-96 flex-col"
+              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex min-h-0 w-96"
             >
               <RegionalHealthCard selectedRegion={selectedRegion} />
             </motion.div>
@@ -68,7 +68,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex h-full min-h-0 w-96 flex-col"
+              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex min-h-0 w-96"
             >
               <NationalBaselineCard regions={regions} />
             </motion.div>

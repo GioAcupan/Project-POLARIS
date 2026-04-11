@@ -188,4 +188,12 @@
   .polaris-map-root.leaflet-container {
     background: transparent;
   }
+
+  .dashboard-floating-rail-vertical {
+    top: calc(
+      var(--ds-spacing-screen-margin) + var(--ds-spacing-section-gap) +
+        var(--ds-spacing-section-gap)
+    );
+    bottom: var(--ds-spacing-screen-margin);
+  }
 }
