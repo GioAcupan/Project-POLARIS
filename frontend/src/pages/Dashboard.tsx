@@ -1,14 +1,19 @@
 import { useEffect } from "react"
+import { AnimatePresence, motion } from "framer-motion"
 
 import { IntelligenceColumn } from "@/components/dashboard/IntelligenceColumn"
 import { MapCanvas } from "@/components/dashboard/MapCanvas"
+import { NationalBaselineCard } from "@/components/dashboard/NationalBaselineCard"
+import { RegionalHealthCard } from "@/components/dashboard/RegionalHealthCard"
 import { useNationalRadar } from "@/hooks/useNationalRadar"
 import { useRegions } from "@/hooks/useRegions"
-import { dashboardStore } from "@/stores/dashboardStore"
+import { dashboardStore, useDashboardStore } from "@/stores/dashboardStore"
 
 export default function Dashboard() {
   const { data: regions = [] } = useRegions()
   const { data: nationalRadar = null } = useNationalRadar()
+  const activeRegion = useDashboardStore((snapshot) => snapshot.activeRegion)
+  const selectedRegion = regions.find((region) => region.region === activeRegion) ?? null
 
   useEffect(() => {
     dashboardStore.setRegions(regions)
@@ -25,9 +30,31 @@ export default function Dashboard() {
 
         <MapCanvas regions={regions} />
 
-        <section className="rounded-xl border border-border bg-card p-4 lg:col-span-3">
-          <h2 className="text-sm font-semibold text-foreground">Detail Panel</h2>
-        </section>
+        <AnimatePresence mode="wait">
+          {selectedRegion ? (
+            <motion.div
+              key={`regional-${selectedRegion.region}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.24 }}
+              className="lg:col-span-3"
+            >
+              <RegionalHealthCard selectedRegion={selectedRegion} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="national-default"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.24 }}
+              className="lg:col-span-3"
+            >
+              <NationalBaselineCard regions={regions} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
