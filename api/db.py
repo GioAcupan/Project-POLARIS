@@ -12,8 +12,13 @@ All routers that need a database session should import and use `get_db`:
 
 import os
 from collections.abc import AsyncGenerator
+from pathlib import Path
 
+from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+# Repo-root `.env` (local dev). Safe no-op when the file is absent (e.g. Docker env).
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 

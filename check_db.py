@@ -1,9 +1,12 @@
 """Temporary pre-flight script: verify Phase A tables exist in Supabase/Postgres.
 
+Also verifies `teacher_profile_extended` has a PRIMARY KEY on `deped_id` (required
+for POST ... ON CONFLICT (deped_id)).
+
 Usage (from repo root, with DATABASE_URL in environment or .env):
     python check_db.py
 
-Exits 0 if all tables exist, 1 otherwise.
+Exits 0 if all checks pass, 1 otherwise.
 """
 
 from __future__ import annotations
@@ -16,6 +19,30 @@ from pathlib import Path
 import asyncpg
 
 REQUIRED = ("teacher_profile_extended", "training_events", "event_registrations")
+
+_EXPECTED_TPE_PK = ("deped_id",)
+
+
+async def _primary_key_columns(
+    conn: asyncpg.Connection, table_name: str
+) -> list[str]:
+    """Ordered PK column names for `public.table_name`, or empty if none."""
+    rows = await conn.fetch(
+        """
+        SELECT kcu.column_name
+        FROM information_schema.table_constraints AS tc
+        INNER JOIN information_schema.key_column_usage AS kcu
+          ON tc.constraint_catalog = kcu.constraint_catalog
+          AND tc.constraint_schema = kcu.constraint_schema
+          AND tc.constraint_name = kcu.constraint_name
+        WHERE tc.table_schema = 'public'
+          AND tc.table_name = $1
+          AND tc.constraint_type = 'PRIMARY KEY'
+        ORDER BY kcu.ordinal_position
+        """,
+        table_name,
+    )
+    return [str(r["column_name"]) for r in rows]
 
 
 def _load_env() -> None:
@@ -70,6 +97,19 @@ async def _run() -> int:
             print(f"\nFAIL: missing table(s): {', '.join(missing)}", file=sys.stderr)
             return 1
         print("\nAll Phase A tables present.")
+
+        pk_cols = await _primary_key_columns(conn, "teacher_profile_extended")
+        if tuple(pk_cols) != _EXPECTED_TPE_PK:
+            print(
+                f"\nFAIL: teacher_profile_extended PRIMARY KEY must be {_EXPECTED_TPE_PK!r}, "
+                f"got {tuple(pk_cols)!r}. Apply db/migrations/003_v34_module4_and_starbot.sql "
+                "on your database (direct connection, not pooler).",
+                file=sys.stderr,
+            )
+            return 1
+        print(
+            f"  teacher_profile_extended PK: OK ({', '.join(pk_cols)} - UPSERT conflict target valid)."
+        )
         return 0
     finally:
         await conn.close()

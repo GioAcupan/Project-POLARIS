@@ -9,9 +9,14 @@ from fastapi.staticfiles import StaticFiles
 import api.models  # noqa: F401 — ensures all ORM models are registered on startup
 import api.tables.nominations  # noqa: F401 — nominations Table on Base.metadata
 from api.routers import chat as chat_router
+from api.routers import downloads as downloads_router
 from api.routers import events as events_router
+from api.routers import profile_extended as profile_extended_router
 from api.routers import registrations as registrations_router
 from api.routers import reports as reports_router
+
+if not logging.root.handlers:
+    logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger("polaris")
 
@@ -40,6 +45,10 @@ app.include_router(chat_router.router)
 app.include_router(reports_router.router)
 app.include_router(events_router.router)
 app.include_router(registrations_router.router)
+app.include_router(profile_extended_router.router)
+app.include_router(downloads_router.router)
+
+logger.info("POLARIS pitch_mode=%s", app.state.pitch_mode)
 
 _check_report_templates()
 
@@ -53,7 +62,6 @@ app.add_middleware(
 
 DOWNLOADS_DIR = os.getenv("POLARIS_OUTPUT_DIR", "/var/polaris/generated")
 os.makedirs(DOWNLOADS_DIR, exist_ok=True)
-app.mount("/downloads", StaticFiles(directory=DOWNLOADS_DIR), name="downloads")
 
 static_dir = Path(__file__).resolve().parent / "static"
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
