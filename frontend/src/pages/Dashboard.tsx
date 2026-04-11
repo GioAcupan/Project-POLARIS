@@ -1,9 +1,11 @@
 import { useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 
-import { IntelligenceColumn } from "@/components/dashboard/IntelligenceColumn"
+import { CriticalPingsFeed } from "@/components/dashboard/CriticalPingsFeed"
+import { LensSelector } from "@/components/dashboard/LensSelector"
 import { MapCanvas } from "@/components/dashboard/MapCanvas"
 import { NationalBaselineCard } from "@/components/dashboard/NationalBaselineCard"
+import { PPSTRadarCard } from "@/components/dashboard/PPSTRadarCard"
 import { RegionalHealthCard } from "@/components/dashboard/RegionalHealthCard"
 import { useNationalRadar } from "@/hooks/useNationalRadar"
 import { useRegions } from "@/hooks/useRegions"
@@ -24,11 +26,26 @@ export default function Dashboard() {
   }, [nationalRadar])
 
   return (
-    <div className="animate-in fade-in duration-300">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-        <IntelligenceColumn regions={regions} radar={nationalRadar} />
+    <div className="relative h-full min-h-screen w-full animate-in fade-in duration-300">
+      <MapCanvas regions={regions} />
 
-        <MapCanvas regions={regions} />
+      <div className="pointer-events-none absolute inset-0 z-10">
+        <header className="pointer-events-auto absolute inset-x-screen-margin top-screen-margin flex items-center justify-between gap-card-gap">
+          <h1 className="font-heading text-display-dashboard font-extrabold text-text-primary">
+            DASHBOARD
+          </h1>
+          <LensSelector />
+        </header>
+
+        <div className="pointer-events-auto absolute bottom-5 left-5 top-28 flex w-80 flex-col gap-4">
+          <PPSTRadarCard radar={nationalRadar} />
+          <section className="flex-1 rounded-glass p-4 polaris-glass-card">
+            <h2 className="font-heading text-section-title font-extrabold text-text-primary">AI Reports</h2>
+            <div className="mt-3 h-full overflow-auto pr-1">
+              <CriticalPingsFeed regions={regions} />
+            </div>
+          </section>
+        </div>
 
         <AnimatePresence mode="wait">
           {selectedRegion ? (
@@ -38,7 +55,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="lg:col-span-3"
+              className="pointer-events-auto absolute right-5 top-28 w-96"
             >
               <RegionalHealthCard selectedRegion={selectedRegion} />
             </motion.div>
@@ -49,7 +66,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="lg:col-span-3"
+              className="pointer-events-auto absolute right-5 top-28 w-96"
             >
               <NationalBaselineCard regions={regions} />
             </motion.div>
