@@ -36,6 +36,31 @@ export interface CriticalPing {
   message: string;
 }
 
+export interface PPSTAxisScores {
+  content_knowledge: number;
+  learning_environment: number;
+  diversity_of_learners: number;
+  curriculum_planning: number;
+  assessment_reporting: number;
+}
+
+export interface PPSTRadar {
+  current: PPSTAxisScores;
+  target?: PPSTAxisScores;
+}
+
+export interface RegionHealth {
+  region: string;
+  traffic_light: TrafficLight;
+  score: number;
+  factors: {
+    teacher_student_ratio: number;
+    specialization_pct: number;
+    star_coverage_pct: number;
+    avg_nat_score: number;
+  };
+}
+
 // ─────────────────────────────────────────────────────────────
 // STARBOT (simplified — query-only)
 // ─────────────────────────────────────────────────────────────
