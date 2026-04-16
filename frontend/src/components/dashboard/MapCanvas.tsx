@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import L from "leaflet"
 import type { Feature, FeatureCollection } from "geojson"
-import { GeoJSON, MapContainer, ZoomControl, useMap } from "react-leaflet"
+import { GeoJSON, MapContainer, ZoomControl, useMap, useMapEvents } from "react-leaflet"
 
 import { dashboardStore, useDashboardStore } from "@/stores/dashboardStore"
 import type { RegionalScore } from "@/types/polaris"
@@ -53,10 +53,12 @@ function MapViewportController({
   geoLayerRef,
   activeRegion,
   triggerFlyTo,
+  triggerResetToNational,
 }: {
   geoLayerRef: { current: L.GeoJSON | null }
   activeRegion: string | null
   triggerFlyTo: boolean
+  triggerResetToNational: boolean
 }) {
   const map = useMap()
   const mapPadding = useMemo(() => {
@@ -107,6 +109,31 @@ function MapViewportController({
     dashboardStore.setTriggerFlyTo(false)
   }, [activeRegion, geoLayerRef, map, mapPadding, triggerFlyTo])
 
+  useEffect(() => {
+    if (!triggerResetToNational) return
+
+    map.flyTo(PH_MAP_CENTER, PH_INITIAL_ZOOM, {
+      duration: 0.9,
+      easeLinearity: 0.45,
+      animate: true,
+    })
+    dashboardStore.setTriggerResetToNational(false)
+  }, [map, triggerResetToNational])
+
+  return null
+}
+
+function MapBackgroundResetController() {
+  useMapEvents({
+    click: () => {
+      const { activeRegion, triggerResetToNational } = dashboardStore.getState()
+      if (!activeRegion) return
+
+      dashboardStore.setActiveRegion(null)
+      dashboardStore.setTriggerResetToNational(!triggerResetToNational)
+    },
+  })
+
   return null
 }
 
@@ -122,6 +149,7 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
   const activeLens = useDashboardStore((snapshot) => snapshot.activeLens)
   const activeRegion = useDashboardStore((snapshot) => snapshot.activeRegion)
   const triggerFlyTo = useDashboardStore((snapshot) => snapshot.triggerFlyTo)
+  const triggerResetToNational = useDashboardStore((snapshot) => snapshot.triggerResetToNational)
   const geoLayerRef = useRef<L.GeoJSON | null>(null)
   const mapFillOpacity = useMemo(() => {
     if (typeof window === "undefined") return 0.85
@@ -189,6 +217,7 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
         attributionControl={false}
         zoomControl={false}
       >
+        <MapBackgroundResetController />
         {geoData ? (
           <GeoJSON
             ref={geoLayerRef}
@@ -224,8 +253,9 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
                   weight: isActive ? 2.8 : 1.2,
                 })
               })
-              pathLayer.on("click", () => {
+              pathLayer.on("click", (event: L.LeafletMouseEvent) => {
                 if (!regionName) return
+                L.DomEvent.stopPropagation(event)
                 dashboardStore.setActiveRegion(regionName)
                 dashboardStore.setTriggerFlyTo(!dashboardStore.getState().triggerFlyTo)
               })
@@ -236,6 +266,7 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
           geoLayerRef={geoLayerRef}
           activeRegion={activeRegion}
           triggerFlyTo={triggerFlyTo}
+          triggerResetToNational={triggerResetToNational}
         />
         <ZoomControl position="bottomleft" />
       </MapContainer>

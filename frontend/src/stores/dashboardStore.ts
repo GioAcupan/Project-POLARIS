@@ -10,6 +10,7 @@ type DashboardState = {
   activeRegion: string | null
   activeLens: DashboardLens
   triggerFlyTo: boolean
+  triggerResetToNational: boolean
   nationalRadar: NationalRadar | null
   regions: RegionalScore[]
 }
@@ -22,6 +23,7 @@ let state: DashboardState = {
   activeRegion: null,
   activeLens: "overall",
   triggerFlyTo: false,
+  triggerResetToNational: false,
   nationalRadar: null,
   regions: [],
 }
@@ -55,6 +57,9 @@ export const dashboardStore = {
   setTriggerFlyTo(triggerFlyTo: boolean) {
     setState({ triggerFlyTo })
   },
+  setTriggerResetToNational(triggerResetToNational: boolean) {
+    setState({ triggerResetToNational })
+  },
   setNationalRadar(nationalRadar: NationalRadar | null) {
     setState({ nationalRadar })
   },
@@ -66,6 +71,7 @@ export const dashboardStore = {
       activeRegion: null,
       activeLens: "overall",
       triggerFlyTo: false,
+      triggerResetToNational: false,
       nationalRadar: null,
       regions: [],
     }
