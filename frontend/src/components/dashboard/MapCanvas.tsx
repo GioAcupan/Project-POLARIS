@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react"
 import L from "leaflet"
 import type { Feature, FeatureCollection } from "geojson"
-import { GeoJSON, MapContainer, ZoomControl, useMap, useMapEvents } from "react-leaflet"
+import { Minus, Plus } from "lucide-react"
+import { GeoJSON, MapContainer, useMap, useMapEvents } from "react-leaflet"
 
 import { dashboardStore, useDashboardStore } from "@/stores/dashboardStore"
 import type { RegionalScore } from "@/types/polaris"
@@ -34,6 +35,11 @@ const PH_MAX_BOUNDS: [LatLngTuple, LatLngTuple] = [
 const PH_ZOOM_SNAP = 0.1
 
 type GeoLayerWithFeature = L.Layer & { feature?: Feature; bringToFront?: () => void }
+type BoundsLayer = L.Layer & { getBounds: () => L.LatLngBounds }
+
+function isBoundsLayer(layer: L.Layer | null): layer is BoundsLayer {
+  return Boolean(layer && "getBounds" in layer && typeof (layer as BoundsLayer).getBounds === "function")
+}
 
 function scoreForLens(region: RegionalScore, lens: "overall" | "supply" | "demand" | "impact"): number {
   if (lens === "supply") return region.supply_subscore
@@ -92,15 +98,15 @@ function MapViewportController({
     const layer = geoLayerRef.current
     if (!layer || !triggerFlyTo || !activeRegion) return
 
-    let selectedLayer: L.Layer | null = null
-    layer.eachLayer((geoLayer: L.Layer) => {
-      const g = geoLayer as GeoLayerWithFeature
-      const featureRegion = g.feature?.properties?.region as string | undefined
-      if (featureRegion === activeRegion) selectedLayer = geoLayer
-    })
+    const selectedLayer =
+      layer.getLayers().find((geoLayer: L.Layer) => {
+        const g = geoLayer as GeoLayerWithFeature
+        const featureRegion = g.feature?.properties?.region as string | undefined
+        return featureRegion === activeRegion
+      }) ?? null
 
-    if (selectedLayer && "getBounds" in selectedLayer && typeof selectedLayer.getBounds === "function") {
-      map.flyToBounds(selectedLayer.getBounds() as L.LatLngBounds, {
+    if (isBoundsLayer(selectedLayer)) {
+      map.flyToBounds(selectedLayer.getBounds(), {
         duration: 0.8,
         easeLinearity: 0.5,
         padding: [mapPadding, mapPadding],
@@ -135,6 +141,82 @@ function MapBackgroundResetController() {
   })
 
   return null
+}
+
+function MapHudZoomControls() {
+  const map = useMap()
+  const [zoom, setZoom] = useState(() => map.getZoom())
+  const [minZoom, setMinZoom] = useState(() => map.getMinZoom())
+  const [maxZoom, setMaxZoom] = useState(() => map.getMaxZoom())
+
+  useEffect(() => {
+    const syncZoomState = () => {
+      setZoom(map.getZoom())
+      setMinZoom(map.getMinZoom())
+      setMaxZoom(map.getMaxZoom())
+    }
+
+    syncZoomState()
+    map.on("zoomend", syncZoomState)
+    map.on("zoomlevelschange", syncZoomState)
+
+    return () => {
+      map.off("zoomend", syncZoomState)
+      map.off("zoomlevelschange", syncZoomState)
+    }
+  }, [map])
+
+  const isAtMinZoom = zoom <= minZoom + 0.001
+  const isAtMaxZoom = zoom >= maxZoom - 0.001
+
+  const blockMapInteractions = (event: ReactMouseEvent<HTMLElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  const handleZoomIn = (event: ReactMouseEvent<HTMLButtonElement>) => {
+    blockMapInteractions(event)
+    if (!isAtMaxZoom) map.zoomIn()
+  }
+
+  const handleZoomOut = (event: ReactMouseEvent<HTMLButtonElement>) => {
+    blockMapInteractions(event)
+    if (!isAtMinZoom) map.zoomOut()
+  }
+
+  return (
+    <div
+      className="pointer-events-auto absolute z-[12] overflow-hidden rounded-xl border border-white/20 bg-white/40 shadow-[0_12px_28px_-14px_rgba(79,70,229,0.35)] backdrop-blur-[24px]"
+      style={{
+        top: "var(--polaris-map-zoom-top, 96px)",
+        left: "calc(var(--ds-spacing-screen-margin) + 20rem + 1rem)",
+      }}
+      onClick={blockMapInteractions}
+      onDoubleClick={blockMapInteractions}
+      onMouseDown={blockMapInteractions}
+    >
+      <div className="flex flex-col">
+        <button
+          type="button"
+          className="flex h-10 w-10 items-center justify-center bg-transparent text-text-primary transition-all duration-200 ease-in-out hover:bg-white/60 hover:shadow-[0_0_16px_rgba(79,70,229,0.2)] focus-visible:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-text-primary/45 disabled:shadow-none"
+          aria-label="Zoom in map"
+          onClick={handleZoomIn}
+          disabled={isAtMaxZoom}
+        >
+          <Plus className="h-4 w-4 stroke-[2.4]" />
+        </button>
+        <button
+          type="button"
+          className="flex h-10 w-10 items-center justify-center border-t border-white/20 bg-transparent text-text-primary transition-all duration-200 ease-in-out hover:bg-white/60 hover:shadow-[0_0_16px_rgba(79,70,229,0.2)] focus-visible:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-text-primary/45 disabled:shadow-none"
+          aria-label="Zoom out map"
+          onClick={handleZoomOut}
+          disabled={isAtMinZoom}
+        >
+          <Minus className="h-4 w-4 stroke-[2.4]" />
+        </button>
+      </div>
+    </div>
+  )
 }
 
 function regionNameFromFeature(feature: Feature | undefined): string | undefined {
@@ -268,11 +350,8 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
           triggerFlyTo={triggerFlyTo}
           triggerResetToNational={triggerResetToNational}
         />
-        <ZoomControl position="bottomleft" />
+        <MapHudZoomControls />
       </MapContainer>
-      <p className="pointer-events-none absolute bottom-4 right-4 rounded-glass border border-white/20 bg-white/40 backdrop-blur-[24px] px-3 py-2 text-label font-medium text-text-secondary">
-        Boundaries: faeldon/philippines-json-maps (2023)
-      </p>
     </section>
   )
 }

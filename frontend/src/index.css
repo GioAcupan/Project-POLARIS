@@ -185,31 +185,6 @@
     background: var(--polaris-app-background);
   }
 
-  .polaris-map-root .leaflet-bar {
-    background: var(--polaris-glass-background);
-    -webkit-backdrop-filter: blur(var(--polaris-glass-backdrop-blur));
-    backdrop-filter: blur(var(--polaris-glass-backdrop-blur));
-    border: var(--polaris-glass-border);
-    box-shadow: var(--polaris-glass-shadow);
-  }
-
-  .polaris-map-root .leaflet-bar a {
-    background: transparent;
-    color: var(--color-text-primary);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  }
-
-  .polaris-map-root .leaflet-bar a:hover,
-  .polaris-map-root .leaflet-bar a:focus {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--color-text-primary);
-  }
-
-  .polaris-map-root .leaflet-bar a.leaflet-disabled {
-    background: transparent;
-    color: color-mix(in oklch, var(--color-text-primary) 35%, transparent);
-  }
-
   .dashboard-floating-rail-vertical {
     top: calc(
       var(--ds-spacing-screen-margin) + var(--ds-spacing-section-gap) +

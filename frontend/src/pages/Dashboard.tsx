@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
 
@@ -36,6 +36,10 @@ function makeFallbackRegionalScore(regionName: string): RegionalScore {
 }
 
 export default function Dashboard() {
+  const dashboardRootRef = useRef<HTMLDivElement | null>(null)
+  const leftRailRef = useRef<HTMLDivElement | null>(null)
+  const aiReportsCardRef = useRef<HTMLElement | null>(null)
+  const [aiReportsTopOffset, setAiReportsTopOffset] = useState(96)
   const { data: regions = [] } = useRegions()
   const { data: dashboardAiReports = null } = useDashboardAiReports(5)
   const { data: nationalRadar = null } = useNationalRadar()
@@ -59,8 +63,48 @@ export default function Dashboard() {
     dashboardStore.setNationalRadar(nationalRadar)
   }, [nationalRadar])
 
+  useEffect(() => {
+    const root = dashboardRootRef.current
+    const leftRail = leftRailRef.current
+    const aiReportsCard = aiReportsCardRef.current
+    if (!root || !leftRail || !aiReportsCard) return
+
+    const updateAiReportsTopOffset = () => {
+      const rootRect = root.getBoundingClientRect()
+      const cardRect = aiReportsCard.getBoundingClientRect()
+      const nextOffset = cardRect.top - rootRect.top
+      if (Number.isFinite(nextOffset)) {
+        setAiReportsTopOffset(Math.max(0, Math.round(nextOffset)))
+      }
+    }
+
+    updateAiReportsTopOffset()
+    const observer = new ResizeObserver(updateAiReportsTopOffset)
+    observer.observe(root)
+    observer.observe(leftRail)
+    observer.observe(aiReportsCard)
+    window.addEventListener("resize", updateAiReportsTopOffset)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("resize", updateAiReportsTopOffset)
+    }
+  }, [dashboardAiReports, nationalRadar, regions.length])
+
+  const dashboardStyle = useMemo(
+    () =>
+      ({
+        "--polaris-map-zoom-top": `${aiReportsTopOffset}px`,
+      }) as CSSProperties,
+    [aiReportsTopOffset],
+  )
+
   return (
-    <div className="relative h-full w-full overflow-hidden bg-transparent animate-in fade-in duration-300">
+    <div
+      ref={dashboardRootRef}
+      style={dashboardStyle}
+      className="relative h-full w-full overflow-hidden bg-transparent animate-in fade-in duration-300"
+    >
       <MapCanvas regions={regions} />
 
       <div className="pointer-events-none absolute inset-0 z-10">
@@ -84,11 +128,14 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute left-screen-margin flex w-80 flex-col items-start gap-card-gap overflow-y-auto pr-1">
+        <div
+          ref={leftRailRef}
+          className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute left-screen-margin flex w-80 flex-col items-start gap-card-gap overflow-y-auto pr-1"
+        >
           <div className="w-full max-h-[60vh]">
             <PPSTRadarCard radar={nationalRadar} />
           </div>
-          <section className="flex h-fit w-full max-h-[35vh] flex-col rounded-glass p-6 polaris-glass-card">
+          <section ref={aiReportsCardRef} className="flex h-fit w-full max-h-[35vh] flex-col rounded-glass p-6 polaris-glass-card">
             <h2 className="font-heading text-section-title font-extrabold text-text-primary">AI Reports</h2>
             <div className="polaris-dashboard-scroll mt-element-stack min-h-0 overflow-y-auto pr-1">
               <CriticalPingsFeed regions={aiReportRegions} />
