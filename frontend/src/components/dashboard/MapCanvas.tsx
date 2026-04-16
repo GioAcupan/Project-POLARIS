@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react"
+import L from "leaflet"
+import type { Feature, FeatureCollection } from "geojson"
 import { GeoJSON, MapContainer, ZoomControl, useMap } from "react-leaflet"
 
 import { dashboardStore, useDashboardStore } from "@/stores/dashboardStore"
@@ -11,9 +13,27 @@ type RegionFeatureProperties = {
   source_file: string
 }
 
-const defaultCenter: LatLngTuple = [12.5, 122.5]
-const UnsafeMapContainer: any = MapContainer
-const UnsafeGeoJSON: any = GeoJSON
+/**
+ * Default view center. Shifted east so the archipelago sits between dashboard rails on wide screens.
+ * Runtime logs showed the previous value was being clamped west by east maxBounds at startup.
+ */
+const PH_MAP_CENTER: LatLngTuple = [12.8797, 124.0]
+/** Nationwide framing for a standard dashboard viewport. */
+const PH_INITIAL_ZOOM = 5.8
+/** Prevents zooming out into empty ocean/grey around the map. */
+const PH_MIN_ZOOM = 5.5
+/**
+ * Pan limits: same north/south as before, with extra horizontal room.
+ * East bound widened so startup center can remain east-shifted instead of being auto-clamped.
+ */
+const PH_MAX_BOUNDS: [LatLngTuple, LatLngTuple] = [
+  [4.5, 111.5],
+  [21.5, 135.0],
+]
+/** Allows fractional zoom levels (e.g. 5.8) alongside Leaflet defaults. */
+const PH_ZOOM_SNAP = 0.1
+
+type GeoLayerWithFeature = L.Layer & { feature?: Feature; bringToFront?: () => void }
 
 function scoreForLens(region: RegionalScore, lens: "overall" | "supply" | "demand" | "impact"): number {
   if (lens === "supply") return region.supply_subscore
@@ -34,12 +54,11 @@ function MapViewportController({
   activeRegion,
   triggerFlyTo,
 }: {
-  geoLayerRef: { current: any }
+  geoLayerRef: { current: L.GeoJSON | null }
   activeRegion: string | null
   triggerFlyTo: boolean
 }) {
   const map = useMap()
-  const initializedBounds = useRef(false)
   const mapPadding = useMemo(() => {
     if (typeof window === "undefined") return 16
     const raw = getComputedStyle(document.documentElement)
@@ -51,29 +70,19 @@ function MapViewportController({
 
   useEffect(() => {
     const layer = geoLayerRef.current
-    if (!layer || initializedBounds.current) return
-
-    const bounds = layer.getBounds()
-    if (!bounds.isValid()) return
-    map.fitBounds(bounds)
-    map.setMaxBounds(bounds)
-    map.setMaxBoundsViscosity(1)
-    map.setMinZoom(map.getZoom())
-    initializedBounds.current = true
-  }, [geoLayerRef, map])
-
-  useEffect(() => {
-    const layer = geoLayerRef.current
     if (!layer) return
 
-    layer.eachLayer((geoLayer: any) => {
-      const featureRegion = geoLayer.feature?.properties?.region as string | undefined
+    layer.eachLayer((geoLayer: L.Layer) => {
+      const g = geoLayer as GeoLayerWithFeature
+      const featureRegion = g.feature?.properties?.region as string | undefined
       const isActive = activeRegion != null && featureRegion === activeRegion
-      geoLayer.setStyle({
-        color: isActive ? "var(--color-text-primary)" : "var(--polaris-map-region-border)",
-        weight: isActive ? 2.8 : 1.2,
-      })
-      if (isActive && geoLayer.bringToFront) geoLayer.bringToFront()
+      if ("setStyle" in g && typeof g.setStyle === "function") {
+        ;(g as L.Path).setStyle({
+          color: isActive ? "var(--color-text-primary)" : "var(--polaris-map-region-border)",
+          weight: isActive ? 2.8 : 1.2,
+        })
+      }
+      if (isActive && g.bringToFront) g.bringToFront()
     })
   }, [activeRegion, geoLayerRef])
 
@@ -81,14 +90,15 @@ function MapViewportController({
     const layer = geoLayerRef.current
     if (!layer || !triggerFlyTo || !activeRegion) return
 
-    let selectedLayer: any = null
-    layer.eachLayer((geoLayer: any) => {
-      const featureRegion = geoLayer.feature?.properties?.region as string | undefined
+    let selectedLayer: L.Layer | null = null
+    layer.eachLayer((geoLayer: L.Layer) => {
+      const g = geoLayer as GeoLayerWithFeature
+      const featureRegion = g.feature?.properties?.region as string | undefined
       if (featureRegion === activeRegion) selectedLayer = geoLayer
     })
 
-    if (selectedLayer) {
-      map.flyToBounds(selectedLayer.getBounds(), {
+    if (selectedLayer && "getBounds" in selectedLayer && typeof selectedLayer.getBounds === "function") {
+      map.flyToBounds(selectedLayer.getBounds() as L.LatLngBounds, {
         duration: 0.8,
         easeLinearity: 0.5,
         padding: [mapPadding, mapPadding],
@@ -100,12 +110,19 @@ function MapViewportController({
   return null
 }
 
+function regionNameFromFeature(feature: Feature | undefined): string | undefined {
+  const props = feature?.properties
+  if (!props || typeof props !== "object" || !("region" in props)) return undefined
+  const r = (props as RegionFeatureProperties).region
+  return typeof r === "string" ? r : undefined
+}
+
 export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
-  const [geoData, setGeoData] = useState<any>(null)
+  const [geoData, setGeoData] = useState<FeatureCollection | null>(null)
   const activeLens = useDashboardStore((snapshot) => snapshot.activeLens)
   const activeRegion = useDashboardStore((snapshot) => snapshot.activeRegion)
   const triggerFlyTo = useDashboardStore((snapshot) => snapshot.triggerFlyTo)
-  const geoLayerRef = useRef<any>(null)
+  const geoLayerRef = useRef<L.GeoJSON | null>(null)
   const mapFillOpacity = useMemo(() => {
     if (typeof window === "undefined") return 0.85
     const raw = getComputedStyle(document.documentElement)
@@ -123,9 +140,11 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
         if (!response.ok) throw new Error("Failed to load ph-regions.geojson")
         return response.json()
       })
-      .then((json) => {
+      .then((json: unknown) => {
         if (cancelled) return
-        setGeoData(json)
+        if (json && typeof json === "object" && "type" in json && json.type === "FeatureCollection") {
+          setGeoData(json as FeatureCollection)
+        }
       })
       .catch((error) => {
         console.error("[MapCanvas] Unable to load PH regions GeoJSON", error)
@@ -156,20 +175,26 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
 
   return (
     <section className="absolute inset-0 z-0 overflow-hidden bg-transparent">
-      <UnsafeMapContainer
-        center={defaultCenter}
-        zoom={6}
-        className="polaris-map-root h-full w-full"
+      <MapContainer
+        center={PH_MAP_CENTER}
+        zoom={PH_INITIAL_ZOOM}
+        minZoom={PH_MIN_ZOOM}
+        maxBounds={PH_MAX_BOUNDS}
+        maxBoundsViscosity={1.0}
+        zoomSnap={PH_ZOOM_SNAP}
+        doubleClickZoom={false}
         scrollWheelZoom
+        wheelPxPerZoomLevel={120}
+        className="polaris-map-root h-full w-full"
         attributionControl={false}
         zoomControl={false}
       >
         {geoData ? (
-          <UnsafeGeoJSON
+          <GeoJSON
             ref={geoLayerRef}
             data={geoData}
-            style={(feature: any) => {
-              const regionName = feature?.properties?.region as string | undefined
+            style={(feature) => {
+              const regionName = regionNameFromFeature(feature ?? undefined)
               const regionData = regionName ? regionByName.get(regionName) : null
               const score = regionData ? scoreForLens(regionData, activeLens) : 50
               return {
@@ -182,23 +207,24 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
                 weight: activeRegion && regionName === activeRegion ? 2.8 : 1.2,
               }
             }}
-            onEachFeature={(feature: any, layer: any) => {
-              const regionName = feature?.properties?.region as string | undefined
-              layer.on("mouseover", () => {
-                layer.setStyle({
+            onEachFeature={(feature, layer) => {
+              const pathLayer = layer as L.Path
+              const regionName = regionNameFromFeature(feature)
+              pathLayer.on("mouseover", () => {
+                pathLayer.setStyle({
                   color: "var(--color-text-secondary)",
                   weight: 2,
                 })
-                if (layer.bringToFront) layer.bringToFront()
+                pathLayer.bringToFront()
               })
-              layer.on("mouseout", () => {
+              pathLayer.on("mouseout", () => {
                 const isActive = activeRegion != null && regionName === activeRegion
-                layer.setStyle({
+                pathLayer.setStyle({
                   color: isActive ? "var(--color-text-primary)" : "var(--polaris-map-region-border)",
                   weight: isActive ? 2.8 : 1.2,
                 })
               })
-              layer.on("click", () => {
+              pathLayer.on("click", () => {
                 if (!regionName) return
                 dashboardStore.setActiveRegion(regionName)
                 dashboardStore.setTriggerFlyTo(!dashboardStore.getState().triggerFlyTo)
@@ -212,7 +238,7 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
           triggerFlyTo={triggerFlyTo}
         />
         <ZoomControl position="bottomleft" />
-      </UnsafeMapContainer>
+      </MapContainer>
       <p className="pointer-events-none absolute bottom-4 right-4 rounded-glass border border-white/20 bg-white/40 backdrop-blur-[24px] px-3 py-2 text-label font-medium text-text-secondary">
         Boundaries: faeldon/philippines-json-maps (2023)
       </p>
