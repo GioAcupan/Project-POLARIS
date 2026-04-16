@@ -18,6 +18,11 @@ export interface RegionalScore {
   specialization_pct: number;
   star_coverage_pct: number;
   avg_nat_score: number;
+  /** Optional period-over-period deltas (% points); used when BASELINE_TREND_SOURCE=backend */
+  teacher_student_ratio_delta_pct?: number;
+  specialization_pct_delta_pct?: number;
+  star_coverage_pct_delta_pct?: number;
+  avg_nat_score_delta_pct?: number;
   // PPST axes (used by STARBOT context + reports)
   ppst_content_knowledge: number;
   ppst_curriculum_planning: number;
@@ -34,6 +39,36 @@ export interface CriticalPing {
   region: string;
   severity: "CRITICAL" | "WARNING" | "GAP";
   message: string;
+}
+
+export interface DashboardAiReportsResponse {
+  total_count: number;
+  limited_results: RegionalScore[];
+}
+
+export interface PPSTAxisScores {
+  content_knowledge: number;
+  learning_environment: number;
+  diversity_of_learners: number;
+  curriculum_planning: number;
+  assessment_reporting: number;
+}
+
+export interface PPSTRadar {
+  current: PPSTAxisScores;
+  target?: PPSTAxisScores;
+}
+
+export interface RegionHealth {
+  region: string;
+  traffic_light: TrafficLight;
+  score: number;
+  factors: {
+    teacher_student_ratio: number;
+    specialization_pct: number;
+    star_coverage_pct: number;
+    avg_nat_score: number;
+  };
 }
 
 // ─────────────────────────────────────────────────────────────
