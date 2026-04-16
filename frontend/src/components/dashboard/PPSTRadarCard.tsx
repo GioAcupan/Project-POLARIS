@@ -41,7 +41,7 @@ export function PPSTRadarCard({ radar }: { radar: PPSTRadar | null }) {
       <p className="mt-1 text-content font-medium text-text-secondary">
         Shows the national average of teachers measured in PPST mapped metrics.
       </p>
-      <div className="mt-3 rounded-glass bg-card/70 p-3">
+      <div className="mt-3 rounded-glass border border-white/20 bg-white/40 p-3">
         <svg viewBox="0 0 220 220" className="mx-auto h-64 w-full max-w-64">
           <polygon
             points={polygonPoints([100, 100, 100, 100, 100])}

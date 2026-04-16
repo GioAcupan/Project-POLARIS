@@ -10,7 +10,7 @@ export function ImpactView({ selectedRegion }: { selectedRegion: RegionalScore }
   return (
     <div className="space-y-2">
       {snapshots.map((snapshot) => (
-        <div key={snapshot.label} className="rounded-glass border border-border bg-card p-2">
+        <div key={snapshot.label} className="rounded-glass border border-white/20 bg-white/40 p-2">
           <p className="text-content font-medium text-text-primary">{snapshot.label}</p>
           <p className="text-label text-text-secondary">Index: {snapshot.value.toFixed(1)}</p>
         </div>

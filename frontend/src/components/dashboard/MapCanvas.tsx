@@ -213,7 +213,7 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
         />
         <ZoomControl position="bottomleft" />
       </UnsafeMapContainer>
-      <p className="pointer-events-none absolute bottom-4 right-4 rounded-glass border border-border bg-white/40 backdrop-blur-[24px] px-3 py-2 text-label font-medium text-text-secondary">
+      <p className="pointer-events-none absolute bottom-4 right-4 rounded-glass border border-white/20 bg-white/40 backdrop-blur-[24px] px-3 py-2 text-label font-medium text-text-secondary">
         Boundaries: faeldon/philippines-json-maps (2023)
       </p>
     </section>

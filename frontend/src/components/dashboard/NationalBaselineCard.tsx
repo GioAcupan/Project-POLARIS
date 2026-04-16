@@ -47,7 +47,7 @@ export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) 
       <label className="sr-only" htmlFor="region-search">
         Search by Region
       </label>
-      <div className="shrink-0 flex items-center gap-2 rounded-glass border border-border bg-card px-3 py-2">
+      <div className="shrink-0 flex items-center gap-2 rounded-glass border border-white/20 bg-white/40 px-3 py-2">
         <input
           id="region-search"
           type="text"
@@ -75,13 +75,13 @@ export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) 
       </h2>
       <div className="mt-4 shrink-0 flex items-center justify-center">
         <div className="relative h-32 w-32 rounded-full" style={donutStyle}>
-          <div className="absolute inset-4 rounded-full bg-card" />
+          <div className="absolute inset-4 rounded-full bg-white/40" />
         </div>
       </div>
       <div className="mt-5 max-h-[28vh] overflow-y-auto pr-1">
         <div className="grid grid-cols-2 gap-2">
           {factors.map((factor) => (
-            <div key={factor.label} className="rounded-md border border-border bg-background p-2">
+            <div key={factor.label} className="rounded-md border border-white/20 bg-white/40 p-2">
               <p className="text-label font-semibold uppercase tracking-wide text-text-secondary">
                 {factor.label}
               </p>

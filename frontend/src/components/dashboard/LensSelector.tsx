@@ -11,7 +11,7 @@ export function LensSelector() {
   const activeLens = useDashboardStore((snapshot) => snapshot.activeLens)
 
   return (
-    <div className="polaris-glass-surface pointer-events-auto inline-flex items-center rounded-glass border border-border px-3 py-2">
+    <div className="polaris-glass-surface pointer-events-auto inline-flex items-center rounded-glass border border-white/20 px-3 py-2">
       <label htmlFor="lens-selector" className="sr-only">
         Select lens
       </label>

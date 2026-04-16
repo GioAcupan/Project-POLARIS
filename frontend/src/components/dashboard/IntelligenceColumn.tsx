@@ -48,13 +48,13 @@ export function IntelligenceColumn({
   const targetPoints = target ? polygonPoints(AXIS_KEYS.map((key) => target[key] ?? 0)) : null
 
   return (
-    <section className="rounded-xl border border-border bg-card p-4 lg:col-span-3">
+    <section className="rounded-xl border border-white/20 bg-white/40 p-4 lg:col-span-3">
       <h2 className="text-sm font-semibold text-foreground">National Skill Radar</h2>
-      <div className="mt-3 rounded-lg border border-border/70 bg-background/80 p-3">
+      <div className="mt-3 rounded-lg border border-white/20 bg-white/40 p-3">
         <svg viewBox="0 0 220 220" className="mx-auto h-52 w-full max-w-[220px]">
-          <polygon points={polygonPoints([100, 100, 100, 100, 100])} fill="none" stroke="#d4d4d8" />
+          <polygon points={polygonPoints([100, 100, 100, 100, 100])} fill="none" stroke="var(--polaris-chart-axis)" />
           {axisGrid().map((line) => (
-            <polyline key={line} points={line} fill="none" stroke="#e4e4e7" strokeWidth="1" />
+            <polyline key={line} points={line} fill="none" stroke="var(--polaris-chart-axis)" strokeWidth="1" />
           ))}
           {targetPoints ? (
             <polygon

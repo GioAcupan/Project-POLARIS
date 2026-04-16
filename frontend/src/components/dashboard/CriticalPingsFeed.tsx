@@ -57,7 +57,7 @@ export function CriticalPingsFeed({ regions }: { regions: RegionalScore[] }) {
             dashboardStore.setActiveRegion(ping.region)
             dashboardStore.setTriggerFlyTo(!dashboardStore.getState().triggerFlyTo)
           }}
-          className="w-full rounded-glass border border-border bg-card p-3 text-left transition hover:bg-brand-babyPink"
+          className="w-full rounded-glass border border-white/20 bg-white/40 p-3 text-left transition hover:bg-indigo-500/10"
         >
           <div className="flex items-center justify-between">
             <span

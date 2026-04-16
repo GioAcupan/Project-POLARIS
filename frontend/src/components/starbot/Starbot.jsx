@@ -141,7 +141,7 @@ export default function Starbot() {
       {isOpen && (
         <section
           ref={panelRef}
-          className="polaris-glass-surface w-[360px] overflow-hidden rounded-2xl border border-white/50 shadow-2xl"
+          className="polaris-glass-surface w-[360px] overflow-hidden rounded-2xl border border-white/20 shadow-glass"
           role="dialog"
           aria-label="STARBOT"
         >
@@ -160,7 +160,7 @@ export default function Starbot() {
                 type="button"
                 onClick={resetConversation}
                 title="Reset conversation"
-                className="rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                className="rounded-md p-1 text-slate-700 transition-colors hover:bg-indigo-500/10 hover:text-slate-900"
               >
                 <RefreshCw className="size-4" aria-hidden />
               </button>
@@ -168,7 +168,7 @@ export default function Starbot() {
                 type="button"
                 onClick={() => setIsMinimized((prev) => !prev)}
                 title={isMinimized ? "Expand" : "Minimize"}
-                className="rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                className="rounded-md p-1 text-slate-700 transition-colors hover:bg-indigo-500/10 hover:text-slate-900"
               >
                 <Minimize2 className="size-4" aria-hidden />
               </button>
@@ -179,7 +179,7 @@ export default function Starbot() {
                   setIsMinimized(false)
                 }}
                 title="Close"
-                className="rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                className="rounded-md p-1 text-slate-700 transition-colors hover:bg-indigo-500/10 hover:text-slate-900"
               >
                 <X className="size-4" aria-hidden />
               </button>
@@ -211,7 +211,7 @@ export default function Starbot() {
                                 setCopiedMessageId(message.id)
                               })
                             }}
-                            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+                            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-indigo-500/10 hover:text-slate-900"
                           >
                             <Copy className="size-3.5" aria-hidden />
                             Copy
@@ -238,21 +238,21 @@ export default function Starbot() {
                     <button
                       type="button"
                       onClick={() => void sendPrompt(CHIP_ONE_PROMPT)}
-                      className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-slate-200 hover:text-slate-900"
+                      className="rounded-full border border-white/20 bg-white/40 px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-indigo-500/10 hover:text-slate-900"
                     >
                       {CHIP_ONE_LABEL}
                     </button>
                     <button
                       type="button"
                       onClick={() => void sendPrompt(CHIP_TWO_PROMPT)}
-                      className="rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-slate-200 hover:text-slate-900"
+                      className="rounded-full border border-white/20 bg-white/40 px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-indigo-500/10 hover:text-slate-900"
                     >
                       {CHIP_TWO_LABEL}
                     </button>
                   </div>
                 )}
                 <form
-                  className="flex items-center gap-2 rounded-2xl border border-slate-300/80 bg-white/80 px-2 py-2"
+                  className="flex items-center gap-2 rounded-2xl border border-white/20 bg-white/40 px-2 py-2"
                   onSubmit={(event) => {
                     event.preventDefault()
                     void sendPrompt(inputValue)
@@ -287,7 +287,7 @@ export default function Starbot() {
           setIsOpen((prev) => !prev)
           setIsMinimized(false)
         }}
-        className="polaris-glass-surface inline-flex size-14 items-center justify-center rounded-full border border-white/60 text-brand-blue shadow-xl"
+        className="polaris-glass-surface inline-flex size-14 items-center justify-center rounded-full border border-white/20 text-brand-blue shadow-glass"
         aria-label="Toggle STARBOT"
         title="STARBOT"
       >

@@ -4,8 +4,8 @@ import { NavLink, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
 
 const iconBtn =
-  "flex size-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-const iconBtnActive = "bg-muted text-foreground"
+  "flex size-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-white/40 hover:text-slate-900"
+const iconBtnActive = "bg-indigo-500/10 text-slate-900"
 
 const logoSlotClass = "flex w-full max-w-[48px] justify-center"
 
@@ -70,7 +70,7 @@ export function Sidebar() {
 
       <div className="flex flex-col items-center px-1" title="Account">
         <div
-          className="size-10 shrink-0 rounded-full border border-border bg-muted"
+          className="size-10 shrink-0 rounded-full border border-white/20 bg-white/40"
           aria-hidden
         />
       </div>

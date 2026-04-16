@@ -78,8 +78,8 @@ export function RegionalHealthCard({ selectedRegion }: { selectedRegion: Regiona
               className={[
                 "rounded-full border px-3 py-1 text-label font-semibold uppercase tracking-wide transition",
                 active
-                  ? "border-brand-blue bg-brand-blue text-text-primary"
-                  : "border-border bg-card text-text-secondary",
+                  ? "border-indigo-500/30 bg-indigo-500/10 text-slate-900"
+                  : "border-white/20 bg-white/40 text-text-secondary",
               ].join(" ")}
             >
               {tab}
