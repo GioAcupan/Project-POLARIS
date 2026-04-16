@@ -46,10 +46,11 @@ function severityClasses(severity: CriticalPing["severity"]): string {
 
 export function CriticalPingsFeed({ regions }: { regions: RegionalScore[] }) {
   const pings = collectPings(regions)
+  const visiblePings = pings.slice(0, 3)
 
   return (
     <div className="space-y-2">
-      {pings.map((ping) => (
+      {visiblePings.map((ping) => (
         <button
           key={`${ping.region}-${ping.severity}-${ping.message}`}
           type="button"

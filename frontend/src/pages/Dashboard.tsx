@@ -37,13 +37,13 @@ export default function Dashboard() {
           <LensSelector />
         </header>
 
-        <div className="dashboard-floating-rail-vertical pointer-events-auto absolute left-screen-margin flex w-80 flex-col items-start gap-card-gap overflow-y-auto pr-1">
-          <div className="w-full">
+        <div className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute left-screen-margin flex w-80 flex-col items-start gap-card-gap overflow-y-auto pr-1">
+          <div className="w-full max-h-[60vh]">
             <PPSTRadarCard radar={nationalRadar} />
           </div>
-          <section className="w-full rounded-glass p-6 polaris-glass-card">
+          <section className="flex h-fit w-full max-h-[35vh] flex-col rounded-glass p-6 polaris-glass-card">
             <h2 className="font-heading text-section-title font-extrabold text-text-primary">AI Reports</h2>
-            <div className="mt-element-stack max-h-[32vh] overflow-y-auto pr-1">
+            <div className="polaris-dashboard-scroll mt-element-stack min-h-0 overflow-y-auto pr-1">
               <CriticalPingsFeed regions={regions} />
             </div>
           </section>
@@ -57,7 +57,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex w-96 items-start overflow-y-auto"
+              className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute right-screen-margin flex w-96 items-start overflow-y-auto"
             >
               <RegionalHealthCard selectedRegion={selectedRegion} />
             </motion.div>
@@ -68,7 +68,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex w-96 items-start overflow-y-auto"
+              className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute right-screen-margin flex w-96 items-start overflow-y-auto"
             >
               <NationalBaselineCard regions={regions} />
             </motion.div>
