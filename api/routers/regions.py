@@ -1,13 +1,13 @@
 """Regions router — returns cached regional score rows for dashboard/report UI."""
 
-from fastapi import APIRouter, Depends
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db import get_db
 from api.intel.region_codes import region_code
 from api.models.regional_score import RegionalScore
-from api.schemas.chat import RegionalScoreContext
+from api.schemas.chat import DashboardAiReportsResponse, RegionalScoreContext
 
 router = APIRouter(tags=["regions"])
 
@@ -45,3 +45,22 @@ async def list_regions(db: AsyncSession = Depends(get_db)) -> list[RegionalScore
     result = await db.execute(select(RegionalScore).order_by(RegionalScore.region.asc()))
     rows = result.scalars().all()
     return [_to_context(row) for row in rows]
+
+
+@router.get("/regions/dashboard-ai-reports", response_model=DashboardAiReportsResponse)
+async def list_dashboard_ai_reports(
+    limit: int = Query(default=5, ge=1),
+    db: AsyncSession = Depends(get_db),
+) -> DashboardAiReportsResponse:
+    total_count_result = await db.execute(select(func.count()).select_from(RegionalScore))
+    total_count = int(total_count_result.scalar_one() or 0)
+
+    limited_rows_result = await db.execute(
+        select(RegionalScore).order_by(RegionalScore.region.asc()).limit(limit)
+    )
+    limited_rows = limited_rows_result.scalars().all()
+
+    return DashboardAiReportsResponse(
+        total_count=total_count,
+        limited_results=[_to_context(row) for row in limited_rows],
+    )

@@ -2,6 +2,7 @@ import type {
   ActiveRegistration,
   ChatRequest,
   ChatResponse,
+  DashboardAiReportsResponse,
   EventRegistration,
   GeneratePDSResponse,
   ProfileExtended,
@@ -72,6 +73,11 @@ export function chat(req: ChatRequest): Promise<ChatResponse> {
 
 export function getRegions(): Promise<RegionalScore[]> {
   return apiFetch<RegionalScore[]>("/regions/")
+}
+
+export function getDashboardAiReports(limit = 5): Promise<DashboardAiReportsResponse> {
+  const q = new URLSearchParams({ limit: String(limit) })
+  return apiFetch<DashboardAiReportsResponse>(`/regions/dashboard-ai-reports?${q.toString()}`)
 }
 
 export function getNationalRadar(): Promise<PPSTRadar> {

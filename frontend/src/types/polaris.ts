@@ -36,6 +36,11 @@ export interface CriticalPing {
   message: string;
 }
 
+export interface DashboardAiReportsResponse {
+  total_count: number;
+  limited_results: RegionalScore[];
+}
+
 export interface PPSTAxisScores {
   content_knowledge: number;
   learning_environment: number;

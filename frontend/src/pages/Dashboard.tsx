@@ -8,13 +8,15 @@ import { NationalBaselineCard } from "@/components/dashboard/NationalBaselineCar
 import { PPSTRadarCard } from "@/components/dashboard/PPSTRadarCard"
 import { RegionalHealthCard } from "@/components/dashboard/RegionalHealthCard"
 import { useNationalRadar } from "@/hooks/useNationalRadar"
-import { useRegions } from "@/hooks/useRegions"
+import { useDashboardAiReports, useRegions } from "@/hooks/useRegions"
 import { dashboardStore, useDashboardStore } from "@/stores/dashboardStore"
 
 export default function Dashboard() {
   const { data: regions = [] } = useRegions()
+  const { data: dashboardAiReports = null } = useDashboardAiReports(5)
   const { data: nationalRadar = null } = useNationalRadar()
   const activeRegion = useDashboardStore((snapshot) => snapshot.activeRegion)
+  const aiReportRegions = dashboardAiReports?.limited_results ?? []
   const selectedRegion = regions.find((region) => region.region === activeRegion) ?? null
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function Dashboard() {
           <section className="flex h-fit w-full max-h-[35vh] flex-col rounded-glass p-6 polaris-glass-card">
             <h2 className="font-heading text-section-title font-extrabold text-text-primary">AI Reports</h2>
             <div className="polaris-dashboard-scroll mt-element-stack min-h-0 overflow-y-auto pr-1">
-              <CriticalPingsFeed regions={regions} />
+              <CriticalPingsFeed regions={aiReportRegions} />
             </div>
           </section>
         </div>

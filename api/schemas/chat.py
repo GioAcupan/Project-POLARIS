@@ -30,6 +30,11 @@ class RegionalScoreContext(BaseModel):
     critical_pings: list[CriticalPing] | None = None
 
 
+class DashboardAiReportsResponse(BaseModel):
+    total_count: int
+    limited_results: list[RegionalScoreContext]
+
+
 class ChatRequest(BaseModel):
     message: str = Field(..., max_length=500)
     region_context: RegionalScoreContext | None = None
