@@ -26,7 +26,7 @@ export default function Dashboard() {
   }, [nationalRadar])
 
   return (
-    <div className="relative h-full min-h-screen w-full animate-in fade-in duration-300">
+    <div className="relative h-full min-h-screen w-full bg-transparent animate-in fade-in duration-300">
       <MapCanvas regions={regions} />
 
       <div className="pointer-events-none absolute inset-0 z-10">
