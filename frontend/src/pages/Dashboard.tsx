@@ -26,7 +26,7 @@ export default function Dashboard() {
   }, [nationalRadar])
 
   return (
-    <div className="relative h-full min-h-screen w-full bg-transparent animate-in fade-in duration-300">
+    <div className="relative h-full w-full overflow-hidden bg-transparent animate-in fade-in duration-300">
       <MapCanvas regions={regions} />
 
       <div className="pointer-events-none absolute inset-0 z-10">
@@ -37,13 +37,13 @@ export default function Dashboard() {
           <LensSelector />
         </header>
 
-        <div className="dashboard-floating-rail-vertical pointer-events-auto absolute left-screen-margin flex min-h-0 w-80 flex-col gap-card-gap">
-          <div className="max-h-[40%] min-h-0 flex-[2]">
+        <div className="dashboard-floating-rail-vertical pointer-events-auto absolute left-screen-margin flex w-80 flex-col items-start gap-card-gap overflow-y-auto pr-1">
+          <div className="w-full">
             <PPSTRadarCard radar={nationalRadar} />
           </div>
-          <section className="flex min-h-0 flex-[3] flex-col rounded-glass p-4 polaris-glass-card">
+          <section className="w-full rounded-glass p-6 polaris-glass-card">
             <h2 className="font-heading text-section-title font-extrabold text-text-primary">AI Reports</h2>
-            <div className="mt-element-stack min-h-0 flex-1 overflow-y-auto pr-1">
+            <div className="mt-element-stack max-h-[32vh] overflow-y-auto pr-1">
               <CriticalPingsFeed regions={regions} />
             </div>
           </section>
@@ -57,7 +57,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex min-h-0 w-96"
+              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex w-96 items-start overflow-y-auto"
             >
               <RegionalHealthCard selectedRegion={selectedRegion} />
             </motion.div>
@@ -68,7 +68,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex min-h-0 w-96"
+              className="dashboard-floating-rail-vertical pointer-events-auto absolute right-screen-margin flex w-96 items-start overflow-y-auto"
             >
               <NationalBaselineCard regions={regions} />
             </motion.div>

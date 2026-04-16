@@ -36,7 +36,7 @@ export function PPSTRadarCard({ radar }: { radar: PPSTRadar | null }) {
   const targetPoints = target ? polygonPoints(AXIS_KEYS.map((key) => target[key] ?? 0)) : null
 
   return (
-    <section className="h-full min-h-0 overflow-hidden rounded-glass p-4 polaris-glass-card">
+    <section className="h-fit w-full overflow-hidden rounded-glass p-6 polaris-glass-card">
       <h2 className="font-heading text-section-title font-extrabold text-text-primary">PPST Radar Graph</h2>
       <p className="mt-1 text-content font-medium text-text-secondary">
         Shows the national average of teachers measured in PPST mapped metrics.

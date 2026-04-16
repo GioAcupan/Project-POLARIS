@@ -5,10 +5,10 @@ import Starbot from "@/components/starbot/Starbot"
 
 export function DashboardLayout() {
   return (
-    <div className="polaris-app-shell flex min-h-svh">
+    <div className="polaris-app-shell flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="min-w-0 flex-1 p-4 md:p-6">
-        <div className="min-h-[min(100%,calc(100svh-3rem))]">
+      <main className="min-w-0 flex-1 overflow-hidden p-6 md:p-8">
+        <div className="h-full overflow-hidden">
           <Outlet />
         </div>
       </main>

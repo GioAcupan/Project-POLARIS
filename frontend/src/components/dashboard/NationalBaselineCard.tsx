@@ -43,7 +43,7 @@ export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) 
   }
 
   return (
-    <section className="flex h-full max-h-full min-h-0 flex-col rounded-glass p-4 polaris-glass-card">
+    <section className="w-full self-start rounded-glass p-6 polaris-glass-card">
       <label className="sr-only" htmlFor="region-search">
         Search by Region
       </label>
@@ -78,7 +78,7 @@ export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) 
           <div className="absolute inset-4 rounded-full bg-card" />
         </div>
       </div>
-      <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-1">
+      <div className="mt-5 max-h-[28vh] overflow-y-auto pr-1">
         <div className="grid grid-cols-2 gap-2">
           {factors.map((factor) => (
             <div key={factor.label} className="rounded-md border border-border bg-background p-2">

@@ -215,7 +215,12 @@
       var(--ds-spacing-screen-margin) + var(--ds-spacing-section-gap) +
         var(--ds-spacing-section-gap)
     );
-    bottom: var(--ds-spacing-screen-margin);
+    max-height: calc(
+      100vh - (
+        var(--ds-spacing-screen-margin) + var(--ds-spacing-section-gap) +
+          var(--ds-spacing-section-gap) + var(--ds-spacing-screen-margin)
+      )
+    );
   }
 }
 
