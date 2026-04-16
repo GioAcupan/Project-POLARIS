@@ -59,7 +59,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute right-screen-margin flex w-96 items-start overflow-y-auto"
+              className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute right-screen-margin flex w-[440px] items-start overflow-y-auto"
             >
               <RegionalHealthCard selectedRegion={selectedRegion} />
             </motion.div>
@@ -70,7 +70,7 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24 }}
-              className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute right-screen-margin flex w-96 items-start overflow-y-auto"
+              className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute right-screen-margin flex w-[440px] items-start overflow-y-auto"
             >
               <NationalBaselineCard regions={regions} />
             </motion.div>
