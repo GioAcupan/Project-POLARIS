@@ -44,10 +44,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <nav
-        className="flex flex-col items-center gap-2"
-        aria-label="Primary navigation"
-      >
+      <nav className="flex flex-col items-center gap-2" aria-label="Primary navigation">
         <NavLink
           to="/"
           end
