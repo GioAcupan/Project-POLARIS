@@ -24,7 +24,7 @@ export const FRONTEND_PITCH_MODE =
 
 function apiBase(): string {
   const raw = import.meta.env.VITE_API_BASE_URL ?? DEFAULT_BASE
-  return raw.replace(/\/$/, "")
+  return raw.trim().replace(/\/$/, "")
 }
 
 async function parseErrorMessage(res: Response): Promise<string> {

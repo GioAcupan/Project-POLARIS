@@ -21,7 +21,7 @@ export function Sidebar() {
   const teacherAssignmentActive = pathname.startsWith("/teacher-assignment")
 
   return (
-    <aside className="polaris-glass-liquid rounded-none border-t-0 border-l-0 border-b-0 flex h-full min-h-svh w-[72px] shrink-0 flex-col items-center justify-between py-4">
+    <aside className="polaris-glass-liquid rounded-none border-t-0 border-l-0 border-b-0 flex h-full min-h-svh w-[60px] shrink-0 flex-col items-center justify-between py-4 sm:w-[72px]">
       <div className="flex w-full flex-col items-center gap-5 px-1">
         <div className={logoSlotClass}>
           <img

@@ -261,6 +261,20 @@
     );
   }
 
+  @media (max-width: 1280px) {
+    .dashboard-floating-rail-vertical {
+      top: 96px;
+      max-height: calc(100vh - 112px);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .dashboard-floating-rail-vertical {
+      top: 88px;
+      max-height: calc(100vh - 96px);
+    }
+  }
+
   .polaris-dashboard-scroll {
     scrollbar-width: thin;
     scrollbar-color: color-mix(in oklch, var(--color-brand-blue) 28%, transparent) transparent;
