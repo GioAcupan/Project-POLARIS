@@ -11,7 +11,7 @@ export function DashboardLayout() {
   return (
     <div className={cn("flex h-screen overflow-hidden", usesFlatWhiteSurface ? "bg-white" : "polaris-app-shell")}>
       <Sidebar />
-      <main className={cn("min-w-0 flex-1 overflow-hidden p-6 md:p-8", usesFlatWhiteSurface && "bg-white")}>
+      <main className="min-w-0 flex-1 overflow-hidden px-6 pb-6 pt-3 md:px-8 md:pb-8 md:pt-4">
         <div className="h-full overflow-hidden">
           <Outlet />
         </div>
@@ -20,3 +20,4 @@ export function DashboardLayout() {
     </div>
   )
 }
+

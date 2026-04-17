@@ -1,3 +1,10 @@
+import { Info } from "lucide-react"
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import type { PPSTRadar } from "@/types/polaris"
 
 const AXIS_KEYS: (keyof NonNullable<PPSTRadar["current"]>)[] = [
@@ -37,11 +44,24 @@ export function PPSTRadarCard({ radar }: { radar: PPSTRadar | null }) {
 
   return (
     <section className="flex h-full max-h-full w-full flex-col overflow-hidden rounded-glass p-6 polaris-glass-card">
-      <h2 className="font-heading text-section-title font-extrabold text-text-primary">PPST Radar Graph</h2>
-      <p className="mt-1 text-content font-medium text-text-secondary">
-        Shows the national average of teachers measured in PPST mapped metrics.
-      </p>
-      <div className="mt-3 min-h-0 flex-1 rounded-glass border border-white/20 bg-white/40 p-3">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-heading text-section-title font-extrabold text-text-primary">
+          PPST Radar Graph
+        </h2>
+        <Tooltip>
+          <TooltipTrigger
+            type="button"
+            aria-label="About the PPST Radar Graph"
+            className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-white/60 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-data-viz-primary)]/60"
+          >
+            <Info className="size-5" aria-hidden="true" />
+          </TooltipTrigger>
+          <TooltipContent>
+            Shows the national average of teachers measured in PPST mapped metrics.
+          </TooltipContent>
+        </Tooltip>
+      </div>
+      <div className="mt-2 min-h-0 flex-1 rounded-glass border border-white/20 bg-white/40 p-3">
         <svg viewBox="0 0 220 220" className="mx-auto h-full w-full max-h-full max-w-64 aspect-square">
           <polygon
             points={polygonPoints([100, 100, 100, 100, 100])}
