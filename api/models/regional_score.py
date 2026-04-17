@@ -9,7 +9,7 @@ import enum
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import DateTime, Enum, Integer, JSON, Numeric, String
+from sqlalchemy import DateTime, Enum, Integer, JSON, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from api.models.base import Base
@@ -42,6 +42,11 @@ class RegionalScore(Base):
     student_pop: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     economic_loss: Mapped[float] = mapped_column(Numeric(15, 2), nullable=False, default=0)
     lays_score: Mapped[float] = mapped_column(Numeric(5, 2), nullable=False, default=0)
+    supply_score_badge: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
+    impact_score_badge: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
+    demand_score_badge: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
+    demand_legend_label: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    demand_note: Mapped[str | None] = mapped_column(Text, nullable=True)
     demand_signal_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     # PPST axis averages (0.000 – 1.000)

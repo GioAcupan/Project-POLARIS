@@ -133,6 +133,7 @@ Primary migration files:
 - `db/migrations/001_init.sql` (base v3.1 objects)
 - `db/migrations/003_v34_module4_and_starbot.sql` (v3.4 additive objects)
 - `db/migrations/004_v35_impact_metrics.sql` (v3.5 additive `regional_scores` impact metrics)
+- `db/migrations/006_advanced_tab_metrics.sql` (v3.6 additive advanced Supply/Impact/Demand tab metric columns + tables)
 - `db/migrations/005_consultant_seed.sql` (consultant demo telemetry + active programs seed, idempotent data update)
 - `db/migrations/002_seed.sql` (seed data only; no new schema objects)
 
@@ -276,6 +277,11 @@ Primary migration files:
   - `student_pop INTEGER NOT NULL DEFAULT 0` (added by `004_v35_impact_metrics.sql`)
   - `economic_loss NUMERIC(15,2) NOT NULL DEFAULT 0` (added by `004_v35_impact_metrics.sql`)
   - `lays_score NUMERIC(5,2) NOT NULL DEFAULT 0` (added by `004_v35_impact_metrics.sql`)
+  - `supply_score_badge NUMERIC(5,2)` (nullable; added by `006_advanced_tab_metrics.sql`)
+  - `impact_score_badge NUMERIC(5,2)` (nullable; added by `006_advanced_tab_metrics.sql`)
+  - `demand_score_badge NUMERIC(5,2)` (nullable; added by `006_advanced_tab_metrics.sql`)
+  - `demand_legend_label VARCHAR(50)` (nullable; added by `006_advanced_tab_metrics.sql`)
+  - `demand_note TEXT` (nullable; added by `006_advanced_tab_metrics.sql`)
   - `demand_signal_count INTEGER NOT NULL DEFAULT 0`
   - `ppst_content_knowledge NUMERIC(4,3) NOT NULL DEFAULT 0`
   - `ppst_curriculum_planning NUMERIC(4,3) NOT NULL DEFAULT 0`
@@ -286,6 +292,40 @@ Primary migration files:
   - `total_teachers INTEGER NOT NULL DEFAULT 0`
   - `traffic_light traffic_light NOT NULL DEFAULT 'red'`
   - `computed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
+
+### `regional_supply_metrics`
+
+- Columns:
+  - `region VARCHAR(100) NOT NULL FK -> regional_scores.region (ON DELETE CASCADE)`
+  - `label VARCHAR(100) NOT NULL`
+  - `value NUMERIC(5,2) NOT NULL CHECK BETWEEN 0 AND 100`
+  - `display_order SMALLINT NOT NULL DEFAULT 0`
+  - `updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
+  - `PRIMARY KEY (region, label)`
+- Indexes: `idx_regional_supply_metrics_region`
+
+### `regional_demand_metrics`
+
+- Columns:
+  - `region VARCHAR(100) NOT NULL FK -> regional_scores.region (ON DELETE CASCADE)`
+  - `label VARCHAR(100) NOT NULL`
+  - `requests INTEGER NOT NULL CHECK >= 0`
+  - `display_order SMALLINT NOT NULL DEFAULT 0`
+  - `updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
+  - `PRIMARY KEY (region, label)`
+- Indexes: `idx_regional_demand_metrics_region`
+
+### `regional_impact_series`
+
+- Columns:
+  - `region VARCHAR(100) NOT NULL FK -> regional_scores.region (ON DELETE CASCADE)`
+  - `year SMALLINT NOT NULL CHECK BETWEEN 2000 AND 2100`
+  - `training_volume INTEGER NOT NULL CHECK >= 0`
+  - `avg_nat_score NUMERIC(5,2) NOT NULL CHECK BETWEEN 0 AND 100`
+  - `avg_feedback NUMERIC(3,2) NOT NULL CHECK BETWEEN 0 AND 5`
+  - `updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
+  - `PRIMARY KEY (region, year)`
+- Indexes: `idx_regional_impact_series_region`, `idx_regional_impact_series_year`
 
 ### `teacher_profile_extended`
 
@@ -397,3 +437,5 @@ Primary migration files:
 - API endpoint inventory is stable (no new route paths), while request/response behavior changed for `/chat` (mode-switched prompting, best-effort `programs` lookup, and optional no-region fallback).
 - Gemini integration path changed in `api/intel/llm_client.py` from `google.generativeai` model wrapper style to `google.genai` client calls (`models.generate_content`).
 - Some base schema tables exist but are not directly exposed by current API endpoints (`schools`, `trainings`, `outcomes`, `needs_signals`, `regional_nat_trends`).
+- New in `006_advanced_tab_metrics.sql`: `regional_supply_metrics`, `regional_demand_metrics`, `regional_impact_series` and nullable advanced tab scalar columns on `regional_scores` now exist, but are not yet populated and are not yet read by current API endpoints.
+- `impact_rows` is intentionally not a DB table; it remains derived client-side from `impact_series` in `frontend/src/components/dashboard/detail-views/regionalTabData.ts`.
