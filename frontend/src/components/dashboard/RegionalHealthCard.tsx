@@ -78,7 +78,7 @@ export function RegionalHealthCard({ selectedRegion }: { selectedRegion: Regiona
                 type="button"
                 onClick={() => setActiveTab(tab)}
                 className={[
-                  "rounded-full px-3 py-1 text-label font-semibold tracking-wide transition",
+                  "capitalize rounded-full px-3 py-1 text-label font-semibold tracking-wide transition",
                   active
                     ? "bg-[#8ec8ff] text-[#1e2a3b]"
                     : "bg-transparent text-[#1f62ac]",
