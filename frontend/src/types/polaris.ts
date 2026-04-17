@@ -79,6 +79,7 @@ export interface RegionHealth {
 // ─────────────────────────────────────────────────────────────
 export interface ChatRequest {
   message: string;                         // max 500 chars
+  mode: "advisor" | "drafting_accomplishment" | "drafting_intervention" | "drafting_needs_assessment";
   region_context: RegionalScore | null;
 }
 

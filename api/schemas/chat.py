@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -40,7 +40,13 @@ class DashboardAiReportsResponse(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str = Field(..., max_length=500)
-    region_context: RegionalScoreContext | None = None
+    mode: Literal[
+        "advisor",
+        "drafting_accomplishment",
+        "drafting_intervention",
+        "drafting_needs_assessment",
+    ] = "advisor"
+    region_context: Optional[RegionalScoreContext] = None
 
 
 class ChatResponse(BaseModel):
