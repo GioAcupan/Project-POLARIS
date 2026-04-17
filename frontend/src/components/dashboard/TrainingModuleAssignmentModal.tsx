@@ -31,7 +31,20 @@ type CreateForm = {
   relevanceNote: string
 }
 
-type ModalError = Partial<Record<"title" | "description" | "host" | "participantCap" | "existingModule", string>>
+type ModalError = Partial<
+  Record<
+    | "title"
+    | "description"
+    | "host"
+    | "participantCap"
+    | "existingModule"
+    | "targetLevels"
+    | "subjectTags"
+    | "competencyFocus"
+    | "relevanceNote",
+    string
+  >
+>
 
 type TrainingModuleAssignmentModalProps = {
   open: boolean
@@ -169,7 +182,7 @@ export function TrainingModuleAssignmentModal({
       participantCap: String(selectedCount || ""),
       targetLevels: initialLevels,
       subjectTags: initialSubjects,
-      competencyFocus: [...COMPETENCY_OPTIONS],
+      competencyFocus: [],
       relevanceNote: "",
     })
   }, [initialLevels, initialSubjects, open, selectedCount])
@@ -229,6 +242,10 @@ export function TrainingModuleAssignmentModal({
     if (!form.title.trim()) nextErrors.title = "Training title is required."
     if (!form.description.trim()) nextErrors.description = "Description is required."
     if (!form.host.trim()) nextErrors.host = "Host / organizer is required."
+    if (!form.competencyFocus.length) nextErrors.competencyFocus = "Select at least one competency focus."
+    if (!form.relevanceNote.trim()) nextErrors.relevanceNote = "Relevance note is required."
+    if (!form.targetLevels.length) nextErrors.targetLevels = "Select at least one target teacher level."
+    if (!form.subjectTags.length) nextErrors.subjectTags = "Select at least one subject / specialization tag."
     const cap = Number(form.participantCap)
     if (!Number.isFinite(cap) || cap < 1) nextErrors.participantCap = "Participant cap must be at least 1."
 
@@ -440,12 +457,70 @@ export function TrainingModuleAssignmentModal({
                     />
                     {errors.host ? <span className="mt-1 block text-sm text-signal-critical">{errors.host}</span> : null}
                   </label>
+
                 </div>
               </section>
 
               <section className="border-b border-chart-highlight/40 py-[18px]">
                 <h3 className="mb-[14px] text-xs font-extrabold uppercase tracking-[0.08em] text-brand-blue">
-                  Section 4 - Targeting & Capacity
+                  Section 2 - Additional Details
+                </h3>
+                <div className="mb-4">
+                  <span className="mb-2 block text-xs font-bold text-brand-blue">
+                    Competency Focus <span className="text-brand-pink">*</span>
+                  </span>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {COMPETENCY_OPTIONS.map((option) => {
+                      const active = form.competencyFocus.includes(option)
+                      return (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() =>
+                            setForm((current) => ({
+                              ...current,
+                              competencyFocus: toggleValue(current.competencyFocus, option),
+                            }))
+                          }
+                          className={cn(
+                            "h-[46px] rounded-xl border px-3 text-left text-[12px] font-semibold transition",
+                            active
+                              ? "border-chart-primary bg-chart-primary/15 text-brand-blue"
+                              : "border-chart-highlight/80 bg-white text-brand-blue",
+                          )}
+                        >
+                          {option}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {errors.competencyFocus ? (
+                    <span className="mt-1 block text-sm text-signal-critical">{errors.competencyFocus}</span>
+                  ) : null}
+                </div>
+                <label className="block">
+                  <span className="mb-[7px] block text-xs font-bold text-brand-blue">
+                    Relevance Note <span className="text-brand-pink">*</span>
+                  </span>
+                  <textarea
+                    value={form.relevanceNote}
+                    onChange={(event) => setForm((current) => ({ ...current, relevanceNote: event.target.value }))}
+                    className={cn(
+                      "w-full rounded-xl border border-chart-highlight/70 bg-white px-3 py-2.5 text-[13px] text-brand-blue outline-none transition focus-visible:ring-2 focus-visible:ring-chart-primary/40",
+                      errors.relevanceNote && "border-signal-critical",
+                    )}
+                    rows={3}
+                    placeholder="This training addresses your Research Proficiency gap."
+                  />
+                  {errors.relevanceNote ? (
+                    <span className="mt-1 block text-sm text-signal-critical">{errors.relevanceNote}</span>
+                  ) : null}
+                </label>
+              </section>
+
+              <section className="border-b border-chart-highlight/40 py-[18px]">
+                <h3 className="mb-[14px] text-xs font-extrabold uppercase tracking-[0.08em] text-brand-blue">
+                  Section 3 - Targeting & Capacity
                 </h3>
 
                 <div className="mb-4">
@@ -477,6 +552,9 @@ export function TrainingModuleAssignmentModal({
                       )
                     })}
                   </div>
+                  {errors.targetLevels ? (
+                    <span className="mt-1 block text-sm text-signal-critical">{errors.targetLevels}</span>
+                  ) : null}
                 </div>
 
                 <div className="mb-4">
@@ -508,6 +586,9 @@ export function TrainingModuleAssignmentModal({
                       )
                     })}
                   </div>
+                  {errors.subjectTags ? (
+                    <span className="mt-1 block text-sm text-signal-critical">{errors.subjectTags}</span>
+                  ) : null}
                 </div>
 
                 <label className="block">
@@ -533,49 +614,6 @@ export function TrainingModuleAssignmentModal({
                 </label>
               </section>
 
-              <section className="py-[18px]">
-                <h3 className="mb-[14px] text-xs font-extrabold uppercase tracking-[0.08em] text-brand-blue">
-                  Section 5 - Additional Details
-                </h3>
-                <div className="mb-4">
-                  <span className="mb-2 block text-xs font-bold text-brand-blue">Competency Focus</span>
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    {COMPETENCY_OPTIONS.map((option) => {
-                      const active = form.competencyFocus.includes(option)
-                      return (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() =>
-                            setForm((current) => ({
-                              ...current,
-                              competencyFocus: toggleValue(current.competencyFocus, option),
-                            }))
-                          }
-                          className={cn(
-                            "h-[46px] rounded-xl border px-3 text-left text-[12px] font-semibold transition",
-                            active
-                              ? "border-chart-primary bg-chart-primary/15 text-brand-blue"
-                              : "border-chart-highlight/80 bg-white text-brand-blue",
-                          )}
-                        >
-                          {option}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-                <label className="block">
-                  <span className="mb-[7px] block text-xs font-bold text-brand-blue">Relevance Note</span>
-                  <textarea
-                    value={form.relevanceNote}
-                    onChange={(event) => setForm((current) => ({ ...current, relevanceNote: event.target.value }))}
-                    className="w-full rounded-xl border border-chart-highlight/70 bg-white px-3 py-2.5 text-[13px] text-brand-blue outline-none transition focus-visible:ring-2 focus-visible:ring-chart-primary/40"
-                    rows={3}
-                    placeholder="This training addresses your Research Proficiency gap."
-                  />
-                </label>
-              </section>
             </div>
           ) : (
             <div className="pb-4 pt-[18px]">
