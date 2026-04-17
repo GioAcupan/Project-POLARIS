@@ -56,9 +56,6 @@ export function Sidebar() {
         >
           <LayoutDashboard className="size-5" aria-hidden />
         </NavLink>
-        <span className={cn(iconBtn, "opacity-80")} role="presentation">
-          <Users className="size-5" aria-hidden />
-        </span>
         <NavLink
           to="/reports"
           title="Report Generator"
@@ -66,6 +63,9 @@ export function Sidebar() {
         >
           <FileText className="size-5" aria-hidden />
         </NavLink>
+        <span className={cn(iconBtn, "opacity-80")} role="presentation">
+          <Users className="size-5" aria-hidden />
+        </span>
       </nav>
 
       <div className="flex flex-col items-center px-1" title="Account">

@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+﻿import { useMemo } from "react"
 
 import { useRegions } from "@/hooks/useRegions"
 import { formatPesoBillions, formatYears } from "@/lib/formatNumber"
@@ -7,7 +7,8 @@ import type { RegionalScore } from "@/types/polaris"
 
 const MAX_SCHOOL_YEARS = 12
 const TAX_LOSS_FACTOR = 0.144
-const HEADLINE_METRIC_CLASS = "text-[28px] font-bold leading-tight"
+const HEADLINE_METRIC_CLASS =
+  "text-[24px] font-extrabold tracking-tight leading-tight"
 
 function toFiniteNumber(value: number | null | undefined): number {
   const parsed = Number(value ?? 0)
@@ -94,46 +95,46 @@ export function EffectOverviewCard() {
           "0 10px 25px -5px rgba(26, 94, 168, 0.1), 0 8px 10px -6px rgba(26, 94, 168, 0.1)",
       }}
     >
-      <div className="space-y-4">
-        <div className="space-y-1">
+      <div className="space-y-3">
+        <div className="space-y-0.5">
           <p className="text-[12px] font-semibold tracking-wide" style={{ color: "#1A5EA8" }}>
             {cardData.contextLabel}
           </p>
           {isDataLoading ? (
-            <p className="text-[12px] font-medium" style={{ color: "#1A5EA8" }}>
+            <p className="text-sm font-medium" style={{ color: "#1A5EA8" }}>
               Loading impact data...
             </p>
           ) : null}
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <p className={HEADLINE_METRIC_CLASS} style={{ color: "#E8532A" }}>
             {formatPesoBillions(cardData.economicLoss)}
           </p>
-          <p className="text-[12px] font-medium" style={{ color: "#1B1B1B" }}>
+          <p className="text-sm font-medium" style={{ color: "#1B1B1B" }}>
             Annual GDP Opportunity Cost
           </p>
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <p className={HEADLINE_METRIC_CLASS} style={{ color: "#F5A623" }}>
             {formatPesoBillions(cardData.taxLoss)}
           </p>
-          <p className="text-[12px] font-medium" style={{ color: "#1A5EA8" }}>
+          <p className="text-sm font-medium" style={{ color: "#1A5EA8" }}>
             Annual Tax Leak
           </p>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[12px] font-medium" style={{ color: "#1A5EA8" }}>
-              Learning Gap
-            </p>
+        <div>
+          <div className="space-y-0.5">
             <p className={HEADLINE_METRIC_CLASS} style={{ color: "#1B1B1B" }}>
               {formatYears(cardData.learningGap)} Lost
             </p>
+            <p className="text-sm font-medium" style={{ color: "#1A5EA8" }}>
+              Learning Gap
+            </p>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full border border-white/40 bg-white/50">
+          <div className="mt-1.5 h-4 w-full overflow-hidden rounded-full border border-white/50 bg-[#1A5EA8]/10">
             <div
               className="h-full rounded-full"
               style={{
@@ -142,7 +143,7 @@ export function EffectOverviewCard() {
               }}
             />
           </div>
-          <p className="text-[12px] font-medium" style={{ color: "#1A5EA8" }}>
+          <p className="mt-0.5 text-sm font-medium" style={{ color: "#1A5EA8" }}>
             LAYS {cardData.lays.toFixed(2)} / {MAX_SCHOOL_YEARS}
           </p>
         </div>
@@ -150,3 +151,5 @@ export function EffectOverviewCard() {
     </section>
   )
 }
+
+
