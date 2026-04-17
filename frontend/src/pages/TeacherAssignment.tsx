@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Filter, Shuffle, SlidersHorizontal } from "lucide-react"
 
+import { TrainingModuleAssignmentModal } from "@/components/dashboard/TrainingModuleAssignmentModal"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -677,6 +678,17 @@ export default function TeacherAssignment({
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS)
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS)
   const [selectedTeacherIds, setSelectedTeacherIds] = useState<Set<number>>(new Set())
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
+  const [modalTeacherIds, setModalTeacherIds] = useState<number[]>([])
+  const [statusBanner, setStatusBanner] = useState<null | { tone: "success" | "error"; message: string }>(
+    null,
+  )
+
+  useEffect(() => {
+    if (!statusBanner) return
+    const timer = window.setTimeout(() => setStatusBanner(null), 2500)
+    return () => window.clearTimeout(timer)
+  }, [statusBanner])
 
   const filteredTeachers = useMemo(() => {
     const normalizedSchoolQuery = appliedFilters.schoolQuery.trim().toLowerCase()
@@ -763,6 +775,19 @@ export default function TeacherAssignment({
     [selectedTeacherIds, visibleTeacherIds],
   )
 
+  const modalSelectedTeachers = useMemo(
+    () => MOCK_TEACHERS.filter((teacher) => modalTeacherIds.includes(teacher.id)),
+    [modalTeacherIds],
+  )
+  const modalInitialLevels = useMemo(
+    () => Array.from(new Set(modalSelectedTeachers.map((teacher) => teacher.position))),
+    [modalSelectedTeachers],
+  )
+  const modalInitialSubjects = useMemo(
+    () => Array.from(new Set(modalSelectedTeachers.flatMap((teacher) => teacher.tags))),
+    [modalSelectedTeachers],
+  )
+
   const updateDraftFilters = <K extends keyof AssignmentFilters>(
     key: K,
     value: AssignmentFilters[K],
@@ -831,7 +856,8 @@ export default function TeacherAssignment({
 
   const handleAssignSelected = () => {
     if (activeSelectedIds.length === 0) return
-    onAssignTeachers(activeSelectedIds)
+    setModalTeacherIds(activeSelectedIds)
+    setIsAssignModalOpen(true)
   }
 
   const handleAssignSingleTeacher = (teacherId: number) => {
@@ -840,11 +866,38 @@ export default function TeacherAssignment({
       next.add(teacherId)
       return next
     })
-    onAssignTeachers([teacherId])
+    setModalTeacherIds([teacherId])
+    setIsAssignModalOpen(true)
+  }
+
+  const handleModalConfirm = ({ title }: { mode: "create" | "existing"; title: string }) => {
+    if (modalTeacherIds.length === 0) return
+    onAssignTeachers(modalTeacherIds)
+    setStatusBanner({
+      tone: "success",
+      message: `Training '${title}' assigned to ${modalTeacherIds.length} teacher${modalTeacherIds.length === 1 ? "" : "s"}.`,
+    })
+    setIsAssignModalOpen(false)
+    setModalTeacherIds([])
   }
 
   return (
     <div className="relative flex h-full min-h-0 flex-col gap-6 bg-white pb-0">
+      {statusBanner ? (
+        <div
+          className={cn(
+            "rounded-xl px-4 py-2.5 text-sm font-medium",
+            statusBanner.tone === "success"
+              ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border border-critical/20 bg-critical/10 text-critical",
+          )}
+          role="status"
+          aria-live="polite"
+        >
+          {statusBanner.message}
+        </div>
+      ) : null}
+
       <header className="flex items-start justify-between gap-4 rounded-2xl border border-chart-primary/20 bg-chart-primary/10 px-5 py-4">
         <div>
           <h1 className="font-heading text-display-dashboard font-extrabold text-brand-blue">
@@ -1205,6 +1258,18 @@ export default function TeacherAssignment({
           </div>
         </div>
       </footer>
+
+      <TrainingModuleAssignmentModal
+        open={isAssignModalOpen}
+        selectedCount={modalTeacherIds.length}
+        initialLevels={modalInitialLevels}
+        initialSubjects={modalInitialSubjects}
+        onClose={() => {
+          setIsAssignModalOpen(false)
+          setModalTeacherIds([])
+        }}
+        onConfirm={handleModalConfirm}
+      />
     </div>
   )
 }
