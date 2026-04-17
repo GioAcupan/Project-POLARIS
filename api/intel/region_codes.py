@@ -18,6 +18,7 @@ REGION_CODE_MAP: dict[str, str] = {
     "Region XI": "R11",
     "Region XII": "R12",
     "Region XIII": "R13",
+    "MIMAROPA": "MIMAROPA",
     "NCR": "NCR",
     "CAR": "CAR",
     "BARMM": "BARMM",

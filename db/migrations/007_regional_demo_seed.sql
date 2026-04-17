@@ -11,8 +11,8 @@
 --           - regional_impact_series       (68 rows, 4 years × 17 regions)
 --           - programs                     (51 rows, 3 per region — UNIQUE names)
 --
--- Excluded: supply_subscore, impact_subscore, demand_subscore
---           underserved_score (let API/scoring.py recompute if needed)
+-- Units:    economic_loss = billions of PHP (matches compute_eoc / EffectOverviewCard).
+--           PPST columns = 0.0–1.0 (demo rubric was 0–4 in draft; stored as /4).
 --
 -- Run:      psql "$DATABASE_URL_DIRECT" -f db/migrations/007_regional_demo_seed.sql
 --           Idempotent — safe to re-run between demo takes.
@@ -30,6 +30,7 @@ BEGIN;
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -40,16 +41,21 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'NCR', '1300000000',
+    38.00, 78.00, 82.50, 45.00,
     32.5000, 74.80, 38.20, 65.40,
-    52, 64800, 2280000, 2150000000.00, 9.10,
+    52, 64800, 2280000, 2.15, 7.85,
     'green'::traffic_light,
-    3.350, 3.200, 2.950, 2.900, 3.150,
+    0.838, 0.800, 0.738, 0.725, 0.788,
     '[{"region":"NCR","severity":"WARNING","message":"Overcrowding pressure — STAR capacity saturated in NCR divisions"},{"region":"NCR","severity":"GAP","message":"Assessment literacy trailing content mastery by 0.45 points"}]'::jsonb,
     78.00, 82.50, 45.00,
     'Moderate Demand', 'Signals concentrated in pedagogical innovation and AI readiness.'
 )
 ON CONFLICT (region) DO UPDATE SET
     psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
     teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct,
     star_coverage_pct = EXCLUDED.star_coverage_pct,
@@ -103,6 +109,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -113,16 +120,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'CAR', '1400000000',
+    40.00, 75.00, 85.00, 32.00,
     28.0000, 68.50, 41.20, 67.80,
-    34, 17600, 495000, 680000000.00, 9.20,
+    34, 17600, 495000, 0.68, 8.14,
     'green'::traffic_light,
-    3.400, 3.250, 3.050, 3.100, 3.000,
+    0.850, 0.812, 0.762, 0.775, 0.750,
     '[{"region":"CAR","severity":"WARNING","message":"GIDA schools in Kalinga and Ifugao need travel-subsidy pathway"}]'::jsonb,
     75.00, 85.00, 32.00,
     'Low Demand', 'Most requests from GIDA districts. Infrastructure need outpaces pedagogy gap.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -168,6 +181,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -178,16 +192,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region I', '0100000000',
+    58.00, 62.00, 64.00, 52.00,
     35.8000, 58.30, 24.80, 54.60,
-    48, 34200, 1080000, 3950000000.00, 7.90,
+    48, 34200, 1080000, 3.95, 6.55,
     'yellow'::traffic_light,
-    2.750, 2.600, 2.350, 2.400, 2.550,
+    0.688, 0.650, 0.588, 0.600, 0.637,
     '[{"region":"Region I","severity":"WARNING","message":"Research-based practice lagging 0.35 below national median"}]'::jsonb,
     62.00, 64.00, 52.00,
     'Moderate Demand', 'Research and assessment literacy gaps driving most signals.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -233,6 +253,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -243,16 +264,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region II', '0200000000',
+    60.00, 58.00, 61.00, 56.00,
     37.2000, 55.60, 22.40, 52.80,
-    54, 24800, 790000, 3420000000.00, 7.70,
+    54, 24800, 790000, 3.42, 6.34,
     'yellow'::traffic_light,
-    2.650, 2.550, 2.300, 2.350, 2.450,
+    0.662, 0.637, 0.575, 0.588, 0.613,
     '[{"region":"Region II","severity":"WARNING","message":"Batanes and Apayao remote districts underserved"},{"region":"Region II","severity":"GAP","message":"Math specialization under 50% in Cagayan"}]'::jsonb,
     58.00, 61.00, 56.00,
     'Moderate Demand', 'Persistent signals from remote and island districts.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -298,6 +325,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -308,16 +336,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region III', '0300000000',
+    42.00, 72.00, 76.00, 44.00,
     31.5000, 66.20, 32.50, 60.80,
-    45, 58400, 2460000, 2680000000.00, 8.60,
+    45, 58400, 2460000, 2.68, 7.30,
     'green'::traffic_light,
-    3.100, 2.950, 2.700, 2.750, 2.850,
+    0.775, 0.738, 0.675, 0.688, 0.713,
     '[{"region":"Region III","severity":"WARNING","message":"Aurora and Zambales coastal divisions show specialization gap"}]'::jsonb,
     72.00, 76.00, 44.00,
     'Moderate Demand', 'Manufacturing-belt schools drive AI and pedagogy requests.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -363,6 +397,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -373,16 +408,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region IV-A', '0400000000',
+    44.00, 74.00, 78.00, 50.00,
     30.2000, 69.40, 34.80, 62.10,
-    58, 74200, 3180000, 2910000000.00, 8.80,
+    58, 74200, 3180000, 2.91, 7.45,
     'green'::traffic_light,
-    3.200, 3.050, 2.800, 2.850, 2.950,
+    0.800, 0.762, 0.700, 0.713, 0.738,
     '[{"region":"Region IV-A","severity":"WARNING","message":"Rizal and Cavite urban fringe schools overcapacity"}]'::jsonb,
     74.00, 78.00, 50.00,
     'Moderate Demand', 'Growth corridors (Cavite, Laguna, Batangas) driving innovation signals.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -428,6 +469,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -438,16 +480,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'MIMAROPA', '1700000000',
+    78.00, 38.00, 42.00, 66.00,
     46.8000, 41.20, 14.20, 44.20,
-    67, 21400, 740000, 7850000000.00, 6.60,
+    67, 21400, 740000, 7.85, 5.30,
     'red'::traffic_light,
-    2.150, 2.050, 1.900, 1.950, 2.000,
+    0.537, 0.512, 0.475, 0.487, 0.500,
     '[{"region":"MIMAROPA","severity":"CRITICAL","message":"Palawan and Occidental Mindoro GIDA schools — 70% without specialized science teacher"},{"region":"MIMAROPA","severity":"GAP","message":"Inter-island travel barrier cuts STAR enrollment"}]'::jsonb,
     38.00, 42.00, 66.00,
     'High Demand', 'Island logistics and specialization scarcity compound underservice.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -493,6 +541,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -503,16 +552,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region V', '0500000000',
+    76.00, 44.00, 46.00, 70.00,
     42.5000, 46.80, 17.60, 47.30,
-    71, 48600, 1820000, 8120000000.00, 6.90,
+    71, 48600, 1820000, 8.12, 5.68,
     'red'::traffic_light,
-    2.300, 2.200, 2.000, 2.050, 2.150,
+    0.575, 0.550, 0.500, 0.512, 0.537,
     '[{"region":"Region V","severity":"CRITICAL","message":"Typhoon corridor — recurring disruption to learning continuity"},{"region":"Region V","severity":"WARNING","message":"Catanduanes and Masbate divisions need targeted support"}]'::jsonb,
     44.00, 46.00, 70.00,
     'High Demand', 'Disaster-resilient pedagogy and catch-up learning requests dominate.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -558,6 +613,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -568,16 +624,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region VI', '0600000000',
+    56.00, 56.00, 58.00, 55.00,
     38.4000, 53.20, 21.80, 51.40,
-    56, 49200, 1900000, 4680000000.00, 7.50,
+    56, 49200, 1900000, 4.68, 6.17,
     'yellow'::traffic_light,
-    2.550, 2.450, 2.200, 2.250, 2.350,
+    0.637, 0.613, 0.550, 0.562, 0.588,
     '[{"region":"Region VI","severity":"WARNING","message":"Aklan and Guimaras posting specialization gaps"}]'::jsonb,
     56.00, 58.00, 55.00,
     'Moderate Demand', 'Assessment literacy and Math specialization requests leading.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -623,6 +685,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -633,16 +696,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region VII', '0700000000',
+    59.00, 64.00, 66.00, 50.00,
     36.6000, 58.40, 26.40, 55.70,
-    51, 44800, 1720000, 3810000000.00, 7.90,
+    51, 44800, 1720000, 3.81, 6.68,
     'yellow'::traffic_light,
-    2.800, 2.700, 2.450, 2.500, 2.600,
+    0.700, 0.675, 0.613, 0.625, 0.650,
     '[{"region":"Region VII","severity":"WARNING","message":"Bohol and Siquijor island divisions trailing urban Cebu"}]'::jsonb,
     64.00, 66.00, 50.00,
     'Moderate Demand', 'Urban-rural divide with Cebu pulling the average; islands lag.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -688,6 +757,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -698,16 +768,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region VIII', '0800000000',
+    82.00, 36.00, 40.00, 82.00,
     48.2000, 39.60, 12.40, 42.80,
-    82, 37800, 1330000, 9240000000.00, 6.40,
+    82, 37800, 1330000, 9.24, 5.14,
     'red'::traffic_light,
-    2.100, 2.000, 1.800, 1.750, 1.950,
+    0.525, 0.500, 0.450, 0.438, 0.487,
     '[{"region":"Region VIII","severity":"CRITICAL","message":"Assessment literacy 1.75/4.0 — lowest nationally"},{"region":"Region VIII","severity":"CRITICAL","message":"12.4% STAR coverage against 82 active demand signals"},{"region":"Region VIII","severity":"GAP","message":"Samar and Biliran divisions need urgent pipeline"}]'::jsonb,
     36.00, 40.00, 82.00,
     'Critical Demand', 'Highest demand-to-coverage ratio nationally. Priority intervention zone.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -753,6 +829,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -763,16 +840,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region IX', '0900000000',
+    80.00, 40.00, 43.00, 68.00,
     44.8000, 42.50, 15.80, 44.60,
-    69, 29600, 1080000, 7420000000.00, 6.70,
+    69, 29600, 1080000, 7.42, 5.35,
     'red'::traffic_light,
-    2.250, 2.150, 1.950, 2.000, 2.100,
+    0.562, 0.537, 0.487, 0.500, 0.525,
     '[{"region":"Region IX","severity":"CRITICAL","message":"Basilan GIDA districts — conflict-affected learning gaps"},{"region":"Region IX","severity":"WARNING","message":"Zamboanga Sibugay specialization pipeline thin"}]'::jsonb,
     40.00, 43.00, 68.00,
     'High Demand', 'Peace-and-order context; prioritize mobile and cohort-based delivery.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -818,6 +901,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -828,16 +912,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region X', '1000000000',
+    57.00, 54.00, 55.00, 57.00,
     38.8000, 52.40, 20.60, 50.20,
-    58, 39400, 1380000, 4240000000.00, 7.40,
+    58, 39400, 1380000, 4.24, 6.02,
     'yellow'::traffic_light,
-    2.550, 2.450, 2.250, 2.300, 2.400,
+    0.637, 0.613, 0.562, 0.575, 0.600,
     '[{"region":"Region X","severity":"WARNING","message":"Camiguin and Lanao del Norte divisions need re-tooling"}]'::jsonb,
     54.00, 55.00, 57.00,
     'Moderate Demand', 'Cagayan de Oro and Iligan urban centers stabilize the average.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -883,6 +973,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -893,16 +984,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region XI', '1100000000',
+    61.00, 62.00, 64.00, 48.00,
     36.8000, 56.80, 24.20, 53.90,
-    49, 34800, 1210000, 3580000000.00, 7.80,
+    49, 34800, 1210000, 3.58, 6.47,
     'yellow'::traffic_light,
-    2.700, 2.600, 2.350, 2.400, 2.500,
+    0.675, 0.650, 0.588, 0.600, 0.625,
     '[{"region":"Region XI","severity":"WARNING","message":"Davao Oriental coastal divisions need logistics support"}]'::jsonb,
     62.00, 64.00, 48.00,
     'Moderate Demand', 'Davao City acts as anchor; periphery provinces lag.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -948,6 +1045,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -958,16 +1056,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region XII', '1200000000',
+    77.00, 42.00, 44.00, 64.00,
     43.6000, 44.80, 16.40, 45.80,
-    64, 31800, 1180000, 6820000000.00, 6.80,
+    64, 31800, 1180000, 6.82, 5.50,
     'red'::traffic_light,
-    2.300, 2.200, 2.000, 2.050, 2.150,
+    0.575, 0.550, 0.500, 0.512, 0.537,
     '[{"region":"Region XII","severity":"CRITICAL","message":"Sultan Kudarat and Sarangani schools — chronic supply gap"},{"region":"Region XII","severity":"WARNING","message":"Math specialization under 45%"}]'::jsonb,
     42.00, 44.00, 64.00,
     'High Demand', 'Agri-industrial divisions with persistent teacher-supply bottlenecks.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -1013,6 +1117,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -1023,16 +1128,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'Region XIII', '1600000000',
+    79.00, 40.00, 42.00, 68.00,
     45.2000, 41.80, 13.80, 43.50,
-    68, 22400, 760000, 7280000000.00, 6.50,
+    68, 22400, 760000, 7.28, 5.22,
     'red'::traffic_light,
-    2.200, 2.100, 1.900, 1.950, 2.050,
+    0.550, 0.525, 0.475, 0.487, 0.512,
     '[{"region":"Region XIII","severity":"CRITICAL","message":"Dinagat Islands and Agusan hinterlands — 74% specialization gap"},{"region":"Region XIII","severity":"WARNING","message":"IP (Indigenous Peoples) schools need culturally responsive STEM materials"}]'::jsonb,
     40.00, 42.00, 68.00,
     'High Demand', 'Mining-region divisions and IP communities under-supplied.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,
@@ -1078,6 +1189,7 @@ ON CONFLICT (region, year) DO UPDATE SET training_volume = EXCLUDED.training_vol
 
 INSERT INTO regional_scores (
     region, psgc_code,
+    underserved_score, supply_subscore, impact_subscore, demand_subscore,
     teacher_student_ratio, specialization_pct, star_coverage_pct, avg_nat_score,
     demand_signal_count, total_teachers, student_pop, economic_loss, lays_score,
     traffic_light,
@@ -1088,16 +1200,22 @@ INSERT INTO regional_scores (
     demand_legend_label, demand_note
 ) VALUES (
     'BARMM', '1900000000',
+    88.00, 28.00, 32.00, 92.00,
     52.4000, 32.60, 9.40, 38.40,
-    94, 31200, 1420000, 11840000000.00, 5.80,
+    94, 31200, 1420000, 11.84, 4.61,
     'red'::traffic_light,
-    1.850, 1.800, 1.650, 1.700, 1.750,
+    0.463, 0.450, 0.412, 0.425, 0.438,
     '[{"region":"BARMM","severity":"CRITICAL","message":"Lanao del Sur and Maguindanao — lowest specialization nationally (32.6%)"},{"region":"BARMM","severity":"CRITICAL","message":"Sulu and Tawi-Tawi island divisions — peace-and-order blocks STAR delivery"},{"region":"BARMM","severity":"CRITICAL","message":"Basilan teacher-student ratio 1:52 — worst nationally"}]'::jsonb,
     28.00, 32.00, 92.00,
     'Critical Demand', 'Highest-priority intervention region. Cultural, peace-and-order, and supply factors compound.'
 )
 ON CONFLICT (region) DO UPDATE SET
-    psgc_code = EXCLUDED.psgc_code, teacher_student_ratio = EXCLUDED.teacher_student_ratio,
+    psgc_code = EXCLUDED.psgc_code,
+    underserved_score = EXCLUDED.underserved_score,
+    supply_subscore = EXCLUDED.supply_subscore,
+    impact_subscore = EXCLUDED.impact_subscore,
+    demand_subscore = EXCLUDED.demand_subscore,
+    teacher_student_ratio = EXCLUDED.teacher_student_ratio,
     specialization_pct = EXCLUDED.specialization_pct, star_coverage_pct = EXCLUDED.star_coverage_pct,
     avg_nat_score = EXCLUDED.avg_nat_score, demand_signal_count = EXCLUDED.demand_signal_count,
     total_teachers = EXCLUDED.total_teachers, student_pop = EXCLUDED.student_pop,

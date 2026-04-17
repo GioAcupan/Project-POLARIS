@@ -40,7 +40,9 @@ class RegionalScore(Base):
     star_coverage_pct: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
     avg_nat_score: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
     student_pop: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    economic_loss: Mapped[float] = mapped_column(Numeric(15, 2), nullable=False, default=0)
+    economic_loss: Mapped[float] = mapped_column(
+        Numeric(15, 2), nullable=False, default=0
+    )  # billions of PHP (annual EOC)
     lays_score: Mapped[float] = mapped_column(Numeric(5, 2), nullable=False, default=0)
     supply_score_badge: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
     impact_score_badge: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
