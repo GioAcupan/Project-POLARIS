@@ -15,8 +15,8 @@
 |---|---|---|---|---|
 | GET | `/health` | `api/main.py::health` | None | inline `{status, pitch_mode}` |
 | POST | `/chat` | `api/routers/chat.py::chat` | `ChatRequest` | `ChatResponse` |
-| GET | `/regions/` | `api/routers/regions.py::list_regions` | query: none | `list[RegionalScoreContext]` |
-| GET | `/regions/dashboard-ai-reports` | `api/routers/regions.py::list_dashboard_ai_reports` | query: `limit>=1` | `DashboardAiReportsResponse` |
+| GET | `/regions/` | `api/routers/regions.py::list_regions` | query: none | `list[RegionalScoreContext]` (includes v3.5 metrics: `student_pop`, `economic_loss`, `lays_score`) |
+| GET | `/regions/dashboard-ai-reports` | `api/routers/regions.py::list_dashboard_ai_reports` | query: `limit>=1` | `DashboardAiReportsResponse` (nested `RegionalScoreContext` includes v3.5 metrics) |
 | GET | `/intelligence/national-skill-radar` | `api/routers/intelligence.py::national_skill_radar` | None | `NationalSkillRadarOut` |
 | POST | `/reports/generate` | `api/routers/reports.py::generate_report` | `ReportGenerateRequest` | `ReportGenerateResponse` |
 | GET | `/events/recommended` | `api/routers/events.py::recommended_events` | query: `deped_id`, `limit(1..50)` | `list[RecommendedEventOut]` |
@@ -43,6 +43,7 @@
 - Router: `api/routers/regions.py`
 - Schema outputs: `api/schemas/chat.py` (`RegionalScoreContext`, `DashboardAiReportsResponse`)
 - Model/table: `api/models/regional_score.py` (`regional_scores`)
+- Exposed v3.5 additive fields from `regional_scores`: `student_pop`, `economic_loss`, `lays_score`
 - Intel/util: `api/intel/region_codes.py`
 - DB session: `api/db.py`
 
@@ -75,7 +76,7 @@
 - Router: `api/routers/registrations.py`
 - Schemas: `api/schemas/registrations.py`, `api/schemas/events.py` (`EventSpecificFieldDef`)
 - Models/tables: `api/models/event_registration.py` (`event_registrations`), `api/models/training_event.py` (`training_events`), `api/models/teacher.py` (`teachers`), `api/models/profile_extended.py` (`teacher_profile_extended`), `api/tables/nominations.py` (`nominations`)
-- Intel/util: `api/intel/form_generator.py`
+- Intel/util: `api/intel/form_generator.py`, `api/intel/form_mappings/csc_form_212.py`
 - Files/templates/static for generated docs: `api/templates/forms/demo_pds_prefilled.xlsx`, `api/templates/forms/csc_form_212.xlsx`, `api/static/forms/demo_pds_preview.png`
 - DB session: `api/db.py`
 
@@ -131,6 +132,7 @@
 Primary migration files:
 - `db/migrations/001_init.sql` (base v3.1 objects)
 - `db/migrations/003_v34_module4_and_starbot.sql` (v3.4 additive objects)
+- `db/migrations/004_v35_impact_metrics.sql` (v3.5 additive `regional_scores` impact metrics)
 - `db/migrations/002_seed.sql` (seed data only; no new schema objects)
 
 ## Enums
@@ -270,6 +272,9 @@ Primary migration files:
   - `specialization_pct NUMERIC(5,2)`
   - `star_coverage_pct NUMERIC(5,2)`
   - `avg_nat_score NUMERIC(5,2)`
+  - `student_pop INTEGER NOT NULL DEFAULT 0` (added by `004_v35_impact_metrics.sql`)
+  - `economic_loss NUMERIC(15,2) NOT NULL DEFAULT 0` (added by `004_v35_impact_metrics.sql`)
+  - `lays_score NUMERIC(5,2) NOT NULL DEFAULT 0` (added by `004_v35_impact_metrics.sql`)
   - `demand_signal_count INTEGER NOT NULL DEFAULT 0`
   - `ppst_content_knowledge NUMERIC(4,3) NOT NULL DEFAULT 0`
   - `ppst_curriculum_planning NUMERIC(4,3) NOT NULL DEFAULT 0`
@@ -372,8 +377,8 @@ Primary migration files:
 |---|---|
 | `GET /health` | none |
 | `POST /chat` | none (context-driven) |
-| `GET /regions/` | `regional_scores` |
-| `GET /regions/dashboard-ai-reports` | `regional_scores` |
+| `GET /regions/` | `regional_scores` (includes v3.5 `student_pop`, `economic_loss`, `lays_score`) |
+| `GET /regions/dashboard-ai-reports` | `regional_scores` (same v3.5 metrics via `limited_results`) |
 | `GET /intelligence/national-skill-radar` | `regional_scores` |
 | `POST /reports/generate` | `regional_scores` |
 | `GET /events/recommended` | `teachers`, `training_events`, `programs`, `nominations`, `regional_scores` (via PPST gap helper) |
@@ -388,4 +393,5 @@ Primary migration files:
 ## 7) Notes / Gaps
 
 - `db/migrations/002_seed.sql` states v3.4 seed requires running `003_v34_module4_and_starbot.sql` first; if another document says `001 -> 002 -> 003`, that sequence conflicts for v3.4 seed inserts.
+- API endpoint inventory is stable (no new route paths), while schema expanded in v3.5 via `db/migrations/004_v35_impact_metrics.sql` and is now surfaced by `/regions/*`.
 - Some base schema tables exist but are not directly exposed by current API endpoints (`schools`, `trainings`, `outcomes`, `needs_signals`, `regional_nat_trends`).
