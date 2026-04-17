@@ -1,4 +1,4 @@
-@config "../tailwind.config.js";
+﻿@config "../tailwind.config.js";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -52,7 +52,7 @@
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
 
-    /* Polaris Luminous Glass — design_system.jsonc (brand, signals, data viz) */
+    /* Polaris Luminous Glass â€” design_system.jsonc (brand, signals, data viz) */
     --color-brand-pink: var(--ds-color-brand-pink);
     --color-brand-blue: var(--ds-color-brand-blue);
     --color-brand-baby-pink: var(--ds-color-brand-baby-pink);
@@ -64,7 +64,7 @@
 }
 
 :root {
-    /* Luminous Glass surface recipe + app mesh (design_system.jsonc → surfaces) */
+    /* Luminous Glass surface recipe + app mesh (design_system.jsonc â†’ surfaces) */
     --polaris-glass-background: var(--ds-surface-glass-background);
     --polaris-glass-backdrop-blur: var(--ds-surface-glass-backdrop-blur);
     --polaris-glass-border: var(--ds-surface-glass-border);
@@ -177,7 +177,7 @@
 }
 
 @layer components {
-  /* design_system.jsonc surfaces.glassCard — shared recipe */
+  /* design_system.jsonc surfaces.glassCard â€” shared recipe */
   .polaris-glass-surface {
     background: var(--polaris-glass-background);
     -webkit-backdrop-filter: blur(var(--polaris-glass-backdrop-blur));
@@ -251,13 +251,12 @@
 
   .dashboard-floating-rail-vertical {
     top: calc(
-      var(--ds-spacing-screen-margin) + var(--ds-spacing-section-gap) +
-        var(--ds-spacing-section-gap)
+      var(--ds-spacing-screen-margin) + var(--ds-spacing-section-gap) + 20px
     );
     max-height: calc(
       100vh - (
-        var(--ds-spacing-screen-margin) + var(--ds-spacing-section-gap) +
-          var(--ds-spacing-section-gap) + var(--ds-spacing-screen-margin)
+        var(--ds-spacing-screen-margin) + var(--ds-spacing-section-gap) + 20px +
+          var(--ds-spacing-screen-margin)
       )
     );
   }
@@ -294,3 +293,6 @@
   background: transparent !important;
   background-color: transparent !important;
 }
+
+
+

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
+﻿import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
 
@@ -106,7 +106,7 @@ export default function Dashboard() {
       <MapCanvas regions={regions} />
 
       <div className="pointer-events-none absolute inset-0 z-10">
-        <header className="pointer-events-auto absolute inset-x-screen-margin top-screen-margin flex items-center justify-between gap-card-gap">
+        <header className="pointer-events-auto absolute inset-x-screen-margin top-5 flex items-center justify-between gap-card-gap">
           <h1 className="font-heading text-display-dashboard font-extrabold text-text-primary">
             DASHBOARD
           </h1>
@@ -173,3 +173,4 @@ export default function Dashboard() {
     </div>
   )
 }
+

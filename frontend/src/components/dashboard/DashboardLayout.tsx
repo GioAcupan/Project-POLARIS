@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom"
+﻿import { Outlet } from "react-router-dom"
 
 import { Sidebar } from "@/components/dashboard/Sidebar"
 import Starbot from "@/components/starbot/Starbot"
@@ -7,7 +7,7 @@ export function DashboardLayout() {
   return (
     <div className="polaris-app-shell flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="min-w-0 flex-1 overflow-hidden p-6 md:p-8">
+      <main className="min-w-0 flex-1 overflow-hidden px-6 pb-6 pt-3 md:px-8 md:pb-8 md:pt-4">
         <div className="h-full overflow-hidden">
           <Outlet />
         </div>
@@ -16,3 +16,4 @@ export function DashboardLayout() {
     </div>
   )
 }
+
