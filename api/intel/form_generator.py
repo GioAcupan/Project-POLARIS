@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 import shutil
 from pathlib import Path
 from typing import Any
@@ -21,14 +20,14 @@ from api.intel.form_mappings.csc_form_212 import (
     resolve_source,
     validate_enum_value,
 )
+from api.runtime_paths import ensure_output_dir
 
 logger = logging.getLogger(__name__)
 
 PDS_TEMPLATE_PATH = (
     Path(__file__).resolve().parents[1] / "templates" / "forms" / "csc_form_212.xlsx"
 )
-OUTPUT_DIR = os.getenv("POLARIS_OUTPUT_DIR", "/var/polaris/generated")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+OUTPUT_DIR = str(ensure_output_dir())
 
 # CSC Form 212 Sheet C1 — cells bound to enum-validated profile fields
 _CELL_ENUM_FIELDS = {"D16": "sex", "D17": "civil_status"}

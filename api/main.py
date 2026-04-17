@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 import api.models  # noqa: F401 — ensures all ORM models are registered on startup
 import api.tables.nominations  # noqa: F401 — nominations Table on Base.metadata
+from api.runtime_paths import ensure_output_dir
 from api.routers import chat as chat_router
 from api.routers import downloads as downloads_router
 from api.routers import events as events_router
@@ -64,8 +65,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DOWNLOADS_DIR = os.getenv("POLARIS_OUTPUT_DIR", "/var/polaris/generated")
-os.makedirs(DOWNLOADS_DIR, exist_ok=True)
+DOWNLOADS_DIR = str(ensure_output_dir())
 
 static_dir = Path(__file__).resolve().parent / "static"
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")

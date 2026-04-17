@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
 
@@ -15,10 +14,11 @@ from sqlalchemy.orm import selectinload
 from api.db import get_db
 from api.models.event_registration import EventRegistration
 from api.models.teacher import Teacher
+from api.runtime_paths import get_output_dir
 
 router = APIRouter(tags=["downloads"])
 
-OUTPUT_DIR = Path(os.getenv("POLARIS_OUTPUT_DIR", "/var/polaris/generated"))
+OUTPUT_DIR = get_output_dir()
 _PDS_FILENAME_RE = re.compile(r"^\d+_pds\.xlsx$")
 
 _PITCH_FRIENDLY_NAME = "Renato_DelaCruz_PDS.xlsx"

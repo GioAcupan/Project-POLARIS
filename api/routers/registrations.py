@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,6 +19,7 @@ from api.models.event_registration import EventRegistration
 from api.models.profile_extended import TeacherProfileExtended
 from api.models.teacher import Teacher
 from api.models.training_event import TrainingEvent
+from api.runtime_paths import ensure_output_dir
 from api.schemas.events import EventSpecificFieldDef
 from api.schemas.registrations import (
     ActiveRegistrationEventOut,
@@ -36,8 +36,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["registrations"])
 
-OUTPUT_DIR = os.getenv("POLARIS_OUTPUT_DIR", "/var/polaris/generated")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+OUTPUT_DIR = str(ensure_output_dir())
 
 ALLOWED_TRANSITIONS: dict[str, list[str]] = {
     "draft": ["forms_generated", "cancelled"],

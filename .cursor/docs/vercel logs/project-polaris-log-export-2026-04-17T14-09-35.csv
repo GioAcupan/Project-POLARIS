@@ -1,0 +1,445 @@
+TimeUTC,timestampInMs,requestPath,requestMethod,requestQueryString,responseStatusCode,requestId,requestUserAgent,level,environment,branch,vercelCache,type,function,host,deploymentDomain,deploymentId,durationMs,region,maxMemoryUsed,memorySize,message,projectId,traceId,sessionId,invocationId,instanceId,concurrency,workflowRunId,workflowStepId
+2026-04-17 14:08:07,1776434887540,project-polaris-one.vercel.app/favicon.ico,GET,,500,b2pk5-1776434882441-463ca3771f01,Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0,error,production,main,MISS,function,/index,project-polaris-one.vercel.app,project-polaris-one.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,,,,,"could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.",prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,,,,,
+2026-04-17 14:08:02,1776434882441,project-polaris-one.vercel.app/favicon.ico,GET,,500,b2pk5-1776434882441-463ca3771f01,Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0,,production,main,MISS,function,/index,project-polaris-one.vercel.app,project-polaris-one.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,4401,iad1,-1,2048,,prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,01KPDWAAHCGTSST5FDDEW3KS42,,-1,,
+2026-04-17 14:08:01,1776434881974,project-polaris-one.vercel.app/,GET,,500,s6vhz-1776434876555-a81558700118,Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0,error,production,main,MISS,function,/,project-polaris-one.vercel.app,project-polaris-one.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,,,,,"could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.",prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,,,,,
+2026-04-17 14:07:56,1776434876555,project-polaris-one.vercel.app/,GET,,500,s6vhz-1776434876555-a81558700118,Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0,,production,main,MISS,function,/,project-polaris-one.vercel.app,project-polaris-one.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,4264,iad1,-1,2048,,prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,01KPDWA57V6ES032C9FHJNTBN9,,-1,,
+2026-04-17 13:58:06,1776434286340,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/favicon.ico,GET,,500,gwq99-1776434281370-1d79f41e61b3,vercel-screenshot/1.0,error,production,main,MISS,function,/index,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,,,,,"could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.",prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,,,,,
+2026-04-17 13:58:01,1776434281370,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/favicon.ico,GET,,500,gwq99-1776434281370-1d79f41e61b3,vercel-screenshot/1.0,,production,main,MISS,function,/index,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,4916,iad1,-1,2048,,prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,01KPDVQYXYJG3TP7HAZTF48BNE,,-1,,
+2026-04-17 13:58:04,1776434284914,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/favicon.ico,GET,,500,kpjfx-1776434280443-b7c4efbc4c15,vercel-screenshot/1.0,error,production,main,MISS,function,/index,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,,,,,"could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.",prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,,,,,
+2026-04-17 13:58:00,1776434280443,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/favicon.ico,GET,,500,kpjfx-1776434280443-b7c4efbc4c15,vercel-screenshot/1.0,,production,main,MISS,function,/index,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,4214,iad1,-1,2048,,prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,01KPDVQY7A6V1XFVA8SAV5ACE6,,-1,,
+2026-04-17 13:58:01,1776434281255,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/,GET,,500,ltcvg-1776434271441-10992262b96b,vercel-screenshot/1.0,error,production,main,MISS,function,/,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,,,,,"e 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.",prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,,,,,
+2026-04-17 13:57:51,1776434271441,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/,GET,,500,ltcvg-1776434271441-10992262b96b,vercel-screenshot/1.0,,production,main,MISS,function,/,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,4495,iad1,-1,2048,,prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,01KPDVQNET2175Y1452RMZT8NY,,-1,,
+2026-04-17 13:58:00,1776434280362,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/,GET,,500,8fbjc-1776434271204-f6aa1f87b8bc,vercel-screenshot/1.0,error,production,main,MISS,function,/,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,,,,,"e 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.",prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,,,,,
+2026-04-17 13:57:51,1776434271204,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/,GET,,500,8fbjc-1776434271204-f6aa1f87b8bc,vercel-screenshot/1.0,,production,main,MISS,function,/,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,4206,iad1,-1,2048,,prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,01KPDVQN3FQY3WAJ7JMPDRN7B7,,-1,,
+2026-04-17 13:57:56,1776434276535,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/,GET,,500,pldfz-1776434267298-4145bc39450e,vercel-screenshot/1.0,error,production,main,MISS,function,/,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,,,,,"e 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.",prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,,,,,
+2026-04-17 13:57:47,1776434267298,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/,GET,,500,pldfz-1776434267298-4145bc39450e,vercel-screenshot/1.0,,production,main,MISS,function,/,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,4168,iad1,-1,2048,,prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,01KPDVQH9TB5EWAD62GSWENPXJ,,-1,,
+2026-04-17 13:57:57,1776434277656,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/,GET,,500,kgn9w-1776434267131-2e966af27234,vercel-screenshot/1.0,error,production,main,MISS,function,/,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,,,,,"e 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+could not import ""api/main.py"":
+Traceback (most recent call last):
+File ""/var/task/_vendor/vercel_runtime/vc_init.py"", line 471, in <module>
+__vc_module = import_module(_entrypoint_modname, _entrypoint_abs)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File ""/var/task/_vendor/vercel_runtime/resolver.py"", line 24, in import_module
+spec.loader.exec_module(mod)
+File ""<frozen importlib._bootstrap_external>"", line 999, in exec_module
+File ""<frozen importlib._bootstrap>"", line 488, in _call_with_frames_removed
+File ""/var/task/api/main.py"", line 12, in <module>
+from api.routers import downloads as downloads_router
+File ""/var/task/api/routers/downloads.py"", line 15, in <module>
+from api.db import get_db
+File ""/var/task/api/db.py"", line 23, in <module>
+DATABASE_URL = os.environ[""DATABASE_URL""]
+~~~~~~~~~~^^^^^^^^^^^^^^^^
+File ""<frozen os>"", line 714, in __getitem__
+KeyError: 'DATABASE_URL'
+/var/task/api/intel/llm_client.py:10: FutureWarning: 
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+import google.generativeai as genai  # type: ignore[import-untyped]
+Python process exited with exit status: 1. The logs above can help with debugging the issue.",prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,,,,,
+2026-04-17 13:57:47,1776434267131,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app/,GET,,500,kgn9w-1776434267131-2e966af27234,vercel-screenshot/1.0,,production,main,MISS,function,/,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,project-polaris-rbg4dgncu-gioacupans-projects.vercel.app,dpl_Bw3ffdXwXCeyqNQpAB7smPiJPdGx,4461,iad1,-1,2048,,prj_47G2AWJBZSbRt5sAToxLMbdpwdG5,,,01KPDVQH873R1HXC12BKMCWMF2,,-1,,
