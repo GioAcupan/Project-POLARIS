@@ -97,18 +97,6 @@ export default function ConsultantPage() {
     : null
   const leftPages = [
     {
-      key: "economic-impact",
-      label: "Economic Impact",
-      render: () => (
-        <div className="space-y-3">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-            Economic Impact
-          </h3>
-          <EffectOverviewCard />
-        </div>
-      ),
-    },
-    {
       key: "regional-health",
       label: "Regional Health",
       render: () => (
@@ -117,6 +105,18 @@ export default function ConsultantPage() {
             Regional Health
           </h3>
           {selectedRegion ? <RegionalHealthCardContent regionData={selectedRegion} /> : null}
+        </div>
+      ),
+    },
+    {
+      key: "economic-impact",
+      label: "Economic Impact",
+      render: () => (
+        <div className="space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Economic Impact
+          </h3>
+          <EffectOverviewCard />
         </div>
       ),
     },
@@ -191,13 +191,13 @@ export default function ConsultantPage() {
 
   return (
     <div className="flex h-full min-h-0 gap-4 md:gap-5">
-      <section className="flex min-h-0 w-1/3 min-w-[320px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 p-4">
+      <section className="polaris-glass-fluent flex min-h-0 w-1/3 min-w-[320px] flex-col overflow-hidden">
+        <div className="p-4">
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
             Region
           </label>
           <select
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-[color:var(--color-brand-blue)] focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={selectedRegion?.region ?? ""}
             onChange={(e) => {
               const nextRegion = regions.find((rg) => rg.region === e.target.value) ?? null
@@ -215,7 +215,7 @@ export default function ConsultantPage() {
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col p-4">
-          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-lg bg-slate-50 p-4">
             {selectedRegion ? (
               <div className="flex min-h-0 flex-1 flex-col">{activeLeftPage.render()}</div>
             ) : (
@@ -226,8 +226,8 @@ export default function ConsultantPage() {
           </div>
         </div>
 
-        <div className="border-t border-slate-200 p-3">
-          <div className="flex items-center justify-center gap-3">
+        <div className="flex justify-center p-3 pt-1">
+          <div className="inline-flex items-center justify-center gap-3 rounded-full bg-slate-100 px-4 py-1.5">
             <button
               type="button"
               onClick={handlePrevLeftPage}

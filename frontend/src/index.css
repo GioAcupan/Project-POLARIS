@@ -195,6 +195,18 @@
     border-radius: var(--radius);
   }
 
+  /* Default dashboard card glass used by EffectOverviewCard. */
+  .polaris-glass-default {
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow:
+      0 10px 25px -5px rgba(26, 94, 168, 0.1),
+      0 8px 10px -6px rgba(26, 94, 168, 0.1);
+    border-radius: 24px;
+  }
+
   /* iOS-style Liquid Glass: thin, refractive, very transparent. */
   .polaris-glass-liquid {
     position: relative;
