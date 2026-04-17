@@ -191,7 +191,7 @@ export default function ConsultantPage() {
 
   return (
     <div className="flex h-full min-h-0 gap-4 md:gap-5">
-      <section className="polaris-glass-fluent flex min-h-0 w-1/3 min-w-[320px] flex-col overflow-hidden">
+      <section className="polaris-glass-default flex min-h-0 w-1/3 min-w-[320px] flex-col overflow-hidden">
         <div className="p-4">
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
             Region
@@ -267,7 +267,7 @@ export default function ConsultantPage() {
         </div>
       </section>
 
-      <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <section className="polaris-glass-default flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="border-b border-slate-200 px-6 py-4">
           <div className="mb-3 flex items-center justify-between">
             <div>
@@ -300,7 +300,7 @@ export default function ConsultantPage() {
           </p>
         </div>
 
-        <div className="flex-1 min-h-0 space-y-4 overflow-y-auto px-6 py-4">
+        <div className="polaris-glass-default mx-4 my-3 flex-1 min-h-0 space-y-4 overflow-y-auto px-6 py-4">
           {messages.length === 0 ? (
             <StarterPrompts
               mode={activeMode}
@@ -354,13 +354,13 @@ export default function ConsultantPage() {
         <div className="border-t border-slate-200 px-6 py-4">
           <div className="flex gap-3">
             <textarea
-              className="flex-1 resize-none rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50"
+              className="h-12 flex-1 resize-none rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50"
               placeholder={
                 activeMode === "advisor"
                   ? `Ask about ${selectedRegion?.region || "a region"}... (e.g. "How do we stop the economic loss?")`
                   : "Type 'Generate the report' to create the document..."
               }
-              rows={2}
+              rows={1}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
