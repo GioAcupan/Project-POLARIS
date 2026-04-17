@@ -38,6 +38,26 @@
       "shadow": "0 10px 25px -5px rgba(26, 94, 168, 0.1), 0 8px 10px -6px rgba(26, 94, 168, 0.1)",
       "radius": "24px"                           // Soft, approachable corners.
     },
+    "glassLiquid": {
+      // iOS-style 'Liquid Glass': thin, highly transparent, refractive edge.
+      "background": "rgba(255, 255, 255, 0.14)",
+      "backdropBlur": "10px",                    // Low blur so the background reads through.
+      "backdropSaturate": "140%",                // Boosts color vibrancy passing through the glass.
+      "border": "1px solid rgba(255, 255, 255, 0.55)",
+      "innerHighlight": "inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -1px 0 rgba(255,255,255,0.18)",
+      "shadow": "0 20px 40px -12px rgba(26, 94, 168, 0.28)",
+      "radius": "28px"
+    },
+    "glassFluent": {
+      // Windows 11 'Fluent Acrylic': milky but noticeably more transparent than glassCard.
+      "background": "rgba(255, 255, 255, 0.45)",
+      "backdropBlur": "22px",
+      "backdropSaturate": "125%",
+      "border": "1px solid rgba(255, 255, 255, 0.35)",
+      "innerHighlight": "inset 0 1px 0 rgba(255,255,255,0.5)",
+      "shadow": "0 16px 32px -14px rgba(26, 94, 168, 0.2)",
+      "radius": "24px"
+    },
     "appBackground": "linear-gradient(135deg, #1A5EA8 0%, #F673DE 100%)"
   },
 
