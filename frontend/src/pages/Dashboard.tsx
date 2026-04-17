@@ -2,14 +2,14 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
 
-import { CriticalPingsFeed } from "@/components/dashboard/CriticalPingsFeed"
+import { EffectOverviewCard } from "@/components/dashboard/EffectOverviewCard"
 import { LensSelector } from "@/components/dashboard/LensSelector"
 import { MapCanvas } from "@/components/dashboard/MapCanvas"
 import { NationalBaselineCard } from "@/components/dashboard/NationalBaselineCard"
 import { PPSTRadarCard } from "@/components/dashboard/PPSTRadarCard"
 import { RegionalHealthCard } from "@/components/dashboard/RegionalHealthCard"
 import { useNationalRadar } from "@/hooks/useNationalRadar"
-import { useDashboardAiReports, useRegions } from "@/hooks/useRegions"
+import { useRegions } from "@/hooks/useRegions"
 import { dashboardStore, useDashboardStore } from "@/stores/dashboardStore"
 import type { RegionalScore } from "@/types/polaris"
 
@@ -38,13 +38,11 @@ function makeFallbackRegionalScore(regionName: string): RegionalScore {
 export default function Dashboard() {
   const dashboardRootRef = useRef<HTMLDivElement | null>(null)
   const leftRailRef = useRef<HTMLDivElement | null>(null)
-  const aiReportsCardRef = useRef<HTMLElement | null>(null)
-  const [aiReportsTopOffset, setAiReportsTopOffset] = useState(96)
+  const radarCardRef = useRef<HTMLDivElement | null>(null)
+  const [mapZoomTopOffset, setMapZoomTopOffset] = useState(96)
   const { data: regions = [] } = useRegions()
-  const { data: dashboardAiReports = null } = useDashboardAiReports(5)
   const { data: nationalRadar = null } = useNationalRadar()
   const activeRegion = useDashboardStore((snapshot) => snapshot.activeRegion)
-  const aiReportRegions = dashboardAiReports?.limited_results ?? []
   const selectedRegion = regions.find((region) => region.region === activeRegion) ?? null
   const selectedRegionForView = useMemo(() => {
     if (!activeRegion) return null
@@ -66,37 +64,37 @@ export default function Dashboard() {
   useEffect(() => {
     const root = dashboardRootRef.current
     const leftRail = leftRailRef.current
-    const aiReportsCard = aiReportsCardRef.current
-    if (!root || !leftRail || !aiReportsCard) return
+    const radarCard = radarCardRef.current
+    if (!root || !leftRail || !radarCard) return
 
-    const updateAiReportsTopOffset = () => {
+    const updateMapZoomTopOffset = () => {
       const rootRect = root.getBoundingClientRect()
-      const cardRect = aiReportsCard.getBoundingClientRect()
+      const cardRect = radarCard.getBoundingClientRect()
       const nextOffset = cardRect.top - rootRect.top
       if (Number.isFinite(nextOffset)) {
-        setAiReportsTopOffset(Math.max(0, Math.round(nextOffset)))
+        setMapZoomTopOffset(Math.max(0, Math.round(nextOffset)))
       }
     }
 
-    updateAiReportsTopOffset()
-    const observer = new ResizeObserver(updateAiReportsTopOffset)
+    updateMapZoomTopOffset()
+    const observer = new ResizeObserver(updateMapZoomTopOffset)
     observer.observe(root)
     observer.observe(leftRail)
-    observer.observe(aiReportsCard)
-    window.addEventListener("resize", updateAiReportsTopOffset)
+    observer.observe(radarCard)
+    window.addEventListener("resize", updateMapZoomTopOffset)
 
     return () => {
       observer.disconnect()
-      window.removeEventListener("resize", updateAiReportsTopOffset)
+      window.removeEventListener("resize", updateMapZoomTopOffset)
     }
-  }, [dashboardAiReports, nationalRadar, regions.length])
+  }, [nationalRadar, regions.length])
 
   const dashboardStyle = useMemo(
     () =>
       ({
-        "--polaris-map-zoom-top": `${aiReportsTopOffset}px`,
+        "--polaris-map-zoom-top": `${mapZoomTopOffset}px`,
       }) as CSSProperties,
-    [aiReportsTopOffset],
+    [mapZoomTopOffset],
   )
 
   return (
@@ -132,15 +130,18 @@ export default function Dashboard() {
           ref={leftRailRef}
           className="dashboard-floating-rail-vertical polaris-dashboard-scroll pointer-events-auto absolute left-screen-margin flex w-80 flex-col items-start gap-card-gap overflow-y-auto pr-1"
         >
-          <div className="w-full max-h-[60vh]">
+          <motion.div
+            key={activeRegion ?? "national"}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            className="w-full"
+          >
+            <EffectOverviewCard />
+          </motion.div>
+          <div ref={radarCardRef} className="w-full max-h-[60vh]">
             <PPSTRadarCard radar={nationalRadar} />
           </div>
-          <section ref={aiReportsCardRef} className="flex h-fit w-full max-h-[35vh] flex-col rounded-glass p-6 polaris-glass-card">
-            <h2 className="font-heading text-section-title font-extrabold text-text-primary">AI Reports</h2>
-            <div className="polaris-dashboard-scroll mt-element-stack min-h-0 overflow-y-auto pr-1">
-              <CriticalPingsFeed regions={aiReportRegions} />
-            </div>
-          </section>
         </div>
 
         <AnimatePresence mode="wait">

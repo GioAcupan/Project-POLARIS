@@ -39,7 +39,10 @@ REGION_VIII_ROW = {
     "teacher_student_ratio": 32.5,
     "specialization_pct": 55.0,
     "star_coverage_pct": 40.0,
-    "avg_nat_score": 58.0,
+    "avg_nat_score": 42.0,
+    "student_pop": 1200000,
+    "economic_loss": 201840000000.00,
+    "lays_score": 6.72,
     "demand_signal_count": 12,
     "ppst_content_knowledge": 0.68,
     "ppst_curriculum_planning": 0.74,
@@ -94,6 +97,9 @@ async def _run() -> int:
       specialization_pct,
       star_coverage_pct,
       avg_nat_score,
+      student_pop,
+      economic_loss,
+      lays_score,
       demand_signal_count,
       ppst_content_knowledge,
       ppst_curriculum_planning,
@@ -106,7 +112,7 @@ async def _run() -> int:
       computed_at
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11,
-      $12, $13, $14, $15, $16, $17::jsonb, $18, $19::traffic_light, NOW()
+      $12, $13, $14, $15, $16, $17, $18, $19, $20::jsonb, $21, $22::traffic_light, NOW()
     )
     ON CONFLICT (region) DO UPDATE SET
       psgc_code = EXCLUDED.psgc_code,
@@ -118,6 +124,9 @@ async def _run() -> int:
       specialization_pct = EXCLUDED.specialization_pct,
       star_coverage_pct = EXCLUDED.star_coverage_pct,
       avg_nat_score = EXCLUDED.avg_nat_score,
+      student_pop = EXCLUDED.student_pop,
+      economic_loss = EXCLUDED.economic_loss,
+      lays_score = EXCLUDED.lays_score,
       demand_signal_count = EXCLUDED.demand_signal_count,
       ppst_content_knowledge = EXCLUDED.ppst_content_knowledge,
       ppst_curriculum_planning = EXCLUDED.ppst_curriculum_planning,
@@ -144,6 +153,9 @@ async def _run() -> int:
             REGION_VIII_ROW["specialization_pct"],
             REGION_VIII_ROW["star_coverage_pct"],
             REGION_VIII_ROW["avg_nat_score"],
+            REGION_VIII_ROW["student_pop"],
+            REGION_VIII_ROW["economic_loss"],
+            REGION_VIII_ROW["lays_score"],
             REGION_VIII_ROW["demand_signal_count"],
             REGION_VIII_ROW["ppst_content_knowledge"],
             REGION_VIII_ROW["ppst_curriculum_planning"],
@@ -157,6 +169,7 @@ async def _run() -> int:
         row = await conn.fetchrow(
             """
             SELECT region, underserved_score, traffic_light::text AS tl,
+                   student_pop, avg_nat_score, economic_loss, lays_score,
                    ppst_assessment_literacy, ppst_research_based_practice
             FROM regional_scores WHERE region = $1
             """,
@@ -165,6 +178,10 @@ async def _run() -> int:
         print("[1] regional_scores — Region VIII")
         print(f"    region={row['region']} underserved_score={row['underserved_score']} "
               f"traffic_light={row['tl']}")
+        print(
+            f"    student_pop={row['student_pop']} avg_nat_score={row['avg_nat_score']} "
+            f"economic_loss={row['economic_loss']} lays_score={row['lays_score']}"
+        )
         print(f"    ppst_assessment_literacy={row['ppst_assessment_literacy']} "
               f"ppst_research_based_practice={row['ppst_research_based_practice']}")
 

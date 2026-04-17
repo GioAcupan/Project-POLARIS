@@ -4,8 +4,8 @@ import { NavLink, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
 
 const iconBtn =
-  "flex size-10 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/10 hover:text-slate-100"
-const iconBtnActive = "bg-white/10 text-chart-primary"
+  "flex size-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-white/40 hover:text-slate-900"
+const iconBtnActive = "polaris-glass-fluent rounded-[14px] text-black"
 
 const logoSlotClass = "flex w-full max-w-[48px] justify-center"
 
@@ -20,7 +20,7 @@ export function Sidebar() {
   const reportsActive = pathname.startsWith("/reports")
 
   return (
-    <aside className="flex h-full min-h-svh w-[72px] shrink-0 flex-col items-center justify-between border-r border-white/10 bg-brand-blue py-4">
+    <aside className="polaris-glass-liquid rounded-none border-t-0 border-l-0 border-b-0 flex h-full min-h-svh w-[72px] shrink-0 flex-col items-center justify-between py-4">
       <div className="flex w-full flex-col items-center gap-5 px-1">
         <div className={logoSlotClass}>
           <img
@@ -54,19 +54,15 @@ export function Sidebar() {
           <LayoutDashboard className="size-5" aria-hidden />
         </NavLink>
         <NavLink
-          to="/teacher-assignment"
-          title="Teacher Assignment"
-          className={({ isActive }) => cn(iconBtn, isActive && iconBtnActive)}
-        >
-          <Users className="size-5" aria-hidden />
-        </NavLink>
-        <NavLink
           to="/reports"
           title="Report Generator"
           className={cn(iconBtn, reportsActive && iconBtnActive)}
         >
           <FileText className="size-5" aria-hidden />
         </NavLink>
+        <span className={cn(iconBtn, "opacity-80")} role="presentation">
+          <Users className="size-5" aria-hidden />
+        </span>
       </nav>
 
       <div className="flex flex-col items-center px-1" title="Account">

@@ -69,6 +69,20 @@
     --polaris-glass-backdrop-blur: var(--ds-surface-glass-backdrop-blur);
     --polaris-glass-border: var(--ds-surface-glass-border);
     --polaris-glass-shadow: var(--ds-surface-glass-shadow);
+    --polaris-glass-liquid-background: var(--ds-surface-glass-liquid-background);
+    --polaris-glass-liquid-blur: var(--ds-surface-glass-liquid-backdrop-blur);
+    --polaris-glass-liquid-saturate: var(--ds-surface-glass-liquid-backdrop-saturate);
+    --polaris-glass-liquid-border: var(--ds-surface-glass-liquid-border);
+    --polaris-glass-liquid-inner: var(--ds-surface-glass-liquid-inner-highlight);
+    --polaris-glass-liquid-shadow: var(--ds-surface-glass-liquid-shadow);
+    --polaris-glass-liquid-radius: var(--ds-surface-glass-liquid-radius);
+    --polaris-glass-fluent-background: var(--ds-surface-glass-fluent-background);
+    --polaris-glass-fluent-blur: var(--ds-surface-glass-fluent-backdrop-blur);
+    --polaris-glass-fluent-saturate: var(--ds-surface-glass-fluent-backdrop-saturate);
+    --polaris-glass-fluent-border: var(--ds-surface-glass-fluent-border);
+    --polaris-glass-fluent-inner: var(--ds-surface-glass-fluent-inner-highlight);
+    --polaris-glass-fluent-shadow: var(--ds-surface-glass-fluent-shadow);
+    --polaris-glass-fluent-radius: var(--ds-surface-glass-fluent-radius);
     --polaris-app-background: var(--ds-surface-app-background);
     --polaris-chart-axis: var(--ds-component-chart-axis-color);
     --polaris-map-region-border: var(--ds-component-map-region-border);
@@ -179,6 +193,56 @@
     border: var(--polaris-glass-border);
     box-shadow: var(--polaris-glass-shadow);
     border-radius: var(--radius);
+  }
+
+  /* iOS-style Liquid Glass: thin, refractive, very transparent. */
+  .polaris-glass-liquid {
+    position: relative;
+    background: var(--polaris-glass-liquid-background);
+    -webkit-backdrop-filter: blur(var(--polaris-glass-liquid-blur))
+      saturate(var(--polaris-glass-liquid-saturate));
+    backdrop-filter: blur(var(--polaris-glass-liquid-blur))
+      saturate(var(--polaris-glass-liquid-saturate));
+    border: var(--polaris-glass-liquid-border);
+    box-shadow: var(--polaris-glass-liquid-shadow), var(--polaris-glass-liquid-inner);
+    border-radius: var(--polaris-glass-liquid-radius);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Diagonal specular streak that sells the refractive edge from the reference. */
+  .polaris-glass-liquid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0) 35%,
+      rgba(255, 255, 255, 0) 65%,
+      rgba(255, 255, 255, 0.18) 100%
+    );
+    mix-blend-mode: screen;
+    z-index: 0;
+  }
+
+  .polaris-glass-liquid > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Windows 11-style Fluent Acrylic: milky but more transparent than glassCard. */
+  .polaris-glass-fluent {
+    background: var(--polaris-glass-fluent-background);
+    -webkit-backdrop-filter: blur(var(--polaris-glass-fluent-blur))
+      saturate(var(--polaris-glass-fluent-saturate));
+    backdrop-filter: blur(var(--polaris-glass-fluent-blur))
+      saturate(var(--polaris-glass-fluent-saturate));
+    border: var(--polaris-glass-fluent-border);
+    box-shadow: var(--polaris-glass-fluent-shadow), var(--polaris-glass-fluent-inner);
+    border-radius: var(--polaris-glass-fluent-radius);
   }
 
   .polaris-app-shell {

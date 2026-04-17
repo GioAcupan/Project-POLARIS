@@ -21,6 +21,9 @@ class RegionalScoreContext(BaseModel):
     specialization_pct: float
     star_coverage_pct: float
     avg_nat_score: float
+    student_pop: int
+    economic_loss: float
+    lays_score: float
     ppst_content_knowledge: float
     ppst_curriculum_planning: float
     ppst_research_based_practice: float
