@@ -18,6 +18,7 @@ const dostLogoClass =
 export function Sidebar() {
   const { pathname } = useLocation()
   const reportsActive = pathname.startsWith("/reports")
+  const teacherAssignmentActive = pathname.startsWith("/teacher-assignment")
 
   return (
     <aside className="polaris-glass-liquid rounded-none border-t-0 border-l-0 border-b-0 flex h-full min-h-svh w-[72px] shrink-0 flex-col items-center justify-between py-4">
@@ -44,10 +45,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <nav
-        className="flex flex-col items-center gap-2"
-        aria-label="Primary navigation"
-      >
+      <nav className="flex flex-col items-center gap-2" aria-label="Primary navigation">
         <NavLink
           to="/"
           end
@@ -63,9 +61,13 @@ export function Sidebar() {
         >
           <FileText className="size-5" aria-hidden />
         </NavLink>
-        <span className={cn(iconBtn, "opacity-80")} role="presentation">
+        <NavLink
+          to="/teacher-assignment"
+          title="Teacher Assignment"
+          className={cn(iconBtn, teacherAssignmentActive && iconBtnActive)}
+        >
           <Users className="size-5" aria-hidden />
-        </span>
+        </NavLink>
       </nav>
 
       <div className="flex flex-col items-center px-1" title="Account">
