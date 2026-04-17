@@ -171,6 +171,19 @@ The click-by-click demo script lives in `.cursor/docs/POLARIS_FINAL_EXECUTION_BL
 - **Frontend:** React 19, TanStack Query, Recharts/Leaflet as used in the app, Tailwind 4. API client base URL from `VITE_API_BASE_URL` in `frontend/src/lib/api.ts`.
 - **Database:** Supabase Postgres; schema and seeds maintained as SQL files under `db/migrations/` (no Alembic in this repo).
 
+## Vercel deployment (single dashboard link)
+
+Use a two-project setup in Vercel:
+
+- **Public dashboard link (share this):** `https://project-polaris-one.vercel.app`
+- **Backend API-only origin (do not share as homepage):** `https://project-polaris-gioacupans-projects.vercel.app`
+
+Notes:
+
+- The frontend project root is `frontend/` and should own the public dashboard domain.
+- The backend project is FastAPI-only; its root path is not a dashboard page.
+- Frontend env var `VITE_API_BASE_URL` must point to the backend API origin.
+
 Optional contributor tooling: this workspace is indexed by **GitNexus**; see [AGENTS.md](AGENTS.md) for graph-based exploration and pre-refactor impact checks (`npx gitnexus analyze`, MCP tools).
 
 ## Troubleshooting

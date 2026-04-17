@@ -8,7 +8,7 @@ function parseJsonc(source) {
   return JSON.parse(withoutLines)
 }
 
-const designSystemPath = path.resolve(process.cwd(), "..", "design_system.jsonc")
+const designSystemPath = path.resolve(process.cwd(), "design_system.jsonc")
 const designSystem = parseJsonc(fs.readFileSync(designSystemPath, "utf8"))
 
 const bodyFont = designSystem.typography.body.family.split(",").map((part) => part.trim())
