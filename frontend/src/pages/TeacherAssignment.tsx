@@ -903,7 +903,7 @@ export default function TeacherAssignment({
 
       <header className="flex items-start justify-between gap-4 rounded-2xl border border-chart-primary/20 bg-chart-primary/10 px-5 py-4">
         <div>
-          <h1 className="font-heading text-display-dashboard font-extrabold text-brand-blue">
+            <h1 className="font-heading text-display-dashboard font-extrabold text-[#9B2678]">
             Teacher Assignment System
           </h1>
           <p className="mt-1 text-content text-muted-foreground">
@@ -1019,8 +1019,8 @@ export default function TeacherAssignment({
         </section>
 
         {isFilterOpen ? (
-          <aside className="flex min-h-0 w-[330px] shrink-0 flex-col border-l border-chart-highlight/70 pl-6 pr-5 pb-5 pt-0">
-            <div className="sticky top-0 z-20 -mx-5 mb-4 border-b border-chart-highlight/70 bg-white/95 px-5 pb-3 pt-2 backdrop-blur-sm">
+          <aside className="polaris-glass-default flex h-fit min-h-0 w-[330px] shrink-0 self-start flex-col px-[24px] py-[20px]">
+            <div className="z-20 -mx-[24px] mb-4 border-b border-chart-highlight/70 bg-white/70 px-[24px] pb-3 pt-2 backdrop-blur-sm">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
                   <Filter className="size-4 shrink-0 text-brand-blue" />
