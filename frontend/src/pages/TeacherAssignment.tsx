@@ -750,6 +750,7 @@ export default function TeacherAssignment({
 
   const allVisibleSelected =
     filteredTeachers.length > 0 && selectedVisibleCount === filteredTeachers.length
+  const hasVisibleSelection = selectedVisibleCount > 0
 
   const filteredSubjectOptions = useMemo(() => {
     const normalizedQuery = subjectQuery.trim().toLowerCase()
@@ -843,7 +844,7 @@ export default function TeacherAssignment({
   }
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col gap-6 bg-white pb-24">
+    <div className="relative flex h-full min-h-0 flex-col gap-6 bg-white pb-0">
       <header className="flex items-start justify-between gap-4 rounded-2xl border border-chart-primary/20 bg-chart-primary/10 px-5 py-4">
         <div>
           <h1 className="font-heading text-display-dashboard font-extrabold text-brand-blue">
@@ -864,8 +865,8 @@ export default function TeacherAssignment({
         </Button>
       </header>
 
-      <div className="flex min-h-0 flex-1 gap-card-gap">
-        <section className="polaris-dashboard-scroll min-h-0 min-w-0 flex-1 overflow-y-auto">
+      <div className="polaris-dashboard-scroll flex h-[800px] min-h-0 gap-card-gap overflow-y-auto">
+        <section className="min-h-0 min-w-0 flex-1">
           {filteredTeachers.length === 0 ? (
             <div className="flex h-full min-h-52 items-center justify-center rounded-md border border-dashed border-chart-highlight/70 p-8 text-center text-content text-muted-foreground">
               No teachers match the current filter settings.
@@ -962,15 +963,38 @@ export default function TeacherAssignment({
         </section>
 
         {isFilterOpen ? (
-          <aside className="polaris-dashboard-scroll flex min-h-0 w-[330px] shrink-0 flex-col overflow-y-auto border-l border-chart-highlight/70 pl-6 pr-5 pb-5 pt-0">
-            <div className="mb-4 flex items-center gap-2 border-b border-chart-highlight/70 pb-3">
-              <Filter className="size-4 text-brand-blue" />
-              <p className="text-sm font-semibold uppercase tracking-wide text-brand-blue">
-                Search Filter
-              </p>
+          <aside className="flex min-h-0 w-[330px] shrink-0 flex-col border-l border-chart-highlight/70 pl-6 pr-5 pb-5 pt-0">
+            <div className="sticky top-0 z-20 -mx-5 mb-4 border-b border-chart-highlight/70 bg-white/95 px-5 pb-3 pt-2 backdrop-blur-sm">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Filter className="size-4 shrink-0 text-brand-blue" />
+                  <p className="truncate text-sm font-semibold uppercase tracking-wide text-brand-blue">
+                    Filter
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-8 whitespace-nowrap px-2 text-[11px] bg-gradient-to-r from-brand-pink to-brand-baby-pink text-white hover:from-brand-pink/90 hover:to-brand-baby-pink/90"
+                    onClick={applyFilters}
+                  >
+                    Apply Filters
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="h-8 whitespace-nowrap px-2 text-[11px] border-brand-blue text-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue"
+                    onClick={clearFilters}
+                  >
+                    Clear All
+                  </Button>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-5 pb-2">
+            <div className="space-y-5 pb-4">
               <section className="space-y-2">
                 <h2 className="text-xs font-semibold uppercase tracking-wide text-brand-blue">
                   Number of Participants
@@ -1041,7 +1065,7 @@ export default function TeacherAssignment({
                   placeholder="Search subjects..."
                   className="h-9 w-full rounded-lg border border-chart-highlight/70 bg-white px-3 text-sm text-brand-blue outline-none transition focus-visible:ring-2 focus-visible:ring-chart-primary/50"
                 />
-                <div className="flex max-h-40 flex-wrap gap-1.5 overflow-y-auto pr-1">
+                <div className="flex flex-wrap gap-1.5 pr-1">
                   {filteredSubjectOptions.map((subject) => {
                     const selected = draftFilters.selectedSubjects.includes(subject)
                     return (
@@ -1128,23 +1152,6 @@ export default function TeacherAssignment({
               </section>
             </div>
 
-            <div className="mt-5 flex gap-2">
-              <Button
-                type="button"
-                className="flex-1 bg-gradient-to-r from-brand-pink to-brand-baby-pink text-white hover:from-brand-pink/90 hover:to-brand-baby-pink/90"
-                onClick={applyFilters}
-              >
-                Apply Filters
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1 border-brand-blue text-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue"
-                onClick={clearFilters}
-              >
-                Clear All
-              </Button>
-            </div>
           </aside>
         ) : null}
       </div>
@@ -1159,15 +1166,37 @@ export default function TeacherAssignment({
             <Button
               type="button"
               variant="outline"
-              className="border-brand-blue bg-white text-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue"
+              className={cn(
+                "relative h-10 min-w-[168px] justify-center rounded-[22px] border px-6 text-sm font-semibold shadow-none transition-colors",
+                hasVisibleSelection
+                  ? "border-brand-blue !bg-brand-blue text-white hover:!bg-brand-blue/90 hover:text-white"
+                  : "border-brand-blue !bg-white text-brand-blue hover:!bg-brand-blue/5 hover:text-brand-blue",
+              )}
               disabled={filteredTeachers.length === 0}
               onClick={handleSelectAll}
             >
-              {allVisibleSelected ? "Deselect All" : "Select All"}
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute left-4 inline-flex size-4 items-center justify-center rounded-[3px] border border-dashed",
+                  hasVisibleSelection ? "border-white/85" : "border-brand-blue",
+                )}
+              >
+                <span
+                  className={cn(
+                    "size-1.5 rounded-[2px]",
+                    hasVisibleSelection ? "bg-white/90" : "bg-brand-blue/90",
+                  )}
+                />
+              </span>
+              <span aria-hidden className="absolute right-4 size-4" />
+              <span className="w-full text-center leading-none">
+                {allVisibleSelected ? "Deselect All" : "Select All"}
+              </span>
             </Button>
             <Button
               type="button"
-              className="rounded-[22px] bg-gradient-to-r from-brand-pink to-brand-baby-pink text-white hover:from-brand-pink/90 hover:to-brand-baby-pink/90"
+              className="h-10 min-w-[168px] justify-center rounded-[22px] bg-gradient-to-r from-brand-pink to-brand-baby-pink px-6 text-sm font-semibold text-white hover:from-brand-pink/90 hover:to-brand-baby-pink/90"
               disabled={activeSelectedIds.length === 0}
               onClick={handleAssignSelected}
             >
