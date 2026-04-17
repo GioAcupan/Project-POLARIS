@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 
 const iconBtn =
   "flex size-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-white/40 hover:text-slate-900"
-const iconBtnActive = "bg-indigo-500/10 text-slate-900"
+const iconBtnActive = "polaris-glass-fluent rounded-[14px] text-black"
 
 const logoSlotClass = "flex w-full max-w-[48px] justify-center"
 
@@ -18,9 +18,10 @@ const dostLogoClass =
 export function Sidebar() {
   const { pathname } = useLocation()
   const reportsActive = pathname.startsWith("/reports")
+  const teacherAssignmentActive = pathname.startsWith("/teacher-assignment")
 
   return (
-    <aside className="polaris-glass-surface flex h-full min-h-svh w-[72px] shrink-0 flex-col items-center justify-between py-4">
+    <aside className="polaris-glass-liquid rounded-none border-t-0 border-l-0 border-b-0 flex h-full min-h-svh w-[72px] shrink-0 flex-col items-center justify-between py-4">
       <div className="flex w-full flex-col items-center gap-5 px-1">
         <div className={logoSlotClass}>
           <img
@@ -44,10 +45,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <nav
-        className="flex flex-col items-center gap-2"
-        aria-label="Primary navigation"
-      >
+      <nav className="flex flex-col items-center gap-2" aria-label="Primary navigation">
         <NavLink
           to="/"
           end
@@ -56,15 +54,19 @@ export function Sidebar() {
         >
           <LayoutDashboard className="size-5" aria-hidden />
         </NavLink>
-        <span className={cn(iconBtn, "opacity-80")} role="presentation">
-          <Users className="size-5" aria-hidden />
-        </span>
         <NavLink
           to="/reports"
           title="Report Generator"
           className={cn(iconBtn, reportsActive && iconBtnActive)}
         >
           <FileText className="size-5" aria-hidden />
+        </NavLink>
+        <NavLink
+          to="/teacher-assignment"
+          title="Teacher Assignment"
+          className={cn(iconBtn, teacherAssignmentActive && iconBtnActive)}
+        >
+          <Users className="size-5" aria-hidden />
         </NavLink>
       </nav>
 

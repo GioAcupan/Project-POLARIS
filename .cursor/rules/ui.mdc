@@ -23,6 +23,14 @@ All surfaces (cards, sidebars, modals) must follow the "Milky Glass" recipe from
 - **Shadow:** `shadow-[0_10_25px_-5px_rgba(26,94,168,0.1)]`.
 - **Corners:** `rounded-[24px]` (Soft, approachable).
 
+### Glass Variants (pick the right surface for the job)
+Three approved variants live in `frontend/src/index.css` and map to tokens in `@design_system.jsonc → surfaces`:
+- **`.polaris-glass-card`** (default, `surfaces.glassCard`): Standard dashboard cards, modals, toolbars. Milky 75% white, 24px blur.
+- **`.polaris-glass-liquid`** (iOS-style, `surfaces.glassLiquid`): Hero/floating panels over the vibrant mesh. Very transparent (14% white), low 10px blur, saturate 140%, diagonal specular streak via `::before`. Use only on top of colorful/photographic backgrounds — not on flat white. Keep content inside child elements so `z-index: 1` lifts them above the streak.
+- **`.polaris-glass-fluent`** (Windows 11-style, `surfaces.glassFluent`): Large outer shells/sidebars that nest other cards. Milky but more transparent than the default (45% white), 22px blur. Pair with inner `.polaris-glass-card` children to create depth.
+
+When nesting: outer container uses `.polaris-glass-fluent`, inner cards use `.polaris-glass-card`. Do not stack two `.polaris-glass-card` surfaces directly — the contrast collapses.
+
 ## 🧪 DESIGN TOKENS (From @design_system.jsonc)
 - **Typography:** - Titles/Headers: Use `Raleway` (800 weight) with `-0.02em` tracking.
   - Data/Body: Use `DM Sans` (Regular 400, Medium 500, Bold 600).

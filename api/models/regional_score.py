@@ -39,6 +39,9 @@ class RegionalScore(Base):
     specialization_pct: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
     star_coverage_pct: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
     avg_nat_score: Mapped[float | None] = mapped_column(Numeric(5, 2), nullable=True)
+    student_pop: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    economic_loss: Mapped[float] = mapped_column(Numeric(15, 2), nullable=False, default=0)
+    lays_score: Mapped[float] = mapped_column(Numeric(5, 2), nullable=False, default=0)
     demand_signal_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     # PPST axis averages (0.000 – 1.000)
