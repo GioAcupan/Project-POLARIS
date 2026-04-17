@@ -89,7 +89,7 @@ export function EffectOverviewCard() {
 
   return (
     <section
-      className="w-full rounded-[24px] border border-white/40 bg-white/75 p-[24px] font-sans backdrop-blur-[24px]"
+      className="w-full rounded-[24px] border border-white/40 bg-white/75 px-[24px] py-[20px] font-sans backdrop-blur-[24px]"
       style={{
         boxShadow:
           "0 10px 25px -5px rgba(26, 94, 168, 0.1), 0 8px 10px -6px rgba(26, 94, 168, 0.1)",
@@ -130,11 +130,16 @@ export function EffectOverviewCard() {
             <p className={HEADLINE_METRIC_CLASS} style={{ color: "#1B1B1B" }}>
               {formatYears(cardData.learningGap)} Lost
             </p>
-            <p className="text-sm font-medium" style={{ color: "#1A5EA8" }}>
-              Learning Gap
-            </p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-medium" style={{ color: "#1A5EA8" }}>
+                Learning Gap
+              </p>
+              <p className="text-sm font-medium" style={{ color: "#1A5EA8" }}>
+                LAYS {cardData.lays.toFixed(2)} / {MAX_SCHOOL_YEARS}
+              </p>
+            </div>
           </div>
-          <div className="mt-1.5 h-4 w-full overflow-hidden rounded-full border border-white/50 bg-[#1A5EA8]/10">
+          <div className="mt-1 h-4 w-full overflow-hidden rounded-full border border-white/50 bg-[#1A5EA8]/10">
             <div
               className="h-full rounded-full"
               style={{
@@ -143,13 +148,12 @@ export function EffectOverviewCard() {
               }}
             />
           </div>
-          <p className="mt-0.5 text-sm font-medium" style={{ color: "#1A5EA8" }}>
-            LAYS {cardData.lays.toFixed(2)} / {MAX_SCHOOL_YEARS}
-          </p>
+
         </div>
       </div>
     </section>
   )
 }
+
 
 
