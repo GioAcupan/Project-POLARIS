@@ -50,8 +50,8 @@ function pillClass(trafficLight: RegionHealth["traffic_light"]): string {
   return "bg-signal-good text-text-primary"
 }
 
-export function RegionalHealthCard({ selectedRegion }: { selectedRegion: RegionalScore }) {
-  const region = toRegionHealth(selectedRegion)
+export function RegionalHealthCardContent({ regionData }: { regionData: RegionalScore }) {
+  const region = toRegionHealth(regionData)
   const [activeTab, setActiveTab] = useState<"summary" | "demand" | "impact">("summary")
 
   return (
@@ -90,9 +90,13 @@ export function RegionalHealthCard({ selectedRegion }: { selectedRegion: Regiona
 
       <div className="mt-3">
         {activeTab === "summary" ? <SummaryView regionHealth={region} /> : null}
-        {activeTab === "demand" ? <DemandView selectedRegion={selectedRegion} /> : null}
-        {activeTab === "impact" ? <ImpactView selectedRegion={selectedRegion} /> : null}
+        {activeTab === "demand" ? <DemandView selectedRegion={regionData} /> : null}
+        {activeTab === "impact" ? <ImpactView selectedRegion={regionData} /> : null}
       </div>
     </section>
   )
+}
+
+export function RegionalHealthCard({ selectedRegion }: { selectedRegion: RegionalScore }) {
+  return <RegionalHealthCardContent regionData={selectedRegion} />
 }
