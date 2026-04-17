@@ -1,4 +1,4 @@
-import type { RegionalScore } from "@/types/polaris"
+import type { ImpactTabData, RegionalScore } from "@/types/polaris"
 import { Info } from "lucide-react"
 import {
   Bar,
@@ -16,30 +16,6 @@ import {
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
-type ImpactDatum = {
-  year: string
-  training: number
-  nat: number
-  feedback: number
-}
-
-const IMPACT_SCORE_BADGE = 54
-
-const IMPACT_DATA: ImpactDatum[] = [
-  { year: "2022", training: 580, nat: 76, feedback: 3.8 },
-  { year: "2023", training: 650, nat: 78, feedback: 4.1 },
-  { year: "2024", training: 720, nat: 79, feedback: 4.3 },
-  { year: "2025", training: 780, nat: 82, feedback: 4.6 },
-]
-
-const IMPACT_ROWS = [
-  { period: "2022", training: 580, nat: 76 },
-  { period: "2023", training: 650, nat: 78 },
-  { period: "2024", training: 720, nat: 79 },
-  { period: "2025", training: 780, nat: 82 },
-]
-const IMPACT_YEARS = IMPACT_DATA.map((datum) => datum.year)
-
 function feedbackColor(feedback: number): string {
   if (feedback >= 4.6) return "#047857"
   if (feedback >= 4.3) return "#22c55e"
@@ -49,10 +25,17 @@ function feedbackColor(feedback: number): string {
   return "#dc2626"
 }
 
-export function ImpactView({ selectedRegion }: { selectedRegion: RegionalScore }) {
+export function ImpactView({
+  selectedRegion,
+  impactData,
+}: {
+  selectedRegion: RegionalScore
+  impactData: ImpactTabData
+}) {
   const regionLabel = selectedRegion.region
+  const impactYears = impactData.series.map((datum) => datum.year)
   const averageFeedback =
-    IMPACT_DATA.reduce((sum, datum) => sum + datum.feedback, 0) / Math.max(IMPACT_DATA.length, 1)
+    impactData.series.reduce((sum, datum) => sum + datum.feedback, 0) / Math.max(impactData.series.length, 1)
 
   return (
     <div className="space-y-2" aria-label={`Impact details for ${regionLabel}`}>
@@ -75,7 +58,7 @@ export function ImpactView({ selectedRegion }: { selectedRegion: RegionalScore }
           </div>
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f2aa24] text-lg font-bold text-white">
-              {IMPACT_SCORE_BADGE}
+              {Math.round(impactData.score_badge)}
             </div>
           </div>
         </div>
@@ -84,7 +67,7 @@ export function ImpactView({ selectedRegion }: { selectedRegion: RegionalScore }
           <div className="min-w-0 flex-1">
             <ResponsiveContainer width="100%" height={210}>
               <ComposedChart
-                data={IMPACT_DATA}
+                data={impactData.series}
                 margin={{ top: 8, right: 6, left: 4, bottom: 8 }}
                 barCategoryGap="9%"
                 barGap={2}
@@ -92,7 +75,7 @@ export function ImpactView({ selectedRegion }: { selectedRegion: RegionalScore }
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(116, 133, 162, 0.25)" />
                 <XAxis
                   dataKey="year"
-                  ticks={IMPACT_YEARS}
+                  ticks={impactYears}
                   interval={0}
                   allowDuplicatedCategory={false}
                   padding={{ left: 0, right: 0 }}
@@ -126,8 +109,8 @@ export function ImpactView({ selectedRegion }: { selectedRegion: RegionalScore }
                   dot={false}
                   activeDot={{ r: 4 }}
                 />
-                <Scatter yAxisId="right" data={IMPACT_DATA} dataKey="nat" name="Avg Feedback (1-5 Stars)">
-                  {IMPACT_DATA.map((datum) => (
+                <Scatter yAxisId="right" data={impactData.series} dataKey="nat" name="Avg Feedback (1-5 Stars)">
+                  {impactData.series.map((datum) => (
                     <Cell key={`feedback-${datum.year}`} fill={feedbackColor(datum.feedback)} stroke="#1f2937" />
                   ))}
                 </Scatter>
@@ -148,7 +131,7 @@ export function ImpactView({ selectedRegion }: { selectedRegion: RegionalScore }
       </section>
 
       <section className="space-y-1.5">
-        {IMPACT_ROWS.map((entry) => (
+        {impactData.rows.map((entry) => (
           <div
             key={entry.period}
             className="grid grid-cols-[56px_minmax(0,1fr)_56px] items-center gap-2 rounded-full border border-[#d0def1] bg-[#cdddf1] px-2.5 py-1.5"

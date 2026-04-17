@@ -2,6 +2,7 @@ import { useState } from "react"
 
 import { DemandView } from "@/components/dashboard/detail-views/DemandView"
 import { ImpactView } from "@/components/dashboard/detail-views/ImpactView"
+import { buildRegionalTabData } from "@/components/dashboard/detail-views/regionalTabData"
 import { SupplyView } from "@/components/dashboard/detail-views/SupplyView"
 import { SummaryView } from "@/components/dashboard/detail-views/SummaryView"
 import type { RegionHealth, RegionalScore } from "@/types/polaris"
@@ -53,6 +54,7 @@ function pillClass(trafficLight: RegionHealth["traffic_light"]): string {
 
 export function RegionalHealthCard({ selectedRegion }: { selectedRegion: RegionalScore }) {
   const region = toRegionHealth(selectedRegion)
+  const tabData = buildRegionalTabData(selectedRegion)
   const [activeTab, setActiveTab] = useState<"summary" | "supply" | "demand" | "impact">("summary")
 
   return (
@@ -92,10 +94,10 @@ export function RegionalHealthCard({ selectedRegion }: { selectedRegion: Regiona
       </div>
 
       <div className="mt-2.5">
-        {activeTab === "summary" ? <SummaryView regionHealth={region} /> : null}
-        {activeTab === "supply" ? <SupplyView selectedRegion={selectedRegion} /> : null}
-        {activeTab === "demand" ? <DemandView selectedRegion={selectedRegion} /> : null}
-        {activeTab === "impact" ? <ImpactView selectedRegion={selectedRegion} /> : null}
+        {activeTab === "summary" ? <SummaryView regionHealth={region} summaryData={tabData.summary} /> : null}
+        {activeTab === "supply" ? <SupplyView selectedRegion={selectedRegion} supplyData={tabData.supply} /> : null}
+        {activeTab === "demand" ? <DemandView selectedRegion={selectedRegion} demandData={tabData.demand} /> : null}
+        {activeTab === "impact" ? <ImpactView selectedRegion={selectedRegion} impactData={tabData.impact} /> : null}
       </div>
     </section>
   )

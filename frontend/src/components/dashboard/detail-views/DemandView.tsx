@@ -1,26 +1,17 @@
-import type { RegionalScore } from "@/types/polaris"
+import type { DemandTabData, RegionalScore } from "@/types/polaris"
 import { Info } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from "recharts"
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
-type DemandMetric = {
-  label: string
-  requests: number
-}
-
-const DEMAND_SCORE_BADGE = 69
-
-const DEMAND_METRICS: DemandMetric[] = [
-  { label: "Cutting-Edge Pedagogy", requests: 68 },
-  { label: "AI in Education", requests: 58 },
-  { label: "International Standards", requests: 52 },
-  { label: "Research Excellence", requests: 45 },
-  { label: "Innovation Labs", requests: 38 },
-]
-
-export function DemandView({ selectedRegion }: { selectedRegion: RegionalScore }) {
-  const topThree = DEMAND_METRICS.slice(0, 3)
+export function DemandView({
+  selectedRegion,
+  demandData,
+}: {
+  selectedRegion: RegionalScore
+  demandData: DemandTabData
+}) {
+  const topThree = demandData.metrics.slice(0, 3)
   const regionLabel = selectedRegion.region
 
   return (
@@ -45,17 +36,17 @@ export function DemandView({ selectedRegion }: { selectedRegion: RegionalScore }
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-[11px] font-medium text-[#4b5563]">
               <span className="inline-block h-2.5 w-2.5 rounded-[2px] bg-[#3495db]" aria-hidden="true" />
-              Requests
+              {demandData.legend_label}
             </div>
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f2aa24] text-lg font-bold text-white">
-              {DEMAND_SCORE_BADGE}
+              {Math.round(demandData.score_badge)}
             </div>
           </div>
         </div>
 
         <div className="mx-auto w-full rounded-glass p-0">
           <ResponsiveContainer width="100%" height={188}>
-            <BarChart data={DEMAND_METRICS} layout="vertical" margin={{ top: 8, right: 18, left: 6, bottom: 8 }}>
+            <BarChart data={demandData.metrics} layout="vertical" margin={{ top: 8, right: 18, left: 6, bottom: 8 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(116, 133, 162, 0.32)" />
               <XAxis type="number" domain={[0, 100]} tickCount={6} />
               <YAxis
@@ -92,7 +83,7 @@ export function DemandView({ selectedRegion }: { selectedRegion: RegionalScore }
       </section>
 
       <aside className="rounded-glass border border-[#d0def1] bg-[#cdddf1] px-2 py-1 text-[10px] leading-tight italic text-[#3b4658]">
-        Note: Red on the map = high volume of demand; more bars = more types of demands
+        {demandData.note}
       </aside>
     </div>
   )

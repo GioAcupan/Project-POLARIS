@@ -6,6 +6,79 @@
 // ─────────────────────────────────────────────────────────────
 export type TrafficLight = "green" | "yellow" | "red";
 
+export type SummaryFactorKey =
+  | "teacher_student_ratio"
+  | "specialization_pct"
+  | "star_coverage_pct"
+  | "avg_nat_score";
+
+export type TrendDirection = "up" | "down";
+
+export interface SummaryTrendPoint {
+  label: string;
+  regional: number;
+  national: number;
+}
+
+export interface SummaryFactorTrend {
+  direction: TrendDirection;
+  pct: number;
+  favorable: boolean;
+}
+
+export interface SummaryTabData {
+  trend_series: SummaryTrendPoint[];
+  factor_trends: Partial<Record<SummaryFactorKey, SummaryFactorTrend>>;
+}
+
+export interface SupplyMetricData {
+  label: string;
+  value: number;
+}
+
+export interface SupplyTabData {
+  score_badge: number;
+  metrics: SupplyMetricData[];
+}
+
+export interface DemandMetricData {
+  label: string;
+  requests: number;
+}
+
+export interface DemandTabData {
+  score_badge: number;
+  legend_label: string;
+  metrics: DemandMetricData[];
+  note: string;
+}
+
+export interface ImpactDatumData {
+  year: string;
+  training: number;
+  nat: number;
+  feedback: number;
+}
+
+export interface ImpactRowData {
+  period: string;
+  training: number;
+  nat: number;
+}
+
+export interface ImpactTabData {
+  score_badge: number;
+  series: ImpactDatumData[];
+  rows: ImpactRowData[];
+}
+
+export interface RegionalTabData {
+  summary: SummaryTabData;
+  supply: SupplyTabData;
+  demand: DemandTabData;
+  impact: ImpactTabData;
+}
+
 export interface RegionalScore {
   region: string;                          // e.g. "Region VIII"
   region_code: string;                     // e.g. "R8" (used in filenames)
@@ -36,6 +109,18 @@ export interface RegionalScore {
   demand_signal_count: number;
   // Critical pings (pre-computed)
   critical_pings?: CriticalPing[];
+  // Optional enriched dashboard payload fields (fall back to local mocks when absent)
+  summary_trend_series?: SummaryTrendPoint[];
+  summary_factor_trends?: Partial<Record<SummaryFactorKey, SummaryFactorTrend>>;
+  supply_score_badge?: number;
+  supply_metrics?: SupplyMetricData[];
+  demand_score_badge?: number;
+  demand_legend_label?: string;
+  demand_metrics?: DemandMetricData[];
+  demand_note?: string;
+  impact_score_badge?: number;
+  impact_series?: ImpactDatumData[];
+  impact_rows?: ImpactRowData[];
 }
 
 export interface CriticalPing {

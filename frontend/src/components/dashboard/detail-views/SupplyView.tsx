@@ -1,22 +1,7 @@
-import type { RegionalScore } from "@/types/polaris"
+import type { RegionalScore, SupplyTabData } from "@/types/polaris"
 import { Info } from "lucide-react"
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-
-type SupplyMetric = {
-  label: string
-  value: number
-}
-
-const SUPPLY_SCORE_BADGE = 78
-
-const SUPPLY_METRICS: SupplyMetric[] = [
-  { label: "Teacher Density", value: 86 },
-  { label: "Specialization", value: 88 },
-  { label: "STAR Coverage", value: 92 },
-  { label: "Infrastructure", value: 85 },
-  { label: "Resources", value: 88 },
-]
 
 function polarPoint(
   index: number,
@@ -44,8 +29,15 @@ function polygonPoints(values: number[], centerX = 110, centerY = 100, radius = 
     .join(" ")
 }
 
-export function SupplyView({ selectedRegion }: { selectedRegion: RegionalScore }) {
-  const metricValues = SUPPLY_METRICS.map((metric) => metric.value)
+export function SupplyView({
+  selectedRegion,
+  supplyData,
+}: {
+  selectedRegion: RegionalScore
+  supplyData: SupplyTabData
+}) {
+  const metrics = supplyData.metrics.length > 0 ? supplyData.metrics : [{ label: "No data", value: 0 }]
+  const metricValues = metrics.map((metric) => metric.value)
   const centerX = 110
   const centerY = 100
   const radius = 66
@@ -72,7 +64,7 @@ export function SupplyView({ selectedRegion }: { selectedRegion: RegionalScore }
             </Tooltip>
           </div>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#39bfa8] text-lg font-bold text-white">
-            {SUPPLY_SCORE_BADGE}
+            {Math.round(supplyData.score_badge)}
           </div>
         </div>
 
@@ -81,15 +73,15 @@ export function SupplyView({ selectedRegion }: { selectedRegion: RegionalScore }
             {ringLevels.map((level) => (
               <polygon
                 key={level}
-                points={polygonPoints(SUPPLY_METRICS.map(() => level * 100), centerX, centerY, radius)}
+                points={polygonPoints(metrics.map(() => level * 100), centerX, centerY, radius)}
                 fill="none"
                 stroke="rgba(116, 133, 162, 0.32)"
                 strokeWidth="1"
               />
             ))}
 
-            {SUPPLY_METRICS.map((metric, index) => {
-              const spoke = polarPoint(index, SUPPLY_METRICS.length, 1, centerX, centerY, radius)
+            {metrics.map((metric, index) => {
+              const spoke = polarPoint(index, metrics.length, 1, centerX, centerY, radius)
               return (
                 <line
                   key={`spoke-${metric.label}`}
@@ -110,10 +102,10 @@ export function SupplyView({ selectedRegion }: { selectedRegion: RegionalScore }
               strokeWidth="2"
             />
 
-            {SUPPLY_METRICS.map((metric, index) => {
+            {metrics.map((metric, index) => {
               const point = polarPoint(
                 index,
-                SUPPLY_METRICS.length,
+                metrics.length,
                 metric.value / 100,
                 centerX,
                 centerY,
@@ -122,8 +114,8 @@ export function SupplyView({ selectedRegion }: { selectedRegion: RegionalScore }
               return <circle key={`dot-${metric.label}`} cx={point.x} cy={point.y} r="2.8" fill="#2f78be" />
             })}
 
-            {SUPPLY_METRICS.map((metric, index) => {
-              const labelPoint = polarPoint(index, SUPPLY_METRICS.length, 1.06, centerX, centerY, radius)
+            {metrics.map((metric, index) => {
+              const labelPoint = polarPoint(index, metrics.length, 1.06, centerX, centerY, radius)
               const anchor =
                 labelPoint.x < centerX - 10 ? "end" : labelPoint.x > centerX + 10 ? "start" : "middle"
               return (
@@ -145,7 +137,7 @@ export function SupplyView({ selectedRegion }: { selectedRegion: RegionalScore }
       </section>
 
       <div className="space-y-2">
-        {SUPPLY_METRICS.map((metric) => (
+        {metrics.map((metric) => (
           <div
             key={metric.label}
             className="flex items-center justify-between rounded-full border border-[#c7d8ef] bg-[#c9ddf6] px-3 py-1.5"

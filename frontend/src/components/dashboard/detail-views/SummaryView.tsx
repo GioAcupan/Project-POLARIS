@@ -1,45 +1,39 @@
-import type { RegionHealth } from "@/types/polaris"
+import type { RegionHealth, SummaryFactorKey, SummaryTabData } from "@/types/polaris"
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
-type ScoreTrendPoint = {
-  label: string
-  regional: number
-  national: number
+const FALLBACK_FACTOR_TREND = {
+  direction: "up" as const,
+  pct: 0,
+  favorable: true,
 }
 
-const sampleTrendData: ScoreTrendPoint[] = [
-  { label: "2021", regional: 80, national: 75 },
-  { label: "2022", regional: 85, national: 78 },
-  { label: "2023", regional: 78, national: 80 },
-  { label: "2024", regional: 90, national: 82 },
-  { label: "2025", regional: 88, national: 85 },
-]
-
-export function SummaryView({ regionHealth }: { regionHealth: RegionHealth }) {
+export function SummaryView({
+  regionHealth,
+  summaryData,
+}: {
+  regionHealth: RegionHealth
+  summaryData: SummaryTabData
+}) {
   const factorCards = [
     {
-      key: "teacher_student_ratio",
+      key: "teacher_student_ratio" as SummaryFactorKey,
       label: "Teacher-Student Ratio",
       value: regionHealth.factors.teacher_student_ratio.toFixed(1),
-      trend: { direction: "up" as const, pct: 2, favorable: false },
     },
     {
-      key: "specialization_pct",
+      key: "specialization_pct" as SummaryFactorKey,
       label: "Specialization %",
       value: `${regionHealth.factors.specialization_pct.toFixed(1)}%`,
-      trend: { direction: "up" as const, pct: 8, favorable: true },
     },
     {
-      key: "star_coverage_pct",
+      key: "star_coverage_pct" as SummaryFactorKey,
       label: "STAR Coverage %",
       value: `${regionHealth.factors.star_coverage_pct.toFixed(1)}%`,
-      trend: { direction: "up" as const, pct: 5, favorable: true },
     },
     {
-      key: "avg_nat_score",
+      key: "avg_nat_score" as SummaryFactorKey,
       label: "Average NAT Score",
       value: regionHealth.factors.avg_nat_score.toFixed(1),
-      trend: { direction: "down" as const, pct: 2, favorable: false },
     },
   ] as const
 
@@ -61,7 +55,7 @@ export function SummaryView({ regionHealth }: { regionHealth: RegionHealth }) {
         </div>
         <div className="h-36 w-full sm:h-40">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={sampleTrendData} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+            <LineChart data={summaryData.trend_series} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="label" />
               <YAxis />
@@ -92,7 +86,7 @@ export function SummaryView({ regionHealth }: { regionHealth: RegionHealth }) {
       <div>
         <div className="grid grid-cols-2 gap-2.5">
           {factorCards.map((factor) => {
-            const { trend } = factor
+            const trend = summaryData.factor_trends[factor.key] ?? FALLBACK_FACTOR_TREND
             const trendClass = trend.favorable
               ? "text-emerald-500 dark:text-emerald-400"
               : "text-rose-600 dark:text-rose-400"
