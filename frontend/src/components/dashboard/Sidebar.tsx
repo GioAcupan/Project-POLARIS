@@ -4,8 +4,8 @@ import { NavLink, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
 
 const iconBtn =
-  "flex size-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-white/40 hover:text-slate-900"
-const iconBtnActive = "bg-indigo-500/10 text-slate-900"
+  "flex size-10 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-white/10 hover:text-slate-100"
+const iconBtnActive = "bg-white/10 text-chart-primary"
 
 const logoSlotClass = "flex w-full max-w-[48px] justify-center"
 
@@ -18,9 +18,10 @@ const dostLogoClass =
 export function Sidebar() {
   const { pathname } = useLocation()
   const reportsActive = pathname.startsWith("/reports")
+  const teacherAssignmentActive = pathname.startsWith("/teacher-assignment")
 
   return (
-    <aside className="polaris-glass-surface flex h-full min-h-svh w-[72px] shrink-0 flex-col items-center justify-between py-4">
+    <aside className="flex h-full min-h-svh w-[72px] shrink-0 flex-col items-center justify-between border-r border-white/10 bg-brand-blue py-4">
       <div className="flex w-full flex-col items-center gap-5 px-1">
         <div className={logoSlotClass}>
           <img
@@ -56,7 +57,11 @@ export function Sidebar() {
         >
           <LayoutDashboard className="size-5" aria-hidden />
         </NavLink>
-        <span className={cn(iconBtn, "opacity-80")} role="presentation">
+        <span
+          className={cn(iconBtn, teacherAssignmentActive ? iconBtnActive : "opacity-80")}
+          role="presentation"
+          title="Teacher Assignment"
+        >
           <Users className="size-5" aria-hidden />
         </span>
         <NavLink

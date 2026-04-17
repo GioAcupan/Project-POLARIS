@@ -1,0 +1,3093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POLARIS-ME - Teacher Assignment System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<style>
+:root {
+  --navy: #0d1b4a;
+  --navy-light: #1a2d5e;
+  --blue: #1565c0;
+  --blue-light: #e3f0ff;
+  --pink: #e91e8a;
+  --pink-grad: linear-gradient(135deg, #e91e8a, #ff4d94);
+  --bg: #f0f4ff;
+  --card-bg: #fff;
+  --border: #d0daf0;
+  --text-muted: #5a6a8a;
+  --text-faint: #8a9bc0;
+  --green: #2e7d32;
+  --orange: #e65100;
+  --red: #c62828;
+  --sidebar-w: 250px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--navy);
+  min-height: 100vh;
+}
+
+.side-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 56px;
+  height: 100vh;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  z-index: 100;
+}
+
+.side-nav .logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--pink-grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 28px;
+}
+
+.side-nav .nav-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.side-nav .nav-icon .material-icons-outlined {
+  font-size: 22px;
+  color: #6a7fb0;
+}
+
+.side-nav .nav-icon:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.side-nav .nav-icon:hover .material-icons-outlined { color: #fff; }
+
+.side-nav .nav-icon.active {
+  background: rgba(21, 101, 192, 0.25);
+}
+
+.side-nav .nav-icon.active .material-icons-outlined {
+  color: #7fb3ff;
+}
+
+.side-nav .spacer { flex: 1; }
+
+.main-wrapper {
+  margin-left: 56px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.top-bar {
+  background: linear-gradient(135deg, #e8f0fe 0%, #dce8fc 100%);
+  padding: 20px 32px 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.top-bar-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1.1;
+}
+
+.top-bar-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, #1565c0, #0d47a1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.top-bar-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 0 14px;
+  height: 42px;
+  width: 360px;
+  gap: 8px;
+}
+
+.search-box .material-icons-outlined { font-size: 20px; color: var(--text-faint); }
+
+.search-box input {
+  border: none;
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--navy);
+  flex: 1;
+  background: transparent;
+}
+
+.search-box input::placeholder { color: var(--text-faint); }
+
+.filter-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1.5px solid var(--navy);
+  background: var(--navy);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+.filter-toggle-btn .material-icons-outlined { font-size: 18px; }
+
+.content-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.content-area.filters-hidden .filter-sidebar {
+  display: none;
+}
+
+.card-grid-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px 100px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+.teacher-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 1.5px solid var(--border);
+  padding: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s;
+}
+
+.teacher-card:hover {
+  border-color: var(--blue);
+  box-shadow: 0 4px 20px rgba(21, 101, 192, 0.12);
+}
+
+.teacher-card.selected {
+  border-color: var(--pink);
+  background: #fff5fa;
+  box-shadow: 0 4px 20px rgba(233, 30, 138, 0.12);
+}
+
+.card-checkbox {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card-checkbox .material-icons-outlined {
+  font-size: 16px;
+  color: transparent;
+}
+
+.teacher-card.selected .card-checkbox {
+  border-color: var(--pink);
+  background: var(--pink);
+}
+
+.teacher-card.selected .card-checkbox .material-icons-outlined {
+  color: #fff;
+}
+
+.card-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.card-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dce8fc, #c8d8f5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.card-avatar .material-icons-outlined {
+  font-size: 28px;
+  color: var(--blue);
+}
+
+.card-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.25;
+}
+
+.card-position {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--pink);
+  margin-top: 1px;
+}
+
+.card-school {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.blur-first {
+  filter: blur(6px);
+  user-select: none;
+}
+
+.card-info-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.card-info-row .material-icons-outlined {
+  font-size: 15px;
+  color: var(--text-faint);
+}
+
+.card-info-row strong {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.card-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: var(--blue-light);
+  color: var(--blue);
+  letter-spacing: 0.2px;
+}
+
+.card-score {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+.card-score-label {
+  color: var(--text-muted);
+}
+
+.score-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.score-dot.green { background: #4caf50; }
+.score-dot.orange { background: #ff9800; }
+.score-dot.red { background: #f44336; }
+
+.score-value {
+  font-weight: 700;
+}
+
+.score-value.green { color: var(--green); }
+.score-value.orange { color: var(--orange); }
+.score-value.red { color: var(--red); }
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.card-btn {
+  width: 100%;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  background: var(--pink-grad);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(233, 30, 138, 0.18);
+  transition: all 0.2s;
+}
+
+.card-btn:hover {
+  box-shadow: 0 6px 20px rgba(233, 30, 138, 0.28);
+  transform: translateY(-1px);
+}
+
+.card-btn .material-icons-outlined {
+  font-size: 16px;
+}
+
+.filter-sidebar {
+  width: var(--sidebar-w);
+  border-left: 1px solid var(--border);
+  background: #fff;
+  overflow-y: auto;
+  padding: 20px 18px 100px;
+  flex-shrink: 0;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--navy);
+}
+
+.filter-header .material-icons-outlined {
+  font-size: 20px;
+  color: var(--navy);
+}
+
+.filter-header-text {
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--navy);
+}
+
+.filter-section {
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #eef2fa;
+}
+
+.filter-section:last-of-type { border-bottom: none; }
+
+.filter-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+.filter-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 9px;
+  cursor: pointer;
+}
+
+.filter-check:last-child { margin-bottom: 0; }
+
+.check-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: all 0.2s;
+}
+
+.check-box .material-icons-outlined {
+  font-size: 14px;
+  color: transparent;
+}
+
+.filter-check.checked .check-box {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.filter-check.checked .check-box .material-icons-outlined { color: #fff; }
+
+.check-label {
+  font-size: 13px;
+  color: var(--navy);
+  line-height: 1.4;
+}
+
+.filter-check.checked .check-label { font-weight: 600; }
+
+.tag-search {
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0 10px;
+  height: 36px;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.tag-search .material-icons-outlined {
+  font-size: 18px;
+  color: var(--text-faint);
+}
+
+.tag-search input {
+  border: none;
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--navy);
+  background: transparent;
+  flex: 1;
+}
+
+.tag-search input::placeholder { color: var(--text-faint); }
+
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.tag-chip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  background: #fff;
+}
+
+.tag-chip:hover { border-color: var(--blue); color: var(--blue); }
+
+.tag-chip.selected {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.tag-chip.is-hidden {
+  display: none;
+}
+
+.filter-select {
+  width: 100%;
+  height: 36px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--navy);
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238a9bc0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.school-search {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0 10px;
+  height: 36px;
+  gap: 6px;
+}
+
+.school-search .material-icons-outlined {
+  font-size: 18px;
+  color: var(--text-faint);
+}
+
+.school-search input {
+  border: none;
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--navy);
+  background: transparent;
+  flex: 1;
+}
+
+.school-search input::placeholder { color: var(--text-faint); }
+
+.priority-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.priority-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+}
+
+.priority-option:hover { border-color: var(--blue); }
+
+.priority-option.selected {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+
+.priority-radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.priority-option.selected .priority-radio {
+  border-color: var(--blue);
+}
+
+.priority-option.selected .priority-radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.priority-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.priority-option.selected .priority-label {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.priority-icon {
+  margin-left: auto;
+  font-size: 16px;
+  color: var(--text-faint);
+}
+
+.priority-option.selected .priority-icon { color: var(--blue); }
+
+.filter-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.filter-apply-btn {
+  flex: 2;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+.filter-clear-btn {
+  flex: 1;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+.bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 56px;
+  right: 0;
+  height: 68px;
+  background: #fff;
+  border-top: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  z-index: 90;
+  box-shadow: 0 -4px 20px rgba(13, 27, 74, 0.06);
+}
+
+.bottom-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.selection-count {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.selection-count strong {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.bottom-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-select-all {
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 12px;
+  border: 2px solid var(--navy);
+  background: #fff;
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-select-all .material-icons-outlined { font-size: 20px; }
+
+.btn-select-all:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+.btn-assign {
+  height: 44px;
+  padding: 0 28px;
+  border-radius: 12px;
+  border: none;
+  background: var(--pink-grad);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(233, 30, 138, 0.3);
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.btn-assign .material-icons-outlined { font-size: 20px; }
+
+.btn-assign:hover {
+  box-shadow: 0 6px 24px rgba(233, 30, 138, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-select-all:disabled,
+.btn-assign:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.participants-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.participants-field {
+  width: 70px;
+  height: 36px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0 10px;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--navy);
+  text-align: center;
+  outline: none;
+}
+
+.participants-field::placeholder { color: var(--text-faint); }
+
+.empty-state {
+  grid-column: 1 / -1;
+  background: #fff;
+  border: 1.5px dashed var(--border);
+  border-radius: 16px;
+  padding: 36px 24px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-state strong {
+  color: var(--navy);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.toast-stack {
+  position: fixed;
+  right: 24px;
+  bottom: 88px;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  min-width: 240px;
+  max-width: 320px;
+  background: rgba(13, 27, 74, 0.96);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 10px 24px rgba(13, 27, 74, 0.2);
+  animation: toast-in 0.2s ease-out;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 27, 74, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 140;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.assign-modal {
+  width: min(640px, 100%);
+  max-height: 85vh;
+  background: #fff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(13, 27, 74, 0.24);
+  display: flex;
+  flex-direction: column;
+}
+
+.assign-modal-header {
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid #e8eefb;
+  flex-shrink: 0;
+}
+
+.assign-modal-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.assign-modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 900;
+  color: var(--navy);
+}
+
+.assign-modal-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.modal-close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--navy);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.modal-close-btn .material-icons-outlined {
+  font-size: 20px;
+}
+
+.modal-tabs {
+  display: inline-flex;
+  padding: 4px;
+  background: var(--bg);
+  border-radius: 999px;
+  gap: 4px;
+}
+
+.modal-tab {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-tab.active {
+  background: #fff;
+  color: var(--navy);
+  box-shadow: 0 4px 12px rgba(13, 27, 74, 0.08);
+}
+
+.assign-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 22px 20px;
+}
+
+.assign-modal-footer {
+  flex-shrink: 0;
+  border-top: 1px solid #e8eefb;
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #fff;
+}
+
+.modal-text-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+.modal-primary-btn {
+  min-width: 210px;
+  height: 46px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: none;
+  background: var(--pink-grad);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(233, 30, 138, 0.24);
+}
+
+.modal-primary-btn:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.modal-section {
+  padding: 18px 0;
+  border-bottom: 1px solid #eef2fa;
+}
+
+.modal-section:last-child {
+  border-bottom: none;
+}
+
+.modal-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 14px;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.modal-field.full {
+  grid-column: 1 / -1;
+}
+
+.modal-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.modal-label .req {
+  color: var(--pink);
+}
+
+.modal-input,
+.modal-textarea,
+.modal-select {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--navy);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.modal-textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.modal-input.error,
+.modal-textarea.error,
+.modal-select.error {
+  border-color: var(--red);
+}
+
+.modal-help {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.modal-error {
+  font-size: 11px;
+  color: var(--red);
+  font-weight: 600;
+}
+
+.warning-text {
+  font-size: 11px;
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.segmented-group,
+.radio-pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.segmented-btn,
+.radio-pill {
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--text-muted);
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+.segmented-btn.active,
+.radio-pill.active {
+  background: var(--blue-light);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.chip-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.choice-chip {
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--text-muted);
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+.choice-chip.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.tag-entry-wrap {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  background: #fff;
+}
+
+.tag-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tag-pill button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tag-entry-row {
+  display: flex;
+  gap: 8px;
+}
+
+.tag-entry-row input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--navy);
+  min-height: 26px;
+}
+
+.tag-add-btn {
+  border: none;
+  background: var(--navy);
+  color: #fff;
+  border-radius: 10px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+.tag-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.tag-suggestion {
+  border: 1px dashed var(--border);
+  background: #fff;
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 10px;
+}
+
+.check-tile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.check-tile.active {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+
+.check-tile-box {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.check-tile.active .check-tile-box {
+  border-color: var(--blue);
+  background: var(--blue);
+}
+
+.check-tile-box .material-icons-outlined {
+  font-size: 12px;
+  color: transparent;
+}
+
+.check-tile.active .check-tile-box .material-icons-outlined {
+  color: #fff;
+}
+
+.check-tile-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.35;
+}
+
+.session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.session-card {
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  background: #fff;
+  padding: 12px;
+}
+
+.session-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.session-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+.session-remove-btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.session-remove-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.session-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.add-session-btn {
+  margin-top: 12px;
+  border: 1.5px dashed var(--blue);
+  background: var(--blue-light);
+  color: var(--blue);
+  height: 38px;
+  border-radius: 999px;
+  padding: 0 16px;
+  font-size: 12px;
+  font-weight: 800;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+.existing-search {
+  margin: 18px 0 14px;
+}
+
+.existing-search input {
+  width: 100%;
+  height: 42px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--navy);
+  outline: none;
+}
+
+.module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 4px;
+}
+
+.module-card {
+  border: 1.5px solid var(--border);
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.module-card.selected {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+
+.module-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.module-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.module-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+.module-card-host {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.module-card-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+  margin-top: 2px;
+}
+
+.module-card.selected .module-card-radio {
+  border-color: var(--blue);
+}
+
+.module-card.selected .module-card-radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.module-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.module-progress {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #edf2ff;
+  overflow: hidden;
+  margin: 8px 0 6px;
+}
+
+.module-progress-bar {
+  height: 100%;
+  background: linear-gradient(135deg, #1565c0, #3b82f6);
+}
+
+.module-slot-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.module-slot-text.full {
+  color: var(--red);
+}
+
+.modal-empty {
+  border: 1.5px dashed var(--border);
+  border-radius: 16px;
+  padding: 30px 18px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+@media (max-width: 767px) {
+  .modal-overlay {
+    padding: 0;
+  }
+
+  .assign-modal {
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-grid,
+  .session-grid,
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .assign-modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .modal-primary-btn {
+    width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+
+<nav class="side-nav">
+  <div class="logo">P</div>
+  <div class="nav-icon" title="Home">
+    <span class="material-icons-outlined">home</span>
+  </div>
+  <div class="nav-icon" title="Dashboard">
+    <span class="material-icons-outlined">dashboard</span>
+  </div>
+  <div class="nav-icon active" title="Assignment">
+    <span class="material-icons-outlined">assignment_ind</span>
+  </div>
+  <div class="nav-icon" title="Training">
+    <span class="material-icons-outlined">school</span>
+  </div>
+  <div class="nav-icon" title="Reports">
+    <span class="material-icons-outlined">assessment</span>
+  </div>
+  <div class="spacer"></div>
+  <div class="nav-icon" title="Settings">
+    <span class="material-icons-outlined">settings</span>
+  </div>
+</nav>
+
+<div class="main-wrapper">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="top-bar-title">Teacher <em>Assignment System</em></div>
+      <div class="top-bar-sub" id="resultsSummary">Showing 50 of 50 teachers</div>
+    </div>
+    <div class="top-bar-right">
+      <button class="filter-toggle-btn" id="filterToggleBtn" type="button">
+        <span class="material-icons-outlined">tune</span> Filter
+      </button>
+    </div>
+  </div>
+
+  <div class="content-area" id="contentArea">
+    <div class="card-grid-wrapper">
+      <div class="card-grid" id="cardGrid"></div>
+    </div>
+
+    <div class="filter-sidebar" id="filterSidebar">
+      <div class="filter-header">
+        <span class="material-icons-outlined">filter_list</span>
+        <span class="filter-header-text">Search Filter</span>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">Number of Participants</div>
+        <div class="participants-input">
+          <input class="participants-field" id="participantsMin" type="number" min="1" max="50" placeholder="MIN">
+          <span style="color:var(--text-faint);">-</span>
+          <input class="participants-field" id="participantsMax" type="number" min="1" max="50" placeholder="MAX">
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">Competency Area</div>
+        <div class="filter-check checked" data-group="competency" data-value="Content Knowledge">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Content Knowledge</span>
+        </div>
+        <div class="filter-check checked" data-group="competency" data-value="Curriculum Planning">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Curriculum Planning</span>
+        </div>
+        <div class="filter-check checked" data-group="competency" data-value="Research-Based Practice">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Research-Based Practice</span>
+        </div>
+        <div class="filter-check checked" data-group="competency" data-value="Assessment Literacy">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Assessment Literacy</span>
+        </div>
+        <div class="filter-check checked" data-group="competency" data-value="Professional Development Goals">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Professional Development Goals</span>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">Teacher Level</div>
+        <div class="filter-check checked" data-group="level" data-value="Teacher I">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Teacher I</span>
+        </div>
+        <div class="filter-check checked" data-group="level" data-value="Teacher II">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Teacher II</span>
+        </div>
+        <div class="filter-check checked" data-group="level" data-value="Teacher III">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Teacher III</span>
+        </div>
+        <div class="filter-check checked" data-group="level" data-value="Master Teacher I">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Master Teacher I</span>
+        </div>
+        <div class="filter-check checked" data-group="level" data-value="Master Teacher II">
+          <div class="check-box"><span class="material-icons-outlined">check</span></div>
+          <span class="check-label">Master Teacher II</span>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">Subject / Specialization</div>
+        <div class="tag-search">
+          <span class="material-icons-outlined">search</span>
+          <input type="text" id="tagSearchInput" placeholder="Search subjects...">
+        </div>
+        <div class="tag-chips" id="tagChips">
+          <span class="tag-chip" data-value="Mathematics">Mathematics</span>
+          <span class="tag-chip" data-value="Physics">Physics</span>
+          <span class="tag-chip" data-value="Chemistry">Chemistry</span>
+          <span class="tag-chip" data-value="Biology">Biology</span>
+          <span class="tag-chip" data-value="Earth Science">Earth Science</span>
+          <span class="tag-chip" data-value="General Science">General Science</span>
+          <span class="tag-chip" data-value="Environmental Science">Environmental Science</span>
+          <span class="tag-chip" data-value="Robotics">Robotics</span>
+          <span class="tag-chip" data-value="Engineering">Engineering</span>
+          <span class="tag-chip" data-value="Technology">Technology</span>
+          <span class="tag-chip" data-value="ICT">ICT</span>
+          <span class="tag-chip" data-value="Programming">Programming</span>
+          <span class="tag-chip" data-value="Calculus">Calculus</span>
+          <span class="tag-chip" data-value="Statistics">Statistics</span>
+          <span class="tag-chip" data-value="Research">Research</span>
+          <span class="tag-chip" data-value="STEM">STEM</span>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">Region</div>
+        <select class="filter-select" id="regionSelect">
+          <option value="all">All Regions</option>
+          <option value="NCR">NCR</option>
+          <option value="CAR">CAR</option>
+          <option value="I">I (Ilocos Region)</option>
+          <option value="II">II (Cagayan Valley)</option>
+          <option value="III">III (Central Luzon)</option>
+          <option value="IV-A">IV-A (CALABARZON)</option>
+          <option value="IV-B">IV-B (MIMAROPA)</option>
+          <option value="V">V (Bicol Region)</option>
+          <option value="VI">VI (Western Visayas)</option>
+          <option value="VII">VII (Central Visayas)</option>
+          <option value="VIII">VIII (Eastern Visayas)</option>
+          <option value="IX">IX (Zamboanga Peninsula)</option>
+          <option value="X">X (Northern Mindanao)</option>
+          <option value="XI">XI (Davao Region)</option>
+          <option value="XII">XII (SOCCSKSARGEN)</option>
+          <option value="XIII">XIII (Caraga)</option>
+          <option value="BARMM">BARMM</option>
+        </select>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">School</div>
+        <div class="school-search">
+          <span class="material-icons-outlined">search</span>
+          <input type="text" id="schoolSearchInput" placeholder="Search school name...">
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">Priority Sort</div>
+        <div class="priority-tabs">
+          <div class="priority-option selected" data-sort="high">
+            <div class="priority-radio"></div>
+            <span class="priority-label">High - Low</span>
+            <span class="material-icons-outlined priority-icon">arrow_downward</span>
+          </div>
+          <div class="priority-option" data-sort="low">
+            <div class="priority-radio"></div>
+            <span class="priority-label">Low - High</span>
+            <span class="material-icons-outlined priority-icon">arrow_upward</span>
+          </div>
+          <div class="priority-option" data-sort="random">
+            <div class="priority-radio"></div>
+            <span class="priority-label">Random</span>
+            <span class="material-icons-outlined priority-icon">shuffle</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button class="filter-apply-btn" id="applyFiltersBtn" type="button">Apply Filters</button>
+        <button class="filter-clear-btn" id="clearFiltersBtn" type="button">Clear All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-action-bar">
+  <div class="bottom-left">
+    <span class="selection-count" id="selectionCount"><strong>0</strong> of 0 teachers selected</span>
+  </div>
+  <div class="bottom-right">
+    <button class="btn-select-all" id="selectAllBtn" type="button">
+      <span class="material-icons-outlined">select_all</span> Select All
+    </button>
+    <button class="btn-assign" id="assignSelectedBtn" type="button">
+      <span class="material-icons-outlined">assignment_ind</span> Assign Training
+    </button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="assignModalOverlay" hidden>
+  <div class="assign-modal" role="dialog" aria-modal="true" aria-labelledby="assignModalTitle">
+    <div class="assign-modal-header" id="assignModalHeader"></div>
+    <div class="assign-modal-body" id="assignModalBody"></div>
+    <div class="assign-modal-footer" id="assignModalFooter"></div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+const teachers = [
+  { id: 1, firstName: 'Franchezca', lastName: 'Banayad', position: 'Teacher III', school: 'Manila Science High School', regionCode: 'NCR', regionLabel: 'NCR', tags: ['Programming', 'Calculus', 'Physics'], score: 82, selected: true },
+  { id: 2, firstName: 'Renato', lastName: 'Cruz', position: 'Master Teacher II', school: 'Makati Science High School', regionCode: 'NCR', regionLabel: 'NCR', tags: ['Mathematics', 'STEM', 'Physics'], score: 85, selected: true },
+  { id: 3, firstName: 'Ana', lastName: 'Reyes', position: 'Teacher III', school: 'Quezon City Science High School', regionCode: 'NCR', regionLabel: 'NCR', tags: ['Biology', 'Chemistry'], score: 79, selected: false },
+  { id: 4, firstName: 'Gloria', lastName: 'Dela Cruz', position: 'Master Teacher I', school: 'Pasig City Science High School', regionCode: 'NCR', regionLabel: 'NCR', tags: ['Research', 'Statistics', 'STEM'], score: 91, selected: true },
+  { id: 5, firstName: 'Maria', lastName: 'Santos', position: 'Master Teacher II', school: 'Taguig Science High School', regionCode: 'NCR', regionLabel: 'NCR', tags: ['Robotics', 'Engineering', 'Technology'], score: 87, selected: true },
+  { id: 6, firstName: 'Noel', lastName: 'Dizon', position: 'Teacher II', school: 'Caloocan City Science High School', regionCode: 'NCR', regionLabel: 'NCR', tags: ['Mathematics', 'Statistics'], score: 68, selected: false },
+  { id: 7, firstName: 'Alvin', lastName: 'Villafuerte', position: 'Teacher I', school: 'Marikina Science High School', regionCode: 'NCR', regionLabel: 'NCR', tags: ['ICT', 'Programming'], score: 90, selected: true },
+  { id: 8, firstName: 'Wilfredo', lastName: 'Baccay', position: 'Teacher III', school: 'Baguio City National High School', regionCode: 'CAR', regionLabel: 'CAR', tags: ['Physics', 'Calculus'], score: 83, selected: false },
+  { id: 9, firstName: 'Mary Ann', lastName: 'Tagel', position: 'Teacher II', school: 'Benguet State Laboratory School', regionCode: 'CAR', regionLabel: 'CAR', tags: ['Environmental Science', 'Biology'], score: 66, selected: false },
+  { id: 10, firstName: 'Romeo', lastName: 'Pascual', position: 'Teacher II', school: 'Ilocos Norte National High School', regionCode: 'I', regionLabel: 'I (Ilocos Region)', tags: ['Technology', 'ICT'], score: 76, selected: false },
+  { id: 11, firstName: 'Benjamin', lastName: 'Macaraeg', position: 'Teacher II', school: 'San Fernando City Science High School', regionCode: 'I', regionLabel: 'I (Ilocos Region)', tags: ['Physics', 'Engineering'], score: 71, selected: false },
+  { id: 12, firstName: 'Loreta', lastName: 'Cabanayan', position: 'Teacher I', school: 'La Union Integrated School', regionCode: 'I', regionLabel: 'I (Ilocos Region)', tags: ['Biology', 'General Science'], score: 62, selected: false },
+  { id: 13, firstName: 'Eduardo', lastName: 'Ramos', position: 'Teacher I', school: 'Tuguegarao National High School', regionCode: 'II', regionLabel: 'II (Cagayan Valley)', tags: ['Earth Science', 'General Science'], score: 52, selected: false },
+  { id: 14, firstName: 'Wilhelmina', lastName: 'Espinosa', position: 'Teacher II', school: 'Cagayan National High School', regionCode: 'II', regionLabel: 'II (Cagayan Valley)', tags: ['Biology', 'Research'], score: 63, selected: false },
+  { id: 15, firstName: 'Emmanuel', lastName: 'Ocampo', position: 'Teacher III', school: 'Angeles City Science High School', regionCode: 'III', regionLabel: 'III (Central Luzon)', tags: ['Chemistry', 'Research'], score: 84, selected: false },
+  { id: 16, firstName: 'Lilibeth', lastName: 'Aquino', position: 'Teacher I', school: 'Tarlac National High School', regionCode: 'III', regionLabel: 'III (Central Luzon)', tags: ['Biology', 'General Science'], score: 44, selected: false },
+  { id: 17, firstName: 'Nena', lastName: 'Baluyot', position: 'Master Teacher I', school: 'Bulacan State Laboratory High School', regionCode: 'III', regionLabel: 'III (Central Luzon)', tags: ['Chemistry', 'Research', 'STEM'], score: 86, selected: true },
+  { id: 18, firstName: 'Juan', lastName: 'Dela Cruz', position: 'Teacher I', school: 'Batangas National High School', regionCode: 'IV-A', regionLabel: 'IV-A (CALABARZON)', tags: ['Environmental Science', 'Biology'], score: 64, selected: true },
+  { id: 19, firstName: 'Erlinda', lastName: 'Soriano', position: 'Teacher II', school: 'Batangas City Integrated High School', regionCode: 'IV-A', regionLabel: 'IV-A (CALABARZON)', tags: ['Biology', 'Environmental Science'], score: 61, selected: false },
+  { id: 20, firstName: 'Renaldo', lastName: 'Mendez', position: 'Master Teacher II', school: 'Cavite Science Integrated School', regionCode: 'IV-A', regionLabel: 'IV-A (CALABARZON)', tags: ['Robotics', 'STEM', 'Engineering'], score: 83, selected: true },
+  { id: 21, firstName: 'Cheryl', lastName: 'Lacuesta', position: 'Teacher I', school: 'Rizal National High School', regionCode: 'IV-A', regionLabel: 'IV-A (CALABARZON)', tags: ['Mathematics', 'Statistics'], score: 55, selected: false },
+  { id: 22, firstName: 'Danilo', lastName: 'Atienza', position: 'Teacher I', school: 'Puerto Princesa City National High School', regionCode: 'IV-B', regionLabel: 'IV-B (MIMAROPA)', tags: ['Earth Science', 'Environmental Science'], score: 49, selected: false },
+  { id: 23, firstName: 'Maureen', lastName: 'Valdez', position: 'Teacher III', school: 'Oriental Mindoro National High School', regionCode: 'IV-B', regionLabel: 'IV-B (MIMAROPA)', tags: ['Biology', 'General Science'], score: 74, selected: false },
+  { id: 24, firstName: 'Gilbert', lastName: 'Macapagal', position: 'Teacher I', school: 'Legazpi City National High School', regionCode: 'V', regionLabel: 'V (Bicol Region)', tags: ['Earth Science', 'General Science'], score: 46, selected: false },
+  { id: 25, firstName: 'Honeylyn', lastName: 'Abella', position: 'Teacher II', school: 'Camarines Sur Science High School', regionCode: 'V', regionLabel: 'V (Bicol Region)', tags: ['Biology', 'Research'], score: 73, selected: false },
+  { id: 26, firstName: 'Carlo', lastName: 'Villanueva', position: 'Teacher II', school: 'Iloilo National High School', regionCode: 'VI', regionLabel: 'VI (Western Visayas)', tags: ['Mathematics', 'Physics', 'Calculus'], score: 58, selected: false },
+  { id: 27, firstName: 'Michelle', lastName: 'Gerona', position: 'Teacher I', school: 'Roxas City National High School', regionCode: 'VI', regionLabel: 'VI (Western Visayas)', tags: ['ICT', 'Technology'], score: 65, selected: false },
+  { id: 28, firstName: 'Orlando', lastName: 'Jabagat', position: 'Master Teacher I', school: 'Bacolod City National High School', regionCode: 'VI', regionLabel: 'VI (Western Visayas)', tags: ['STEM', 'Research', 'Statistics'], score: 88, selected: true },
+  { id: 29, firstName: 'Miguel', lastName: 'Reyes', position: 'Teacher II', school: 'Cebu City Science High School', regionCode: 'VII', regionLabel: 'VII (Central Visayas)', tags: ['Programming', 'Calculus', 'Physics'], score: 72, selected: false },
+  { id: 30, firstName: 'Teresa', lastName: 'Gutierrez', position: 'Teacher III', school: 'Bohol Integrated School', regionCode: 'VII', regionLabel: 'VII (Central Visayas)', tags: ['Biology', 'General Science'], score: 66, selected: false },
+  { id: 31, firstName: 'Kristine', lastName: 'Ybanez', position: 'Teacher I', school: 'Dumaguete City Science High School', regionCode: 'VII', regionLabel: 'VII (Central Visayas)', tags: ['Chemistry', 'Biology'], score: 54, selected: false },
+  { id: 32, firstName: 'Danica', lastName: 'Alvero', position: 'Teacher III', school: 'Eastern Visayas Regional Science High School', regionCode: 'VIII', regionLabel: 'VIII (Eastern Visayas)', tags: ['Mathematics', 'Statistics'], score: 80, selected: false },
+  { id: 33, firstName: 'Marvin', lastName: 'Abad', position: 'Teacher II', school: 'Tacloban City National High School', regionCode: 'VIII', regionLabel: 'VIII (Eastern Visayas)', tags: ['Environmental Science', 'Biology'], score: 62, selected: false },
+  { id: 34, firstName: 'Antonio', lastName: 'Lopez', position: 'Teacher I', school: 'Zamboanga del Sur National High School', regionCode: 'IX', regionLabel: 'IX (Zamboanga Peninsula)', tags: ['General Science'], score: 48, selected: false },
+  { id: 35, firstName: 'Crispin', lastName: 'Salvador', position: 'Master Teacher II', school: 'Zamboanga City Science High School', regionCode: 'IX', regionLabel: 'IX (Zamboanga Peninsula)', tags: ['Mathematics', 'STEM'], score: 89, selected: true },
+  { id: 36, firstName: 'Rochelle', lastName: 'Matalang', position: 'Teacher II', school: 'Pagadian City Integrated School', regionCode: 'IX', regionLabel: 'IX (Zamboanga Peninsula)', tags: ['ICT', 'Technology'], score: 67, selected: false },
+  { id: 37, firstName: 'Geraldine', lastName: 'Busa', position: 'Teacher II', school: 'Cagayan de Oro National High School', regionCode: 'X', regionLabel: 'X (Northern Mindanao)', tags: ['Physics', 'STEM'], score: 70, selected: false },
+  { id: 38, firstName: 'Victor', lastName: 'Anonas', position: 'Teacher III', school: 'Bukidnon Science High School', regionCode: 'X', regionLabel: 'X (Northern Mindanao)', tags: ['Environmental Science', 'Research'], score: 76, selected: false },
+  { id: 39, firstName: 'Priscilla', lastName: 'Abao', position: 'Teacher I', school: 'Iligan City East National High School', regionCode: 'X', regionLabel: 'X (Northern Mindanao)', tags: ['Biology', 'General Science'], score: 53, selected: false },
+  { id: 40, firstName: 'Luisa', lastName: 'Marquez', position: 'Master Teacher I', school: 'Davao City National High School', regionCode: 'XI', regionLabel: 'XI (Davao Region)', tags: ['Technology', 'Engineering'], score: 88, selected: false },
+  { id: 41, firstName: 'Melchor', lastName: 'Sarmiento', position: 'Teacher II', school: 'Tagum National Comprehensive High School', regionCode: 'XI', regionLabel: 'XI (Davao Region)', tags: ['Calculus', 'Mathematics'], score: 69, selected: false },
+  { id: 42, firstName: 'Joel', lastName: 'Tamayo', position: 'Teacher III', school: 'Koronadal National Comprehensive High School', regionCode: 'XII', regionLabel: 'XII (SOCCSKSARGEN)', tags: ['Chemistry', 'Research'], score: 75, selected: false },
+  { id: 43, firstName: 'April Mae', lastName: 'Sumagul', position: 'Teacher II', school: 'Kidapawan City Science High School', regionCode: 'XII', regionLabel: 'XII (SOCCSKSARGEN)', tags: ['Mathematics', 'Physics'], score: 72, selected: false },
+  { id: 44, firstName: 'Rodelyn', lastName: 'Palao', position: 'Teacher I', school: 'General Santos City High School', regionCode: 'XII', regionLabel: 'XII (SOCCSKSARGEN)', tags: ['General Science', 'Biology'], score: 57, selected: false },
+  { id: 45, firstName: 'Reniel', lastName: 'Quimno', position: 'Teacher I', school: 'Butuan City School of Arts and Trades', regionCode: 'XIII', regionLabel: 'XIII (Caraga)', tags: ['Technology', 'ICT'], score: 60, selected: false },
+  { id: 46, firstName: 'Hazel', lastName: 'Jamero', position: 'Teacher III', school: 'Surigao del Norte National High School', regionCode: 'XIII', regionLabel: 'XIII (Caraga)', tags: ['Environmental Science', 'Biology'], score: 74, selected: false },
+  { id: 47, firstName: 'Paolo', lastName: 'Seronay', position: 'Teacher II', school: 'Bislig City National High School', regionCode: 'XIII', regionLabel: 'XIII (Caraga)', tags: ['Engineering', 'Robotics'], score: 78, selected: false },
+  { id: 48, firstName: 'Farida', lastName: 'Ampatuan', position: 'Teacher I', school: 'Lamitan City National High School', regionCode: 'BARMM', regionLabel: 'BARMM', tags: ['General Science', 'Biology'], score: 47, selected: false },
+  { id: 49, firstName: 'Jamaloden', lastName: 'Macaraya', position: 'Teacher II', school: 'Marawi City National High School', regionCode: 'BARMM', regionLabel: 'BARMM', tags: ['Mathematics', 'Statistics'], score: 59, selected: false },
+  { id: 50, firstName: 'Hadja', lastName: 'Salik', position: 'Master Teacher I', school: 'Maguindanao Integrated School', regionCode: 'BARMM', regionLabel: 'BARMM', tags: ['Research', 'STEM'], score: 81, selected: true }
+];
+
+const competencyTagMap = {
+  'Content Knowledge': ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Earth Science', 'General Science', 'Calculus', 'STEM'],
+  'Curriculum Planning': ['Biology', 'Chemistry', 'General Science', 'Environmental Science', 'STEM'],
+  'Research-Based Practice': ['Research', 'Statistics', 'STEM'],
+  'Assessment Literacy': ['Mathematics', 'Statistics', 'Calculus', 'Research'],
+  'Professional Development Goals': ['Technology', 'ICT', 'Programming', 'Robotics', 'Engineering']
+};
+
+const cardGrid = document.getElementById('cardGrid');
+const resultsSummary = document.getElementById('resultsSummary');
+const selectionCount = document.getElementById('selectionCount');
+const selectAllBtn = document.getElementById('selectAllBtn');
+const assignSelectedBtn = document.getElementById('assignSelectedBtn');
+const contentArea = document.getElementById('contentArea');
+const toastStack = document.getElementById('toastStack');
+const filterToggleBtn = document.getElementById('filterToggleBtn');
+const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+const regionSelect = document.getElementById('regionSelect');
+const schoolSearchInput = document.getElementById('schoolSearchInput');
+const tagSearchInput = document.getElementById('tagSearchInput');
+const participantsMin = document.getElementById('participantsMin');
+const participantsMax = document.getElementById('participantsMax');
+const assignModalOverlay = document.getElementById('assignModalOverlay');
+const assignModalHeader = document.getElementById('assignModalHeader');
+const assignModalBody = document.getElementById('assignModalBody');
+const assignModalFooter = document.getElementById('assignModalFooter');
+
+let currentVisibleIds = [];
+let modalState = null;
+
+const subjectOptions = [
+  'Mathematics',
+  'Physics',
+  'Chemistry',
+  'Biology',
+  'Earth Science',
+  'General Science',
+  'Environmental Science',
+  'Robotics',
+  'Engineering',
+  'Technology',
+  'ICT',
+  'Programming',
+  'Calculus',
+  'Statistics',
+  'Research',
+  'STEM'
+];
+
+const competencyOptions = [
+  'Content Knowledge',
+  'Curriculum Planning',
+  'Research-Based Practice',
+  'Assessment Literacy',
+  'Professional Development Goals'
+];
+
+const modalLevelOptions = [
+  'Teacher I',
+  'Teacher II',
+  'Teacher III',
+  'Master Teacher I',
+  'Master Teacher II',
+  'Master Teacher III',
+  'Master Teacher IV'
+];
+
+const trainingTypeSeed = ['INSET', 'LAC', 'SLAC', 'Division Training', 'Webinar'];
+
+const existingModules = [
+  {
+    id: 'mod-001',
+    title: 'Research Coaching for Science Teachers',
+    host: 'DepEd Region VIII',
+    modality: 'Online',
+    dateLabel: 'May 18-20, 2026',
+    cap: 30,
+    assignedCount: 18,
+    tags: ['Research', 'Biology', 'STEM']
+  },
+  {
+    id: 'mod-002',
+    title: 'AI in the STEM Classroom',
+    host: 'Division of Manila',
+    modality: 'Blended',
+    dateLabel: 'June 3-5, 2026',
+    cap: 25,
+    assignedCount: 11,
+    tags: ['Programming', 'Technology', 'STEM']
+  },
+  {
+    id: 'mod-003',
+    title: 'Laboratory Safety and Chemistry Assessment',
+    host: 'DepEd Region III',
+    modality: 'Face-to-Face',
+    dateLabel: 'June 11, 2026',
+    cap: 20,
+    assignedCount: 20,
+    tags: ['Chemistry', 'Assessment Literacy']
+  },
+  {
+    id: 'mod-004',
+    title: 'Mathematics Intervention Design Sprint',
+    host: 'DepEd Region XI',
+    modality: 'Online',
+    dateLabel: 'July 2-4, 2026',
+    cap: 35,
+    assignedCount: 9,
+    tags: ['Mathematics', 'Statistics', 'Curriculum Planning']
+  },
+  {
+    id: 'mod-005',
+    title: 'Environmental Science Fieldwork Planning',
+    host: 'DepEd MIMAROPA',
+    modality: 'Blended',
+    dateLabel: 'July 15-17, 2026',
+    cap: 22,
+    assignedCount: 14,
+    tags: ['Environmental Science', 'Biology', 'Research']
+  }
+];
+
+teachers.forEach((teacher, index) => {
+  teacher.defaultOrder = index;
+  teacher.competencies = deriveCompetencies(teacher.tags);
+});
+
+function deriveCompetencies(tags) {
+  return Object.entries(competencyTagMap)
+    .filter(([, mappedTags]) => tags.some((tag) => mappedTags.includes(tag)))
+    .map(([competency]) => competency);
+}
+
+function getScoreMeta(score) {
+  if (score >= 75) {
+    return { label: 'Strong', color: 'green' };
+  }
+  if (score >= 55) {
+    return { label: 'Developing', color: 'orange' };
+  }
+  return { label: 'Needs Support', color: 'red' };
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function createSession(index) {
+  return {
+    id: `session-${Date.now()}-${index}-${Math.random().toString(16).slice(2, 8)}`,
+    dayLabel: `Day ${index + 1}`,
+    date: '',
+    startTime: '',
+    endTime: '',
+    topic: ''
+  };
+}
+
+function getSelectedTeachers() {
+  return teachers.filter((teacher) => teacher.selected);
+}
+
+function getTrainingTypeSuggestions() {
+  const existingTypePool = existingModules.flatMap((module) => module.tags || []);
+  return Array.from(new Set([...trainingTypeSeed, ...existingTypePool]));
+}
+
+function getSelectedTeacherLevels(teacherList) {
+  return Array.from(new Set(teacherList.map((teacher) => teacher.position)));
+}
+
+function getSelectedTeacherTags(teacherList) {
+  return Array.from(new Set(teacherList.flatMap((teacher) => teacher.tags)));
+}
+
+function getSelectedTeacherCompetencies(teacherList) {
+  return Array.from(new Set(teacherList.flatMap((teacher) => teacher.competencies)));
+}
+
+function getDefaultModalState() {
+  const selectedTeachers = getSelectedTeachers();
+  return {
+    isOpen: false,
+    mode: 'create',
+    searchQuery: '',
+    selectedExistingModuleId: '',
+    errors: {},
+    form: {
+      title: '',
+      description: '',
+      trainingTypes: [],
+      trainingTypeInput: '',
+      host: '',
+      modality: 'Face-to-Face',
+      venue: '',
+      onlinePlatform: '',
+      meetingLink: '',
+      scheduleType: 'Single Day',
+      singleDate: '',
+      rangeStart: '',
+      rangeEnd: '',
+      sessions: [createSession(0), createSession(1)],
+      duration: '',
+      targetLevels: getSelectedTeacherLevels(selectedTeachers),
+      subjectTags: getSelectedTeacherTags(selectedTeachers),
+      participantCap: String(selectedTeachers.length || ''),
+      competencyFocus: getSelectedTeacherCompetencies(selectedTeachers),
+      relevanceNote: '',
+      contactPerson: '',
+      contactDetails: ''
+    }
+  };
+}
+
+function isFormDirty() {
+  if (!modalState || modalState.mode !== 'create') {
+    return false;
+  }
+
+  const form = modalState.form;
+  return Boolean(
+    form.title ||
+    form.description ||
+    form.trainingTypes.length ||
+    form.host ||
+    form.venue ||
+    form.onlinePlatform ||
+    form.meetingLink ||
+    form.singleDate ||
+    form.rangeStart ||
+    form.rangeEnd ||
+    form.duration ||
+    form.relevanceNote ||
+    form.contactPerson ||
+    form.contactDetails ||
+    form.trainingTypeInput ||
+    form.subjectTags.length !== getSelectedTeacherTags(getSelectedTeachers()).length ||
+    form.targetLevels.length !== getSelectedTeacherLevels(getSelectedTeachers()).length ||
+    form.competencyFocus.length ||
+    form.sessions.some((session) => session.date || session.startTime || session.endTime || session.topic)
+  );
+}
+
+function getSuggestedDuration() {
+  if (!modalState) {
+    return '';
+  }
+
+  const form = modalState.form;
+
+  if (form.scheduleType === 'Single Day' && form.singleDate) {
+    return '1 day';
+  }
+
+  if (form.scheduleType === 'Multi-Day Range' && form.rangeStart && form.rangeEnd) {
+    const start = new Date(form.rangeStart);
+    const end = new Date(form.rangeEnd);
+    if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && end >= start) {
+      const diffDays = Math.round((end - start) / 86400000) + 1;
+      return `${diffDays} day${diffDays === 1 ? '' : 's'}`;
+    }
+  }
+
+  if (form.scheduleType === 'Session Breakdown') {
+    return `${form.sessions.length} session${form.sessions.length === 1 ? '' : 's'}`;
+  }
+
+  return '';
+}
+
+function formatModuleIcon(modality) {
+  if (modality === 'Face-to-Face') return 'school';
+  if (modality === 'Online') return 'computer';
+  return 'sync_alt';
+}
+
+function openAssignModal(focusTeacherId = null) {
+  if (focusTeacherId) {
+    const teacher = findTeacher(focusTeacherId);
+    if (teacher && !teacher.selected) {
+      teacher.selected = true;
+      rerenderCurrentView();
+    }
+  }
+
+  const selectedTeachers = getSelectedTeachers();
+  if (!selectedTeachers.length) {
+    showToastMessage('Select at least one teacher before assigning a training module.');
+    return;
+  }
+
+  modalState = getDefaultModalState();
+  modalState.isOpen = true;
+  document.body.style.overflow = 'hidden';
+  assignModalOverlay.hidden = false;
+  renderAssignModal();
+}
+
+function closeAssignModal(forceClose = false) {
+  if (!modalState || !modalState.isOpen) {
+    return;
+  }
+
+  if (!forceClose && isFormDirty()) {
+    const shouldClose = window.confirm('You have unsaved training module details. Close this popup anyway?');
+    if (!shouldClose) {
+      return;
+    }
+  }
+
+  assignModalOverlay.hidden = true;
+  document.body.style.overflow = '';
+  modalState = null;
+}
+
+function toggleArrayValue(array, value) {
+  return array.includes(value)
+    ? array.filter((item) => item !== value)
+    : [...array, value];
+}
+
+function getModalError(field) {
+  return modalState && modalState.errors ? modalState.errors[field] : '';
+}
+
+function renderAssignModal() {
+  if (!modalState || !modalState.isOpen) {
+    return;
+  }
+
+  const selectedTeachers = getSelectedTeachers();
+  const assignCount = selectedTeachers.length;
+  const activeModule = existingModules.find((module) => module.id === modalState.selectedExistingModuleId);
+  const disableAssignInExisting = modalState.mode === 'existing' && (!activeModule || (activeModule.cap - activeModule.assignedCount) < assignCount);
+
+  assignModalHeader.innerHTML = `
+    <div class="assign-modal-top">
+      <div>
+        <div class="assign-modal-title" id="assignModalTitle">Training Module Assignment</div>
+        <div class="assign-modal-sub">${assignCount} selected teacher${assignCount === 1 ? '' : 's'} ready for assignment</div>
+      </div>
+      <button class="modal-close-btn" type="button" data-modal-action="close">
+        <span class="material-icons-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-tabs">
+      <button class="modal-tab ${modalState.mode === 'create' ? 'active' : ''}" type="button" data-modal-tab="create">Create New Module</button>
+      <button class="modal-tab ${modalState.mode === 'existing' ? 'active' : ''}" type="button" data-modal-tab="existing">Select Existing Module</button>
+    </div>
+  `;
+
+  assignModalBody.innerHTML = modalState.mode === 'create'
+    ? renderCreateModuleView(selectedTeachers)
+    : renderExistingModuleView(assignCount);
+
+  assignModalFooter.innerHTML = `
+    <button class="modal-text-btn" type="button" data-modal-action="cancel">Cancel</button>
+    <button class="modal-primary-btn" type="button" data-modal-action="submit" ${disableAssignInExisting ? 'disabled' : ''}>
+      Assign to ${assignCount} Teacher${assignCount === 1 ? '' : 's'}
+    </button>
+  `;
+}
+
+function renderCreateModuleView(selectedTeachers) {
+  const form = modalState.form;
+  const capValue = Number.parseInt(form.participantCap, 10);
+  const selectedCount = selectedTeachers.length;
+  const capWarning = Number.isFinite(capValue) && capValue > 0 && selectedCount > capValue
+    ? `You have selected ${selectedCount} teachers but the cap is ${capValue}.`
+    : '';
+  const suggestedDuration = getSuggestedDuration();
+  const trainingTypeSuggestions = getTrainingTypeSuggestions()
+    .filter((type) => !form.trainingTypes.includes(type))
+    .slice(0, 8);
+
+  return `
+    <div class="modal-section">
+      <div class="modal-section-title">Section 1 - Basic Information</div>
+      <div class="modal-grid">
+        <div class="modal-field full">
+          <label class="modal-label">Training Title <span class="req">*</span></label>
+          <input class="modal-input ${getModalError('title') ? 'error' : ''}" name="title" value="${escapeHtml(form.title)}" placeholder="AI in the STEM Classroom">
+          ${getModalError('title') ? `<div class="modal-error">${escapeHtml(getModalError('title'))}</div>` : ''}
+        </div>
+        <div class="modal-field full">
+          <label class="modal-label">Description <span class="req">*</span></label>
+          <textarea class="modal-textarea ${getModalError('description') ? 'error' : ''}" name="description" rows="4" placeholder="Brief overview of the training objectives">${escapeHtml(form.description)}</textarea>
+          ${getModalError('description') ? `<div class="modal-error">${escapeHtml(getModalError('description'))}</div>` : ''}
+        </div>
+        <div class="modal-field full">
+          <label class="modal-label">Training Type</label>
+          <div class="tag-entry-wrap">
+            <div class="tag-pill-list">
+              ${form.trainingTypes.map((type) => `
+                <span class="tag-pill">${escapeHtml(type)} <button type="button" data-modal-action="remove-training-type" data-value="${escapeHtml(type)}">&times;</button></span>
+              `).join('')}
+            </div>
+            <div class="tag-entry-row">
+              <input name="trainingTypeInput" value="${escapeHtml(form.trainingTypeInput)}" placeholder="Type and press Enter">
+              <button class="tag-add-btn" type="button" data-modal-action="add-training-type">Add</button>
+            </div>
+          </div>
+          <div class="tag-suggestions">
+            ${trainingTypeSuggestions.map((type) => `<button class="tag-suggestion" type="button" data-modal-action="pick-training-type" data-value="${escapeHtml(type)}">${escapeHtml(type)}</button>`).join('')}
+          </div>
+        </div>
+        <div class="modal-field full">
+          <label class="modal-label">Host / Organizer <span class="req">*</span></label>
+          <input class="modal-input ${getModalError('host') ? 'error' : ''}" name="host" value="${escapeHtml(form.host)}" placeholder="Division of Manila">
+          ${getModalError('host') ? `<div class="modal-error">${escapeHtml(getModalError('host'))}</div>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Section 2 - Modality & Location</div>
+      <div class="modal-field">
+        <label class="modal-label">Modality <span class="req">*</span></label>
+        <div class="segmented-group">
+          ${['Face-to-Face', 'Online', 'Blended'].map((mode) => `
+            <button class="segmented-btn ${form.modality === mode ? 'active' : ''}" type="button" data-modal-action="set-modality" data-value="${mode}">${mode === 'Blended' ? 'Blended / Hybrid' : mode}</button>
+          `).join('')}
+        </div>
+      </div>
+      <div class="modal-grid" style="margin-top:14px;">
+        ${(form.modality === 'Face-to-Face' || form.modality === 'Blended') ? `
+          <div class="modal-field full">
+            <label class="modal-label">Venue / Location <span class="req">*</span></label>
+            <input class="modal-input ${getModalError('venue') ? 'error' : ''}" name="venue" value="${escapeHtml(form.venue)}" placeholder="Manila Science HS Auditorium">
+            ${getModalError('venue') ? `<div class="modal-error">${escapeHtml(getModalError('venue'))}</div>` : ''}
+          </div>
+        ` : ''}
+        ${(form.modality === 'Online' || form.modality === 'Blended') ? `
+          <div class="modal-field">
+            <label class="modal-label">Online Platform <span class="req">*</span></label>
+            <input class="modal-input ${getModalError('onlinePlatform') ? 'error' : ''}" name="onlinePlatform" value="${escapeHtml(form.onlinePlatform)}" placeholder="Zoom or Google Meet">
+            ${getModalError('onlinePlatform') ? `<div class="modal-error">${escapeHtml(getModalError('onlinePlatform'))}</div>` : ''}
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Meeting Link</label>
+            <input class="modal-input ${getModalError('meetingLink') ? 'error' : ''}" name="meetingLink" value="${escapeHtml(form.meetingLink)}" placeholder="https://">
+            ${getModalError('meetingLink') ? `<div class="modal-error">${escapeHtml(getModalError('meetingLink'))}</div>` : ''}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Section 3 - Schedule</div>
+      <div class="modal-field">
+        <label class="modal-label">Schedule Type <span class="req">*</span></label>
+        <div class="radio-pill-group">
+          ${[
+            { value: 'Single Day', label: 'Single Day' },
+            { value: 'Multi-Day Range', label: 'Multi-Day (date range)' },
+            { value: 'Session Breakdown', label: 'Multi-Day (session breakdown)' }
+          ].map((option) => `
+            <button class="radio-pill ${form.scheduleType === option.value ? 'active' : ''}" type="button" data-modal-action="set-schedule-type" data-value="${option.value}">${option.label}</button>
+          `).join('')}
+        </div>
+      </div>
+      <div class="modal-grid" style="margin-top:14px;">
+        ${form.scheduleType === 'Single Day' ? `
+          <div class="modal-field">
+            <label class="modal-label">Date <span class="req">*</span></label>
+            <input class="modal-input ${getModalError('singleDate') ? 'error' : ''}" type="date" name="singleDate" value="${escapeHtml(form.singleDate)}">
+            ${getModalError('singleDate') ? `<div class="modal-error">${escapeHtml(getModalError('singleDate'))}</div>` : ''}
+          </div>
+        ` : ''}
+        ${form.scheduleType === 'Multi-Day Range' ? `
+          <div class="modal-field">
+            <label class="modal-label">Start Date <span class="req">*</span></label>
+            <input class="modal-input ${getModalError('rangeStart') ? 'error' : ''}" type="date" name="rangeStart" value="${escapeHtml(form.rangeStart)}">
+            ${getModalError('rangeStart') ? `<div class="modal-error">${escapeHtml(getModalError('rangeStart'))}</div>` : ''}
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">End Date <span class="req">*</span></label>
+            <input class="modal-input ${getModalError('rangeEnd') ? 'error' : ''}" type="date" name="rangeEnd" value="${escapeHtml(form.rangeEnd)}">
+            ${getModalError('rangeEnd') ? `<div class="modal-error">${escapeHtml(getModalError('rangeEnd'))}</div>` : ''}
+          </div>
+        ` : ''}
+      </div>
+      ${form.scheduleType === 'Session Breakdown' ? `
+        <div style="margin-top:14px;">
+          <div class="session-list">
+            ${form.sessions.map((session, index) => `
+              <div class="session-card">
+                <div class="session-card-top">
+                  <div class="session-title">Session ${index + 1}</div>
+                  <button class="session-remove-btn" type="button" data-modal-action="remove-session" data-session-id="${session.id}" ${form.sessions.length <= 2 ? 'disabled' : ''}>Remove</button>
+                </div>
+                <div class="session-grid">
+                  <div class="modal-field">
+                    <label class="modal-label">Day Label <span class="req">*</span></label>
+                    <input class="modal-input ${getModalError(`session-dayLabel-${session.id}`) ? 'error' : ''}" name="session-dayLabel-${session.id}" value="${escapeHtml(session.dayLabel)}" placeholder="Day 1">
+                    ${getModalError(`session-dayLabel-${session.id}`) ? `<div class="modal-error">${escapeHtml(getModalError(`session-dayLabel-${session.id}`))}</div>` : ''}
+                  </div>
+                  <div class="modal-field">
+                    <label class="modal-label">Date <span class="req">*</span></label>
+                    <input class="modal-input ${getModalError(`session-date-${session.id}`) ? 'error' : ''}" type="date" name="session-date-${session.id}" value="${escapeHtml(session.date)}">
+                    ${getModalError(`session-date-${session.id}`) ? `<div class="modal-error">${escapeHtml(getModalError(`session-date-${session.id}`))}</div>` : ''}
+                  </div>
+                  <div class="modal-field">
+                    <label class="modal-label">Start Time <span class="req">*</span></label>
+                    <input class="modal-input ${getModalError(`session-startTime-${session.id}`) ? 'error' : ''}" type="time" name="session-startTime-${session.id}" value="${escapeHtml(session.startTime)}">
+                    ${getModalError(`session-startTime-${session.id}`) ? `<div class="modal-error">${escapeHtml(getModalError(`session-startTime-${session.id}`))}</div>` : ''}
+                  </div>
+                  <div class="modal-field">
+                    <label class="modal-label">End Time <span class="req">*</span></label>
+                    <input class="modal-input ${getModalError(`session-endTime-${session.id}`) ? 'error' : ''}" type="time" name="session-endTime-${session.id}" value="${escapeHtml(session.endTime)}">
+                    ${getModalError(`session-endTime-${session.id}`) ? `<div class="modal-error">${escapeHtml(getModalError(`session-endTime-${session.id}`))}</div>` : ''}
+                  </div>
+                  <div class="modal-field full">
+                    <label class="modal-label">Topic / Title <span class="req">*</span></label>
+                    <input class="modal-input ${getModalError(`session-topic-${session.id}`) ? 'error' : ''}" name="session-topic-${session.id}" value="${escapeHtml(session.topic)}" placeholder="Session topic">
+                    ${getModalError(`session-topic-${session.id}`) ? `<div class="modal-error">${escapeHtml(getModalError(`session-topic-${session.id}`))}</div>` : ''}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          ${getModalError('sessions') ? `<div class="modal-error" style="margin-top:8px;">${escapeHtml(getModalError('sessions'))}</div>` : ''}
+          <button class="add-session-btn" type="button" data-modal-action="add-session">+ Add Session</button>
+        </div>
+      ` : ''}
+      <div class="modal-field full" style="margin-top:14px;">
+        <label class="modal-label">Duration <span class="req">*</span></label>
+        <input class="modal-input ${getModalError('duration') ? 'error' : ''}" name="duration" value="${escapeHtml(form.duration)}" placeholder="5 days or 3 hours">
+        <div class="modal-help">${suggestedDuration ? `Suggested: ${escapeHtml(suggestedDuration)}` : 'Auto-calculate from dates, or enter a custom duration.'}</div>
+        ${getModalError('duration') ? `<div class="modal-error">${escapeHtml(getModalError('duration'))}</div>` : ''}
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Section 4 - Targeting & Capacity</div>
+      <div class="modal-field full">
+        <label class="modal-label">Target Teacher Levels <span class="req">*</span></label>
+        <div class="checkbox-grid">
+          ${modalLevelOptions.map((level) => `
+            <button class="check-tile ${form.targetLevels.includes(level) ? 'active' : ''}" type="button" data-modal-action="toggle-level" data-value="${level}">
+              <span class="check-tile-box"><span class="material-icons-outlined">check</span></span>
+              <span class="check-tile-label">${level}</span>
+            </button>
+          `).join('')}
+        </div>
+        ${getModalError('targetLevels') ? `<div class="modal-error">${escapeHtml(getModalError('targetLevels'))}</div>` : ''}
+      </div>
+      <div class="modal-field full" style="margin-top:14px;">
+        <label class="modal-label">Subject / Specialization Tags <span class="req">*</span></label>
+        <div class="chip-selection">
+          ${subjectOptions.map((subject) => `
+            <button class="choice-chip ${form.subjectTags.includes(subject) ? 'active' : ''}" type="button" data-modal-action="toggle-subject" data-value="${subject}">${subject}</button>
+          `).join('')}
+        </div>
+        ${getModalError('subjectTags') ? `<div class="modal-error">${escapeHtml(getModalError('subjectTags'))}</div>` : ''}
+      </div>
+      <div class="modal-grid" style="margin-top:14px;">
+        <div class="modal-field">
+          <label class="modal-label">Participant Cap <span class="req">*</span></label>
+          <input class="modal-input ${getModalError('participantCap') ? 'error' : ''}" type="number" min="1" name="participantCap" value="${escapeHtml(form.participantCap)}" placeholder="20">
+          <div class="modal-help">No additional teachers can be assigned once this cap is reached.</div>
+          ${capWarning ? `<div class="warning-text">&#9888; ${escapeHtml(capWarning)}</div>` : ''}
+          ${getModalError('participantCap') ? `<div class="modal-error">${escapeHtml(getModalError('participantCap'))}</div>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Section 5 - Additional Details</div>
+      <div class="modal-field full">
+        <label class="modal-label">Competency Focus</label>
+        <div class="checkbox-grid">
+          ${competencyOptions.map((competency) => `
+            <button class="check-tile ${form.competencyFocus.includes(competency) ? 'active' : ''}" type="button" data-modal-action="toggle-competency-focus" data-value="${competency}">
+              <span class="check-tile-box"><span class="material-icons-outlined">check</span></span>
+              <span class="check-tile-label">${competency}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+      <div class="modal-grid" style="margin-top:14px;">
+        <div class="modal-field full">
+          <label class="modal-label">Relevance Note</label>
+          <textarea class="modal-textarea" name="relevanceNote" rows="2" placeholder="This training addresses your Research Proficiency gap.">${escapeHtml(form.relevanceNote)}</textarea>
+        </div>
+        <div class="modal-field">
+          <label class="modal-label">Contact Person</label>
+          <input class="modal-input" name="contactPerson" value="${escapeHtml(form.contactPerson)}" placeholder="Point person name">
+        </div>
+        <div class="modal-field">
+          <label class="modal-label">Contact Email / Phone</label>
+          <input class="modal-input" name="contactDetails" value="${escapeHtml(form.contactDetails)}" placeholder="email@domain.com / 09xx">
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderExistingModuleView(assignCount) {
+  const query = modalState.searchQuery.trim().toLowerCase();
+  const filteredModules = existingModules.filter((module) => {
+    const haystack = `${module.title} ${module.host} ${module.modality} ${module.tags.join(' ')}`.toLowerCase();
+    return !query || haystack.includes(query);
+  });
+
+  return `
+    <div class="existing-search">
+      <input name="existingSearch" value="${escapeHtml(modalState.searchQuery)}" placeholder="Search by training title, type, or host...">
+    </div>
+    <div class="module-list">
+      ${filteredModules.length ? filteredModules.map((module) => {
+        const remaining = Math.max(module.cap - module.assignedCount, 0);
+        const isFull = remaining === 0;
+        const selected = modalState.selectedExistingModuleId === module.id;
+        const progress = Math.min((module.assignedCount / module.cap) * 100, 100);
+        return `
+          <div class="module-card ${selected ? 'selected' : ''} ${isFull ? 'disabled' : ''}" data-modal-action="select-existing-module" data-module-id="${module.id}">
+            <div class="module-card-top">
+              <div>
+                <div class="module-card-title">${escapeHtml(module.title)}</div>
+                <div class="module-card-host">${escapeHtml(module.host)}</div>
+              </div>
+              <div class="module-card-radio"></div>
+            </div>
+            <div class="module-card-meta">
+              <span><span class="material-icons-outlined" style="font-size:14px; vertical-align:-2px;">${formatModuleIcon(module.modality)}</span> ${escapeHtml(module.modality)}</span>
+              <span><span class="material-icons-outlined" style="font-size:14px; vertical-align:-2px;">event</span> ${escapeHtml(module.dateLabel)}</span>
+            </div>
+            <div class="module-slot-text ${isFull ? 'full' : ''}">
+              ${isFull ? 'Full - No slots available' : `${remaining} / ${module.cap} slots remaining`}
+            </div>
+            <div class="module-progress">
+              <div class="module-progress-bar" style="width:${progress}%;"></div>
+            </div>
+            <div class="chip-selection" style="margin-top:10px;">
+              ${module.tags.map((tag) => `<span class="card-tag">${escapeHtml(tag)}</span>`).join('')}
+            </div>
+            ${!isFull && remaining < assignCount ? `<div class="warning-text" style="margin-top:10px;">&#9888; This module only has ${remaining} remaining slots for ${assignCount} selected teachers.</div>` : ''}
+          </div>
+        `;
+      }).join('') : `
+        <div class="modal-empty">No training modules matched your search.</div>
+      `}
+      ${getModalError('existingModule') ? `<div class="modal-error">${escapeHtml(getModalError('existingModule'))}</div>` : ''}
+    </div>
+  `;
+}
+
+function updateModalField(name, value) {
+  if (!modalState) {
+    return;
+  }
+
+  if (name.startsWith('session-')) {
+    const fieldName = name.slice('session-'.length);
+    const separatorIndex = fieldName.indexOf('-');
+    const key = fieldName.slice(0, separatorIndex);
+    const sessionId = fieldName.slice(separatorIndex + 1);
+    modalState.form.sessions = modalState.form.sessions.map((session) => (
+      session.id === sessionId ? { ...session, [key]: value } : session
+    ));
+    return;
+  }
+
+  modalState.form[name] = value;
+}
+
+function addTrainingType(value) {
+  const cleanValue = value.trim();
+  if (!cleanValue || modalState.form.trainingTypes.includes(cleanValue)) {
+    modalState.form.trainingTypeInput = '';
+    return;
+  }
+  modalState.form.trainingTypes = [...modalState.form.trainingTypes, cleanValue];
+  modalState.form.trainingTypeInput = '';
+}
+
+function validateModalForm() {
+  const errors = {};
+  const selectedCount = getSelectedTeachers().length;
+  const form = modalState.form;
+
+  if (modalState.mode === 'existing') {
+    const activeModule = existingModules.find((module) => module.id === modalState.selectedExistingModuleId);
+    if (!activeModule) {
+      errors.existingModule = 'Select a training module to continue.';
+    } else if ((activeModule.cap - activeModule.assignedCount) < selectedCount) {
+      errors.existingModule = 'The selected module does not have enough remaining slots.';
+    }
+    modalState.errors = errors;
+    return Object.keys(errors).length === 0;
+  }
+
+  if (!form.title.trim()) errors.title = 'Training title is required.';
+  if (!form.description.trim()) errors.description = 'Description is required.';
+  if (!form.host.trim()) errors.host = 'Host / Organizer is required.';
+
+  if ((form.modality === 'Face-to-Face' || form.modality === 'Blended') && !form.venue.trim()) {
+    errors.venue = 'Venue / Location is required for this modality.';
+  }
+
+  if ((form.modality === 'Online' || form.modality === 'Blended') && !form.onlinePlatform.trim()) {
+    errors.onlinePlatform = 'Online platform is required for this modality.';
+  }
+
+  if (form.meetingLink.trim()) {
+    try {
+      new URL(form.meetingLink);
+    } catch (error) {
+      errors.meetingLink = 'Enter a valid meeting link URL.';
+    }
+  }
+
+  if (form.scheduleType === 'Single Day' && !form.singleDate) {
+    errors.singleDate = 'Select the training date.';
+  }
+
+  if (form.scheduleType === 'Multi-Day Range') {
+    if (!form.rangeStart) errors.rangeStart = 'Select a start date.';
+    if (!form.rangeEnd) errors.rangeEnd = 'Select an end date.';
+    if (form.rangeStart && form.rangeEnd && form.rangeEnd < form.rangeStart) {
+      errors.rangeEnd = 'End date must be on or after the start date.';
+    }
+  }
+
+  if (form.scheduleType === 'Session Breakdown') {
+    if (form.sessions.length < 2) {
+      errors.sessions = 'At least two sessions are required.';
+    }
+    form.sessions.forEach((session) => {
+      if (!session.dayLabel.trim()) errors[`session-dayLabel-${session.id}`] = 'Required.';
+      if (!session.date) errors[`session-date-${session.id}`] = 'Required.';
+      if (!session.startTime) errors[`session-startTime-${session.id}`] = 'Required.';
+      if (!session.endTime) errors[`session-endTime-${session.id}`] = 'Required.';
+      if (!session.topic.trim()) errors[`session-topic-${session.id}`] = 'Required.';
+      if (session.startTime && session.endTime && session.endTime <= session.startTime) {
+        errors[`session-endTime-${session.id}`] = 'End time must be after the start time.';
+      }
+    });
+  }
+
+  if (!form.duration.trim()) {
+    if (getSuggestedDuration()) {
+      form.duration = getSuggestedDuration();
+    } else {
+      errors.duration = 'Duration is required.';
+    }
+  }
+
+  if (!form.targetLevels.length) errors.targetLevels = 'Select at least one teacher level.';
+  if (!form.subjectTags.length) errors.subjectTags = 'Select at least one subject or specialization tag.';
+
+  const participantCap = Number.parseInt(form.participantCap, 10);
+  if (!Number.isFinite(participantCap) || participantCap <= 0) {
+    errors.participantCap = 'Participant cap must be at least 1.';
+  } else if (selectedCount > participantCap) {
+    errors.participantCap = `You selected ${selectedCount} teachers but the cap is ${participantCap}.`;
+  }
+
+  modalState.errors = errors;
+  return Object.keys(errors).length === 0;
+}
+
+function scrollToFirstModalError() {
+  const firstError = assignModalBody.querySelector('.modal-input.error, .modal-textarea.error, .modal-select.error');
+  if (firstError) {
+    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    firstError.focus();
+    return;
+  }
+  const errorText = assignModalBody.querySelector('.modal-error');
+  if (errorText) {
+    errorText.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function buildCreatedModule() {
+  const form = modalState.form;
+  return {
+    id: `mod-${Date.now()}`,
+    title: form.title.trim(),
+    host: form.host.trim(),
+    modality: form.modality,
+    dateLabel:
+      form.scheduleType === 'Single Day' ? form.singleDate :
+      form.scheduleType === 'Multi-Day Range' ? `${form.rangeStart} to ${form.rangeEnd}` :
+      `${form.sessions.length} scheduled sessions`,
+    cap: Number.parseInt(form.participantCap, 10),
+    assignedCount: getSelectedTeachers().length,
+    tags: form.subjectTags.slice(0, 4),
+    description: form.description.trim(),
+    trainingTypes: [...form.trainingTypes],
+    venue: form.venue.trim(),
+    onlinePlatform: form.onlinePlatform.trim(),
+    meetingLink: form.meetingLink.trim(),
+    duration: form.duration.trim(),
+    targetLevels: [...form.targetLevels],
+    competencyFocus: [...form.competencyFocus],
+    relevanceNote: form.relevanceNote.trim(),
+    contactPerson: form.contactPerson.trim(),
+    contactDetails: form.contactDetails.trim(),
+    sessions: form.sessions.map((session) => ({ ...session }))
+  };
+}
+
+function submitAssignModal() {
+  if (!modalState) {
+    return;
+  }
+
+  if (!validateModalForm()) {
+    renderAssignModal();
+    scrollToFirstModalError();
+    return;
+  }
+
+  const selectedTeachers = getSelectedTeachers();
+  let title = '';
+
+  if (modalState.mode === 'create') {
+    const createdModule = buildCreatedModule();
+    existingModules.unshift({
+      id: createdModule.id,
+      title: createdModule.title,
+      host: createdModule.host,
+      modality: createdModule.modality,
+      dateLabel: createdModule.dateLabel,
+      cap: createdModule.cap,
+      assignedCount: selectedTeachers.length,
+      tags: createdModule.tags
+    });
+    title = createdModule.title;
+  } else {
+    const module = existingModules.find((item) => item.id === modalState.selectedExistingModuleId);
+    if (!module) {
+      return;
+    }
+    module.assignedCount += selectedTeachers.length;
+    title = module.title;
+  }
+
+  closeAssignModal(true);
+  showToastMessage(`Training '${title}' assigned to ${selectedTeachers.length} teacher${selectedTeachers.length === 1 ? '' : 's'}.`);
+}
+
+function teacherCardTemplate(teacher) {
+  const scoreMeta = getScoreMeta(teacher.score);
+  const tagsHtml = teacher.tags
+    .map((tag) => `<span class="card-tag">${escapeHtml(tag)}</span>`)
+    .join('');
+
+  return `
+    <div class="teacher-card${teacher.selected ? ' selected' : ''}" data-id="${teacher.id}">
+      <div class="card-checkbox" data-action="toggle-select"><span class="material-icons-outlined">check</span></div>
+      <div class="card-profile">
+        <div class="card-avatar"><span class="material-icons-outlined">person</span></div>
+        <div>
+          <div class="card-name"><span class="blur-first">${escapeHtml(teacher.firstName)}</span> ${escapeHtml(teacher.lastName)}</div>
+          <div class="card-position">${escapeHtml(teacher.position)}</div>
+          <div class="card-school">${escapeHtml(teacher.school)}</div>
+        </div>
+      </div>
+      <div class="card-info-row">
+        <span class="material-icons-outlined">location_on</span>
+        Region: <strong>${escapeHtml(teacher.regionLabel)}</strong>
+      </div>
+      <div class="card-tags">${tagsHtml}</div>
+      <div class="card-score">
+        <span class="card-score-label">Teacher Vulnerability Index Score:</span>
+      </div>
+      <div class="card-score" style="margin-top:-6px;">
+        <span class="score-dot ${scoreMeta.color}"></span>
+        <span class="score-value ${scoreMeta.color}">${teacher.score} (${scoreMeta.label})</span>
+      </div>
+      <div class="card-actions">
+        <button class="card-btn" type="button" data-action="assign-card">
+          <span class="material-icons-outlined">assignment_ind</span> Assign Training
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderTeachers(visibleTeachers) {
+  currentVisibleIds = visibleTeachers.map((teacher) => teacher.id);
+
+  if (!visibleTeachers.length) {
+    cardGrid.innerHTML = `
+      <div class="empty-state">
+        <strong>No teachers match the current filters.</strong>
+        Try broadening the selected competencies, regions, or subject tags.
+      </div>
+    `;
+  } else {
+    cardGrid.innerHTML = visibleTeachers.map(teacherCardTemplate).join('');
+  }
+
+  updateCounts(visibleTeachers);
+}
+
+function updateCounts(visibleTeachers) {
+  const selectedVisible = visibleTeachers.filter((teacher) => teacher.selected).length;
+  resultsSummary.textContent = `Showing ${visibleTeachers.length} of ${teachers.length} teachers`;
+  selectionCount.innerHTML = `<strong>${selectedVisible}</strong> of ${visibleTeachers.length} teachers selected`;
+
+  const allVisibleSelected = visibleTeachers.length > 0 && visibleTeachers.every((teacher) => teacher.selected);
+  selectAllBtn.disabled = visibleTeachers.length === 0;
+  assignSelectedBtn.disabled = selectedVisible === 0;
+  selectAllBtn.innerHTML = allVisibleSelected
+    ? '<span class="material-icons-outlined">clear_all</span> Clear Visible'
+    : '<span class="material-icons-outlined">select_all</span> Select All';
+}
+
+function getSelectedValues(selector) {
+  return Array.from(document.querySelectorAll(selector))
+    .map((item) => item.dataset.value);
+}
+
+function getActiveSort() {
+  const activeSort = document.querySelector('.priority-option.selected');
+  return activeSort ? activeSort.dataset.sort : 'high';
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function parsePositiveInt(value) {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+function applyFilters(showToast = false) {
+  const selectedCompetencies = getSelectedValues('.filter-check[data-group="competency"].checked');
+  const selectedLevels = getSelectedValues('.filter-check[data-group="level"].checked');
+  const selectedTags = Array.from(document.querySelectorAll('.tag-chip.selected')).map((chip) => chip.dataset.value);
+  const schoolQuery = schoolSearchInput.value.trim().toLowerCase();
+  const regionValue = regionSelect.value;
+  let minParticipants = parsePositiveInt(participantsMin.value);
+  let maxParticipants = parsePositiveInt(participantsMax.value);
+
+  if (minParticipants && maxParticipants && minParticipants > maxParticipants) {
+    [minParticipants, maxParticipants] = [maxParticipants, minParticipants];
+  }
+
+  let filteredTeachers = teachers.filter((teacher) => {
+    const matchesCompetency = !selectedCompetencies.length || teacher.competencies.some((competency) => selectedCompetencies.includes(competency));
+    const matchesLevel = !selectedLevels.length || selectedLevels.includes(teacher.position);
+    const matchesTags = !selectedTags.length || teacher.tags.some((tag) => selectedTags.includes(tag));
+    const matchesRegion = regionValue === 'all' || teacher.regionCode === regionValue;
+    const matchesSchool = !schoolQuery || teacher.school.toLowerCase().includes(schoolQuery);
+
+    return matchesCompetency && matchesLevel && matchesTags && matchesRegion && matchesSchool;
+  });
+
+  const activeSort = getActiveSort();
+
+  if (activeSort === 'high') {
+    filteredTeachers = [...filteredTeachers].sort((a, b) => b.score - a.score || a.defaultOrder - b.defaultOrder);
+  } else if (activeSort === 'low') {
+    filteredTeachers = [...filteredTeachers].sort((a, b) => a.score - b.score || a.defaultOrder - b.defaultOrder);
+  } else {
+    filteredTeachers = shuffle(filteredTeachers);
+  }
+
+  if (maxParticipants) {
+    filteredTeachers = filteredTeachers.slice(0, maxParticipants);
+  }
+
+  if (minParticipants && filteredTeachers.length < minParticipants) {
+    filteredTeachers = [];
+  }
+
+  renderTeachers(filteredTeachers);
+
+  if (showToast) {
+    showToastMessage(`${filteredTeachers.length} teacher${filteredTeachers.length === 1 ? '' : 's'} matched the current filters.`);
+  }
+}
+
+function resetFilters() {
+  document.querySelectorAll('.filter-check').forEach((item) => item.classList.add('checked'));
+  document.querySelectorAll('.tag-chip').forEach((chip) => chip.classList.remove('selected', 'is-hidden'));
+  document.querySelectorAll('.priority-option').forEach((option) => option.classList.remove('selected'));
+  document.querySelector('.priority-option[data-sort="high"]').classList.add('selected');
+
+  regionSelect.value = 'all';
+  schoolSearchInput.value = '';
+  tagSearchInput.value = '';
+  participantsMin.value = '';
+  participantsMax.value = '';
+
+  applyFilters(false);
+}
+
+function showToastMessage(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  toastStack.appendChild(toast);
+
+  window.setTimeout(() => {
+    toast.remove();
+  }, 2600);
+}
+
+function findTeacher(id) {
+  return teachers.find((teacher) => teacher.id === id);
+}
+
+function rerenderCurrentView() {
+  const visibleTeachers = currentVisibleIds
+    .map((id) => findTeacher(id))
+    .filter(Boolean);
+  renderTeachers(visibleTeachers);
+}
+
+function toggleTeacherSelection(id, source) {
+  const teacher = findTeacher(id);
+  if (!teacher) {
+    return;
+  }
+
+  teacher.selected = !teacher.selected;
+  rerenderCurrentView();
+
+  if (source === 'assign') {
+    openAssignModal(id);
+  }
+}
+
+cardGrid.addEventListener('click', (event) => {
+  const card = event.target.closest('.teacher-card');
+  if (!card) {
+    return;
+  }
+
+  const teacherId = Number(card.dataset.id);
+  const actionTarget = event.target.closest('[data-action]');
+
+  if (!actionTarget) {
+    return;
+  }
+
+  const action = actionTarget.dataset.action;
+
+  if (action === 'toggle-select') {
+    toggleTeacherSelection(teacherId, 'checkbox');
+  }
+
+  if (action === 'assign-card') {
+    toggleTeacherSelection(teacherId, 'assign');
+  }
+});
+
+document.querySelectorAll('.filter-check').forEach((item) => {
+  item.addEventListener('click', () => {
+    item.classList.toggle('checked');
+    applyFilters(false);
+  });
+});
+
+document.querySelectorAll('.tag-chip').forEach((chip) => {
+  chip.addEventListener('click', () => {
+    chip.classList.toggle('selected');
+    applyFilters(false);
+  });
+});
+
+document.querySelectorAll('.priority-option').forEach((option) => {
+  option.addEventListener('click', () => {
+    document.querySelectorAll('.priority-option').forEach((item) => item.classList.remove('selected'));
+    option.classList.add('selected');
+    applyFilters(false);
+  });
+});
+
+tagSearchInput.addEventListener('input', () => {
+  const query = tagSearchInput.value.trim().toLowerCase();
+  document.querySelectorAll('.tag-chip').forEach((chip) => {
+    const isMatch = chip.dataset.value.toLowerCase().includes(query);
+    chip.classList.toggle('is-hidden', !isMatch);
+  });
+});
+
+schoolSearchInput.addEventListener('input', () => {
+  applyFilters(false);
+});
+
+regionSelect.addEventListener('change', () => {
+  applyFilters(false);
+});
+
+[participantsMin, participantsMax].forEach((input) => {
+  input.addEventListener('input', () => {
+    applyFilters(false);
+  });
+});
+
+applyFiltersBtn.addEventListener('click', () => {
+  applyFilters(true);
+});
+
+clearFiltersBtn.addEventListener('click', () => {
+  resetFilters();
+  showToastMessage('Filters cleared. Showing the full teacher roster again.');
+});
+
+filterToggleBtn.addEventListener('click', () => {
+  contentArea.classList.toggle('filters-hidden');
+});
+
+selectAllBtn.addEventListener('click', () => {
+  const visibleTeachers = currentVisibleIds.map((id) => findTeacher(id)).filter(Boolean);
+  if (!visibleTeachers.length) {
+    return;
+  }
+
+  const shouldSelectAll = !visibleTeachers.every((teacher) => teacher.selected);
+  visibleTeachers.forEach((teacher) => {
+    teacher.selected = shouldSelectAll;
+  });
+
+  rerenderCurrentView();
+  showToastMessage(
+    shouldSelectAll
+      ? `${visibleTeachers.length} visible teachers selected.`
+      : 'Visible teacher selections cleared.'
+  );
+});
+
+assignSelectedBtn.addEventListener('click', () => {
+  openAssignModal();
+});
+
+assignModalOverlay.addEventListener('click', (event) => {
+  if (event.target === assignModalOverlay) {
+    closeAssignModal();
+  }
+});
+
+assignModalOverlay.addEventListener('input', (event) => {
+  if (!modalState) {
+    return;
+  }
+
+  const target = event.target;
+  if (!target.name) {
+    return;
+  }
+
+  if (target.name === 'existingSearch') {
+    modalState.searchQuery = target.value;
+    renderAssignModal();
+    return;
+  }
+
+  updateModalField(target.name, target.value);
+});
+
+assignModalOverlay.addEventListener('keydown', (event) => {
+  if (!modalState) {
+    return;
+  }
+
+  if (event.key === 'Escape') {
+    closeAssignModal();
+  }
+
+  if (event.key === 'Enter' && event.target.name === 'trainingTypeInput') {
+    event.preventDefault();
+    addTrainingType(modalState.form.trainingTypeInput);
+    renderAssignModal();
+  }
+});
+
+assignModalOverlay.addEventListener('click', (event) => {
+  if (!modalState) {
+    return;
+  }
+
+  const actionTarget = event.target.closest('[data-modal-action], [data-modal-tab]');
+  if (!actionTarget) {
+    return;
+  }
+
+  const tab = actionTarget.dataset.modalTab;
+  if (tab) {
+    modalState.mode = tab;
+    modalState.errors = {};
+    renderAssignModal();
+    return;
+  }
+
+  const action = actionTarget.dataset.modalAction;
+  const value = actionTarget.dataset.value || '';
+  const sessionId = actionTarget.dataset.sessionId || '';
+  const moduleId = actionTarget.dataset.moduleId || '';
+
+  if (action === 'close' || action === 'cancel') {
+    closeAssignModal();
+    return;
+  }
+
+  if (action === 'submit') {
+    submitAssignModal();
+    return;
+  }
+
+  if (action === 'set-modality') {
+    modalState.form.modality = value;
+    modalState.errors = {};
+    renderAssignModal();
+    return;
+  }
+
+  if (action === 'set-schedule-type') {
+    modalState.form.scheduleType = value;
+    modalState.errors = {};
+    renderAssignModal();
+    return;
+  }
+
+  if (action === 'toggle-level') {
+    modalState.form.targetLevels = toggleArrayValue(modalState.form.targetLevels, value);
+    renderAssignModal();
+    return;
+  }
+
+  if (action === 'toggle-subject') {
+    modalState.form.subjectTags = toggleArrayValue(modalState.form.subjectTags, value);
+    renderAssignModal();
+    return;
+  }
+
+  if (action === 'toggle-competency-focus') {
+    modalState.form.competencyFocus = toggleArrayValue(modalState.form.competencyFocus, value);
+    renderAssignModal();
+    return;
+  }
+
+  if (action === 'add-training-type') {
+    addTrainingType(modalState.form.trainingTypeInput);
+    renderAssignModal();
+    return;
+  }
+
+  if (action === 'pick-training-type') {
+    addTrainingType(value);
+    renderAssignModal();
+    return;
+  }
+
+  if (action === 'remove-training-type') {
+    modalState.form.trainingTypes = modalState.form.trainingTypes.filter((item) => item !== value);
+    renderAssignModal();
+    return;
+  }
+
+  if (action === 'add-session') {
+    modalState.form.sessions.push(createSession(modalState.form.sessions.length));
+    renderAssignModal();
+    return;
+  }
+
+  if (action === 'remove-session') {
+    if (modalState.form.sessions.length > 2) {
+      modalState.form.sessions = modalState.form.sessions.filter((session) => session.id !== sessionId);
+      renderAssignModal();
+    }
+    return;
+  }
+
+  if (action === 'select-existing-module') {
+    const module = existingModules.find((item) => item.id === moduleId);
+    if (!module || module.cap - module.assignedCount <= 0) {
+      return;
+    }
+    modalState.selectedExistingModuleId = moduleId;
+    modalState.errors = {};
+    renderAssignModal();
+  }
+});
+
+resetFilters();
+</script>
+
+</body>
+</html>
