@@ -1,6 +1,6 @@
 # POLARIS
 
-POLARIS is a regional intelligence and STAR Program demo platform: a FastAPI backend and React frontend backed by Supabase PostgreSQL, with optional Google Gemini for STARBOT when not in pitch mode.
+POLARIS is a regional intelligence and STAR Program demo platform: a FastAPI backend and React frontend backed by Supabase PostgreSQL, with optional Google Gemini for STARBOT when not in pitch mode. hopefully we win.
 
 ## Repository layout
 
