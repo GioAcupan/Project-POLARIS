@@ -910,7 +910,7 @@ export default function TeacherAssignment({
         <Button
           type="button"
           variant="default"
-          className="gap-2 border border-brand-blue bg-brand-blue text-white hover:bg-brand-blue/90"
+          className="self-center gap-2 border border-brand-blue bg-brand-blue text-white hover:bg-brand-blue/90"
           onClick={() => setIsFilterOpen((current) => !current)}
         >
           <SlidersHorizontal className="size-4" />
