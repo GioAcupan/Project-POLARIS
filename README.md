@@ -106,6 +106,33 @@ Vite defaults to **http://localhost:5173**. Ensure `VITE_API_BASE_URL` matches y
 
 Other scripts: `npm run build`, `npm run preview`, `npm run lint`, `npm run typecheck`.
 
+## One-command E2E tests
+
+From `frontend/`, run:
+
+```bash
+npm run test:e2e
+```
+
+This command uses Playwright `webServer` orchestration to:
+
+1. Start the FastAPI backend at `http://127.0.0.1:8000`
+2. Wait for backend health at `http://127.0.0.1:8000/health`
+3. Start the Vite frontend at `http://127.0.0.1:5173`
+4. Run browser E2E smoke tests and stop managed servers automatically
+
+Additional variants:
+
+- `npm run test:e2e:headed` (headed browser mode)
+- `npm run test:e2e:ui` (Playwright interactive UI mode)
+
+Prerequisites and notes:
+
+- Install browsers once: `npx playwright install chromium`
+- Backend startup uses `python -m uvicorn ...` from repo root, so ensure Python is installed and your dependencies from `requirements.txt` are available (usually via your `.venv`)
+- Keep `.env` at repo root configured, especially `DATABASE_URL`
+- If ports `8000` or `5173` are occupied, stop the conflicting process or adjust ports in `frontend/playwright.config.ts`
+
 ## Pitch mode vs full mode
 
 | Mode | Backend | Frontend | Behavior |
