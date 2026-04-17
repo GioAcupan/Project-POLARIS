@@ -41,6 +41,28 @@ def _check_report_templates() -> None:
             logger.warning("Missing report template: api/templates/reports/%s", name)
 
 
+def _read_cors_origins() -> list[str]:
+    """
+    Read comma-separated allowed origins for browser clients.
+    Defaults cover local Vite dev + preview ports.
+    """
+    raw = os.getenv(
+        "POLARIS_CORS_ORIGINS",
+        ",".join(
+            [
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "http://localhost:4173",
+                "http://127.0.0.1:4173",
+            ]
+        ),
+    )
+    origins = [origin.strip().rstrip("/") for origin in raw.split(",") if origin.strip()]
+    if origins:
+        return origins
+    return ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+
 app = FastAPI(title="POLARIS API")
 app.state.pitch_mode = _read_pitch_mode()
 
@@ -57,10 +79,14 @@ logger.info("POLARIS pitch_mode=%s", app.state.pitch_mode)
 
 _check_report_templates()
 
+cors_origins = _read_cors_origins()
+logger.info("POLARIS CORS allow_origins=%s", cors_origins)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

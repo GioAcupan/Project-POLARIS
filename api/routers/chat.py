@@ -1,119 +1,84 @@
-"""STARBOT query endpoint — v3.4 (query-only, no draft routing).
-
-Single responsibility: accept a ChatRequest, return a ChatResponse.
-No intent classification. No mode field. No draft paths.
 """
+api/routers/chat.py
+Consultant Page / Starbot chat endpoint.
+Mode-switched system prompts via ChatRequest.mode.
 
-import asyncio
+Adaptation note:
+- This codebase exposes Gemini via `GeminiClient.complete(system_prompt=..., user_content=...)`
+  instead of `call_gemini(system_prompt=..., user_message=...)`.
+"""
+import logging
 import re
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.schemas.chat import ChatRequest, ChatResponse
+from api.db import get_db
+from api.intel.consultant_context import build_source_citations, fetch_active_programs
 from api.intel.llm_client import GeminiClient
+from api.intel.system_prompts import (
+    get_advisor_prompt,
+    get_drafting_accomplishment_prompt,
+    get_drafting_intervention_prompt,
+    get_drafting_needs_assessment_prompt,
+)
+from api.schemas.chat import ChatRequest, ChatResponse, RegionalScoreContext
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# ---------------------------------------------------------------------------
-# Pitch-mode canned responses (Part C Step 8, Part E §E.1.1)
-# Keys are always compared post-normalization: message.strip().lower()
-# ---------------------------------------------------------------------------
-PITCH_RESPONSES: dict[str, dict[str, str]] = {
-    "which ppst domain has the biggest gap in this region?": {
-        "template": (
-            "Looking at the PPST skill profile for {region}, the biggest gap is in "
-            "**Assessment Literacy**, currently at {assessment_val} against a target of 0.80. "
-            "This is {gap} points below target — the widest gap across all five PPST domains. "
-            "Curriculum Planning and Content Knowledge are closer to target, while "
-            "Research-Based Practice sits in the middle at {research_val}."
-        ),
-    },
-    "how does this region compare to the national average?": {
-        "template": (
-            "{region} has an Underserved Score of {score}/100, which places it in the "
-            "**{traffic_light} zone**. The national average across all 17 regions is "
-            "approximately 65/100. Teacher-to-student ratio in {region} is {ratio}, and "
-            "STAR Program coverage sits at {coverage}%. The most pressing factor is the "
-            "specialization match rate at {spec}%."
-        ),
-    },
+_CITATION_HALLUCINATION_PATTERN = re.compile(
+    r"\[Source:[^\]]*\]|\[Ref:[^\]]*\]|\[\d+\]|\(Source:[^\)]*\)",
+    re.IGNORECASE,
+)
+
+_MODE_PROMPT_MAP = {
+    "advisor": get_advisor_prompt,
+    "drafting_accomplishment": get_drafting_accomplishment_prompt,
+    "drafting_intervention": get_drafting_intervention_prompt,
+    "drafting_needs_assessment": get_drafting_needs_assessment_prompt,
 }
 
-_GENERIC_FALLBACK = (
-    "I'm currently showing a curated preview of my capabilities. "
-    "Try one of the suggested questions below, or come back after hackathon day "
-    "for the full experience."
-)
-
-# Placeholder — full system prompt lives in polaris_starbot_roadmap.md
-_STARBOT_QUERY_SYSTEM = (
-    "You are STARBOT, the POLARIS regional intelligence assistant. "
-    "Answer questions about Philippine teacher deployment and training data "
-    "concisely and accurately. Cite only information provided in the user context. "
-    "Do not fabricate statistics."
-)
-
-# Strips any hallucinated [Source: ...] patterns from LLM output (§E.1)
-_SOURCE_TAG_RE = re.compile(r"\[Source:[^\]]*\]", re.IGNORECASE)
+_GENERIC_STARBOT_PROMPT = """
+You are STARBOT, the AI assistant for the POLARIS teacher intelligence platform built for DOST-SEI's Project STAR program.
+You help regional education coordinators understand teacher data, identify underserved areas, and recommend science/math capacity-building programs.
+No region has been selected. Ask the user to select a region from the dashboard to get data-grounded insights.
+Keep your response brief and friendly.
+DO NOT fabricate statistics. DO NOT cite any policy document numbers.
+"""
 
 
 @router.post("/chat", response_model=ChatResponse)
-async def chat(body: ChatRequest, request: Request) -> ChatResponse:
-    pitch_mode: bool = request.app.state.pitch_mode
+async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
+    ctx: RegionalScoreContext | None = request.region_context
 
-    # ── Guard: region must be selected before asking questions ──────────────
-    if body.region_context is None:
+    if ctx:
+        try:
+            programs = await fetch_active_programs(db, ctx.region, limit=3)
+        except Exception as e:
+            logger.warning(f"Failed to fetch active programs: {e}")
+            programs = []
+
+        prompt_fn = _MODE_PROMPT_MAP.get(request.mode, get_advisor_prompt)
+        system_prompt = prompt_fn(ctx, programs)
+        sources = build_source_citations(ctx)
+    else:
+        system_prompt = _GENERIC_STARBOT_PROMPT
+        sources = ["POLARIS system knowledge base"]
+
+    try:
+        client = GeminiClient()
+        raw_response = await client.complete(
+            system_prompt=system_prompt,
+            user_content=request.message,
+        )
+    except Exception as e:
+        logger.exception("LLM call failed")
         return ChatResponse(
-            response="Please select a region on the map first, then ask me about it.",
+            response=f"⚠️ STARBOT is temporarily unavailable. ({type(e).__name__})",
             sources=[],
         )
 
-    region_name: str = body.region_context.region
+    clean_response = _CITATION_HALLUCINATION_PATTERN.sub("", raw_response).strip()
 
-    # ── PITCH MODE ───────────────────────────────────────────────────────────
-    if pitch_mode:
-        key = body.message.strip().lower()
-        entry = PITCH_RESPONSES.get(key)
-
-        if entry is None:
-            response_text = _GENERIC_FALLBACK
-        else:
-            try:
-                ctx = body.region_context.model_dump()
-                response_text = entry["template"].format(
-                    region=ctx["region"],
-                    assessment_val=round(ctx["ppst_assessment_literacy"], 2),
-                    gap=round(0.80 - ctx["ppst_assessment_literacy"], 2),
-                    research_val=round(ctx["ppst_research_based_practice"], 2),
-                    score=round(ctx["underserved_score"]),
-                    traffic_light=ctx["traffic_light"],
-                    ratio=ctx["teacher_student_ratio"],
-                    coverage=round(ctx["star_coverage_pct"]),
-                    spec=round(ctx["specialization_pct"]),
-                )
-            except (KeyError, ValueError, TypeError):
-                response_text = _GENERIC_FALLBACK
-
-        await asyncio.sleep(0.6)
-        return ChatResponse(
-            response=response_text,
-            sources=[f"POLARIS regional_scores — {region_name}"],
-        )
-
-    # ── LIVE MODE (Gemini) ────────────────────────────────────────────────────
-    ctx_summary = body.region_context.model_dump_json(indent=None)
-    user_content = f"{body.message}\n\nRegional context:\n{ctx_summary}"
-
-    client = GeminiClient()
-    raw_text = await client.complete(
-        system_prompt=_STARBOT_QUERY_SYSTEM,
-        user_content=user_content,
-    )
-
-    # Strip any [Source: ...] tags the model may hallucinate (§E.1)
-    clean_text = _SOURCE_TAG_RE.sub("", raw_text).strip()
-
-    return ChatResponse(
-        response=clean_text,
-        sources=[f"POLARIS regional_scores — {region_name}"],
-    )
+    return ChatResponse(response=clean_response, sources=sources)

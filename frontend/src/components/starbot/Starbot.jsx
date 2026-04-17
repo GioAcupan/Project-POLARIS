@@ -1,15 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { Bot, Copy, MessageSquare, Minimize2, RefreshCw, Send, X } from "lucide-react"
+import { Copy, MessageSquare, Minimize2, RefreshCw, Send, X } from "lucide-react"
+import ReactMarkdown from "react-markdown"
 
 import { chat } from "@/lib/api"
 import { useDashboardStore } from "@/stores/dashboardStore"
-
-import StreamingResponse from "./StreamingResponse"
-
-const CHIP_ONE_LABEL = "💡 Biggest PPST gap here?"
-const CHIP_ONE_PROMPT = "Which PPST domain has the biggest gap in this region?"
-const CHIP_TWO_LABEL = "📊 How does this region compare nationally?"
-const CHIP_TWO_PROMPT = "How does this region compare to the national average?"
 
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -29,8 +23,12 @@ export default function Starbot() {
   const launcherRef = useRef(null)
   const listRef = useRef(null)
 
-  const activeRegion = useDashboardStore((state) => state.activeRegion)
+  const activeRegionName = useDashboardStore((state) => state.activeRegion)
   const regions = useDashboardStore((state) => state.regions)
+  const activeRegion = useMemo(
+    () => regions.find((row) => row.region === activeRegionName) ?? null,
+    [activeRegionName, regions],
+  )
   const resetConversation = useMemo(
     () => () => {
       setMessages([])
@@ -78,15 +76,16 @@ export default function Starbot() {
     return () => document.removeEventListener("mousedown", onOutsideClick)
   }, [isOpen])
 
+  useEffect(() => {
+    setMessages([])
+  }, [activeRegion?.region])
+
   const hasMessages = messages.length > 0
 
   async function sendPrompt(rawMessage) {
     const message = rawMessage.trim()
     if (!message || isSending) return
-
-    const regionContext = activeRegion
-      ? regions.find((row) => row.region === activeRegion) ?? null
-      : null
+    if (!activeRegion) return
 
     setIsSending(true)
     setMessages((prev) => [...prev, { id: makeId(), role: "user", text: message }])
@@ -95,14 +94,15 @@ export default function Starbot() {
     try {
       const response = await chat({
         message,
-        region_context: regionContext,
+        region_context: activeRegion,
+        mode: "advisor",
       })
       setMessages((prev) => [
         ...prev,
         {
           id: makeId(),
           role: "assistant",
-          response: response.response,
+          content: response.response,
           sources: response.sources ?? [],
         },
       ])
@@ -114,13 +114,17 @@ export default function Starbot() {
         {
           id: makeId(),
           role: "assistant",
-          response: fallbackMessage,
+          content: fallbackMessage,
           sources: [],
         },
       ])
     } finally {
       setIsSending(false)
     }
+  }
+
+  function sendChipMessage(text) {
+    void sendPrompt(text)
   }
 
   function onDragStart(event) {
@@ -188,7 +192,40 @@ export default function Starbot() {
 
           {!isMinimized && (
             <div className="flex h-[460px] flex-col">
+              <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-50 px-4 py-2">
+                <span className="text-sm font-semibold text-slate-700">STARBOT Advisor</span>
+                {activeRegion ? (
+                  <>
+                    <span className="text-slate-400">·</span>
+                    <span className="text-xs text-slate-600">Active: {activeRegion.region}</span>
+                    <span
+                      className={`inline-block h-2 w-2 rounded-full ${
+                        activeRegion.traffic_light === "red"
+                          ? "bg-red-500"
+                          : activeRegion.traffic_light === "yellow"
+                            ? "bg-yellow-500"
+                            : activeRegion.traffic_light === "green"
+                              ? "bg-green-500"
+                              : "bg-slate-400"
+                      }`}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <span className="text-slate-400">·</span>
+                    <span className="text-xs text-slate-500">Ready</span>
+                    <span className="inline-block h-2 w-2 rounded-full bg-slate-400" />
+                  </>
+                )}
+              </div>
               <div ref={listRef} className="flex-1 space-y-3 overflow-y-auto p-4">
+                {!hasMessages && (
+                  <div className="rounded-2xl bg-white/70 px-3 py-2.5 text-sm text-slate-700">
+                    {activeRegion
+                      ? `Region ${activeRegion.region} analysis complete. How would you like to proceed?`
+                      : "Hello Maricris! Please select a region on the map or a Critical Ping to begin our strategic analysis."}
+                  </div>
+                )}
                 {messages.map((message) => (
                   <article key={message.id} className="space-y-1.5">
                     {message.role === "user" ? (
@@ -197,7 +234,9 @@ export default function Starbot() {
                       </div>
                     ) : (
                       <div className="mr-auto max-w-[95%] rounded-2xl bg-white/80 px-3 py-2.5 text-slate-800">
-                        <StreamingResponse fullText={message.response} />
+                        <div className="prose prose-sm max-w-none">
+                          <ReactMarkdown>{message.content ?? ""}</ReactMarkdown>
+                        </div>
                         {message.sources?.length > 0 && (
                           <p className="mt-2 text-xs text-slate-500">
                             [Source: {message.sources.join(", ")}]
@@ -207,7 +246,7 @@ export default function Starbot() {
                           <button
                             type="button"
                             onClick={() => {
-                              void navigator.clipboard.writeText(message.response).then(() => {
+                              void navigator.clipboard.writeText(message.content ?? "").then(() => {
                                 setCopiedMessageId(message.id)
                               })
                             }}
@@ -233,22 +272,22 @@ export default function Starbot() {
               </div>
 
               <div className="flex flex-col gap-2 border-t border-white/50 p-3">
-                {!hasMessages && (
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => void sendPrompt(CHIP_ONE_PROMPT)}
-                      className="rounded-full border border-white/20 bg-white/40 px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-indigo-500/10 hover:text-slate-900"
-                    >
-                      {CHIP_ONE_LABEL}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => void sendPrompt(CHIP_TWO_PROMPT)}
-                      className="rounded-full border border-white/20 bg-white/40 px-3 py-1.5 text-sm font-medium text-slate-900 hover:bg-indigo-500/10 hover:text-slate-900"
-                    >
-                      {CHIP_TWO_LABEL}
-                    </button>
+                {activeRegion && messages.length === 0 && (
+                  <div className="flex flex-col gap-2 px-4 pb-3">
+                    {[
+                      { icon: "💡", text: "Why is this region red?" },
+                      { icon: "📊", text: "Compare to National Average" },
+                      { icon: "🛠️", text: "Suggested Programs" },
+                    ].map((chip) => (
+                      <button
+                        key={chip.text}
+                        type="button"
+                        onClick={() => sendChipMessage(chip.text)}
+                        className="rounded-full bg-slate-100 px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-200"
+                      >
+                        {chip.icon} {chip.text}
+                      </button>
+                    ))}
                   </div>
                 )}
                 <form
@@ -262,12 +301,17 @@ export default function Starbot() {
                     value={inputValue}
                     onChange={(event) => setInputValue(event.target.value)}
                     maxLength={500}
-                    placeholder="Ask STARBOT about this region..."
+                    disabled={!activeRegion}
+                    placeholder={
+                      activeRegion
+                        ? "Ask STARBOT about this region..."
+                        : "Select a region on the map to begin..."
+                    }
                     className="min-w-0 flex-1 bg-transparent px-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
                   />
                   <button
                     type="submit"
-                    disabled={isSending || inputValue.trim().length === 0}
+                    disabled={isSending || !activeRegion || inputValue.trim().length === 0}
                     className="inline-flex size-8 items-center justify-center rounded-full bg-brand-blue text-white disabled:cursor-not-allowed disabled:opacity-50"
                     title="Send"
                   >
@@ -291,7 +335,15 @@ export default function Starbot() {
         aria-label="Toggle STARBOT"
         title="STARBOT"
       >
-        <Bot className="size-6" aria-hidden />
+        <span className="flex h-full w-full items-center justify-center">
+          <img
+            src="/assets/sidebar/logos/STARBOT Logo transparent.png"
+            alt="STARBOT"
+            className="block h-9 w-9 object-contain object-center"
+            loading="lazy"
+            decoding="async"
+          />
+        </span>
       </button>
     </div>
   )

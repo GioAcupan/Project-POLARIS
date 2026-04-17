@@ -1,22 +1,19 @@
-"""Gemini LLM wrapper for POLARIS.
+"""Thin async wrapper around the google-genai SDK (Gemini 2.x compatible)."""
+from __future__ import annotations
 
-Full hardening (retry logic, token budgets, prompt versioning) lives in
-polaris_starbot_roadmap.md — this module holds the minimal interface that
-the rest of the codebase imports against.
-"""
-
+import asyncio
 import os
 
-import google.generativeai as genai  # type: ignore[import-untyped]
+from google import genai
+from google.genai import types
 
-_MODEL_NAME = "gemini-1.5-flash"
+_MODEL_NAME = "gemini-flash-latest"  # stable alias; also works: "gemini-2.5-flash"
 
 
 class GeminiClient:
-    """Thin async wrapper around the Gemini generative AI SDK.
+    """Thin async wrapper around the google-genai SDK.
 
-    Raises RuntimeError on construction if GOOGLE_GEMINI_API_KEY is absent
-    so failures surface immediately rather than at first API call.
+    Raises RuntimeError on construction if GOOGLE_GEMINI_API_KEY is absent.
     """
 
     def __init__(self) -> None:
@@ -26,28 +23,22 @@ class GeminiClient:
                 "GOOGLE_GEMINI_API_KEY is not set. "
                 "Set it in .env or run with POLARIS_PITCH_MODE=true to bypass Gemini."
             )
-        genai.configure(api_key=api_key)
-        self._model = genai.GenerativeModel(
-            model_name=_MODEL_NAME,
-            system_instruction=None,  # injected per-call via system_prompt
-        )
+        self._client = genai.Client(api_key=api_key)
 
     async def complete(self, *, system_prompt: str, user_content: str) -> str:
-        """Send a single-turn prompt and return the response text.
+        """Single-turn prompt, returns response text.
 
-        Uses the synchronous SDK call wrapped in an executor so the event
-        loop is not blocked. Full async streaming is a roadmap item.
+        Uses the sync SDK call wrapped in an executor so the event loop is not blocked.
         """
-        import asyncio
-
-        model = genai.GenerativeModel(
-            model_name=_MODEL_NAME,
-            system_instruction=system_prompt,
-        )
+        config = types.GenerateContentConfig(system_instruction=system_prompt)
 
         loop = asyncio.get_event_loop()
         response = await loop.run_in_executor(
             None,
-            lambda: model.generate_content(user_content),
+            lambda: self._client.models.generate_content(
+                model=_MODEL_NAME,
+                contents=user_content,
+                config=config,
+            ),
         )
         return response.text
