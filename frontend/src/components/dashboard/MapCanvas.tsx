@@ -55,6 +55,36 @@ function fillForScore(score: number): string {
   return "var(--color-signal-good)"
 }
 
+type RegionBoundaryState = "default" | "hover" | "active"
+
+function boundaryStyleForState(state: RegionBoundaryState): L.PathOptions {
+  if (state === "active") {
+    return {
+      color: "var(--color-chart-highlight)",
+      weight: 5.2,
+      opacity: 1,
+      lineJoin: "round",
+      lineCap: "round",
+    }
+  }
+  if (state === "hover") {
+    return {
+      color: "var(--color-chart-primary)",
+      weight: 2.4,
+      opacity: 0.98,
+      lineJoin: "round",
+      lineCap: "round",
+    }
+  }
+  return {
+    color: "var(--polaris-map-region-border)",
+    weight: 1.35,
+    opacity: 0.9,
+    lineJoin: "round",
+    lineCap: "round",
+  }
+}
+
 function MapViewportController({
   geoLayerRef,
   activeRegion,
@@ -85,10 +115,7 @@ function MapViewportController({
       const featureRegion = g.feature?.properties?.region as string | undefined
       const isActive = activeRegion != null && featureRegion === activeRegion
       if ("setStyle" in g && typeof g.setStyle === "function") {
-        ;(g as L.Path).setStyle({
-          color: isActive ? "var(--color-text-primary)" : "var(--polaris-map-region-border)",
-          weight: isActive ? 2.8 : 1.2,
-        })
+        ;(g as L.Path).setStyle(boundaryStyleForState(isActive ? "active" : "default"))
       }
       if (isActive && g.bringToFront) g.bringToFront()
     })
@@ -311,29 +338,22 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
               return {
                 fillColor: fillForScore(score),
                 fillOpacity: mapFillOpacity,
-                color:
-                  activeRegion && regionName === activeRegion
-                    ? "var(--color-text-primary)"
-                    : "var(--polaris-map-region-border)",
-                weight: activeRegion && regionName === activeRegion ? 2.8 : 1.2,
+                ...boundaryStyleForState(activeRegion && regionName === activeRegion ? "active" : "default"),
               }
             }}
             onEachFeature={(feature, layer) => {
               const pathLayer = layer as L.Path
               const regionName = regionNameFromFeature(feature)
+              const isRegionActive = () => {
+                const selectedRegion = dashboardStore.getState().activeRegion
+                return selectedRegion != null && regionName === selectedRegion
+              }
               pathLayer.on("mouseover", () => {
-                pathLayer.setStyle({
-                  color: "var(--color-text-secondary)",
-                  weight: 2,
-                })
+                pathLayer.setStyle(boundaryStyleForState(isRegionActive() ? "active" : "hover"))
                 pathLayer.bringToFront()
               })
               pathLayer.on("mouseout", () => {
-                const isActive = activeRegion != null && regionName === activeRegion
-                pathLayer.setStyle({
-                  color: isActive ? "var(--color-text-primary)" : "var(--polaris-map-region-border)",
-                  weight: isActive ? 2.8 : 1.2,
-                })
+                pathLayer.setStyle(boundaryStyleForState(isRegionActive() ? "active" : "default"))
               })
               pathLayer.on("click", (event: L.LeafletMouseEvent) => {
                 if (!regionName) return
