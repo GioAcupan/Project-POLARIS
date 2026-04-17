@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { CalendarDays, Laptop, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -160,32 +160,12 @@ export function TrainingModuleAssignmentModal({
     trainingTypes: [],
     trainingTypeInput: "",
     host: "",
-    participantCap: "",
-    targetLevels: [],
-    subjectTags: [],
+    participantCap: String(selectedCount || ""),
+    targetLevels: initialLevels,
+    subjectTags: initialSubjects,
     competencyFocus: [],
     relevanceNote: "",
   })
-
-  useEffect(() => {
-    if (!open) return
-    setMode("create")
-    setSearchQuery("")
-    setSelectedExistingId("")
-    setErrors({})
-    setForm({
-      title: "",
-      description: "",
-      trainingTypes: [],
-      trainingTypeInput: "",
-      host: "",
-      participantCap: String(selectedCount || ""),
-      targetLevels: initialLevels,
-      subjectTags: initialSubjects,
-      competencyFocus: [],
-      relevanceNote: "",
-    })
-  }, [initialLevels, initialSubjects, open, selectedCount])
 
   const filteredModules = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()

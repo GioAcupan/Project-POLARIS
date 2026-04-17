@@ -6,7 +6,7 @@
 - Effective backend base URL in frontend: `VITE_API_BASE_URL` fallback `http://localhost:8000` (`frontend/src/lib/api.ts`).
 - Mounted static backend files: `GET /static/{path}` from `api/static`.
 - FastAPI default docs surface (enabled): `GET /docs`, `GET /redoc`, `GET /openapi.json`.
-- CORS: allow all origins/methods/headers (`api/main.py`).
+- CORS: configurable allowlist via `POLARIS_CORS_ORIGINS` plus localhost regex fallback (`api/main.py::_read_cors_origins`, `CORSMiddleware`).
 - Auth: no auth dependency/middleware on API routes.
 
 ## 2) Complete API Registry
@@ -14,7 +14,7 @@
 | Method | Path | Handler | Request Schema | Response Schema |
 |---|---|---|---|---|
 | GET | `/health` | `api/main.py::health` | None | inline `{status, pitch_mode}` |
-| POST | `/chat` | `api/routers/chat.py::chat` | `ChatRequest` | `ChatResponse` |
+| POST | `/chat` | `api/routers/chat.py::chat` | `ChatRequest` (`message`, `mode`, optional `region_context`) | `ChatResponse` |
 | GET | `/regions/` | `api/routers/regions.py::list_regions` | query: none | `list[RegionalScoreContext]` (includes v3.5 metrics: `student_pop`, `economic_loss`, `lays_score`) |
 | GET | `/regions/dashboard-ai-reports` | `api/routers/regions.py::list_dashboard_ai_reports` | query: `limit>=1` | `DashboardAiReportsResponse` (nested `RegionalScoreContext` includes v3.5 metrics) |
 | GET | `/intelligence/national-skill-radar` | `api/routers/intelligence.py::national_skill_radar` | None | `NationalSkillRadarOut` |
@@ -35,8 +35,8 @@
 
 - Router: `api/routers/chat.py`
 - Schemas: `api/schemas/chat.py`
-- Intel/service: `api/intel/llm_client.py`
-- DB usage: none directly (uses passed `region_context` payload only)
+- Intel/service: `api/intel/llm_client.py`, `api/intel/consultant_context.py`, `api/intel/system_prompts.py`
+- DB usage: reads `programs` table via `fetch_active_programs` (best-effort, optional for response generation)
 
 ### `/regions/`, `/regions/dashboard-ai-reports`
 
@@ -107,11 +107,11 @@
 
 | Frontend File | API Function | Method + Path |
 |---|---|---|
-| `frontend/src/components/starbot/Starbot.jsx` | `chat` | `POST /chat` |
-| `frontend/src/hooks/useRegions.ts` -> used by `frontend/src/pages/Dashboard.tsx`, `frontend/src/pages/ReportGenerator.jsx` | `getRegions` | `GET /regions/` |
+| `frontend/src/components/starbot/Starbot.jsx` | `chat` (`mode: "advisor"`) | `POST /chat` |
+| `frontend/src/pages/ConsultantPage.tsx` | `chat` (mode-switched: advisor + drafting modes) | `POST /chat` |
+| `frontend/src/hooks/useRegions.ts` -> used by `frontend/src/pages/Dashboard.tsx`, `frontend/src/pages/ConsultantPage.tsx` | `getRegions` | `GET /regions/` |
 | `frontend/src/hooks/useRegions.ts` -> used by `frontend/src/pages/Dashboard.tsx` | `getDashboardAiReports(5)` | `GET /regions/dashboard-ai-reports?limit=5` |
-| `frontend/src/hooks/useNationalRadar.ts` -> used by `frontend/src/pages/Dashboard.tsx` | `getNationalRadar` | `GET /intelligence/national-skill-radar` |
-| `frontend/src/pages/ReportGenerator.jsx` | `generateReport` | `POST /reports/generate` |
+| `frontend/src/hooks/useNationalRadar.ts` -> used by `frontend/src/pages/Dashboard.tsx`, `frontend/src/pages/ConsultantPage.tsx` | `getNationalRadar` | `GET /intelligence/national-skill-radar` |
 
 ## API helpers defined but not currently called by frontend components/pages
 
@@ -133,6 +133,7 @@ Primary migration files:
 - `db/migrations/001_init.sql` (base v3.1 objects)
 - `db/migrations/003_v34_module4_and_starbot.sql` (v3.4 additive objects)
 - `db/migrations/004_v35_impact_metrics.sql` (v3.5 additive `regional_scores` impact metrics)
+- `db/migrations/005_consultant_seed.sql` (consultant demo telemetry + active programs seed, idempotent data update)
 - `db/migrations/002_seed.sql` (seed data only; no new schema objects)
 
 ## Enums
@@ -376,7 +377,7 @@ Primary migration files:
 | Endpoint | Main DB objects touched |
 |---|---|
 | `GET /health` | none |
-| `POST /chat` | none (context-driven) |
+| `POST /chat` | `programs` (read-only active program lookup); uses request `region_context` as primary telemetry payload |
 | `GET /regions/` | `regional_scores` (includes v3.5 `student_pop`, `economic_loss`, `lays_score`) |
 | `GET /regions/dashboard-ai-reports` | `regional_scores` (same v3.5 metrics via `limited_results`) |
 | `GET /intelligence/national-skill-radar` | `regional_scores` |
@@ -393,5 +394,6 @@ Primary migration files:
 ## 7) Notes / Gaps
 
 - `db/migrations/002_seed.sql` states v3.4 seed requires running `003_v34_module4_and_starbot.sql` first; if another document says `001 -> 002 -> 003`, that sequence conflicts for v3.4 seed inserts.
-- API endpoint inventory is stable (no new route paths), while schema expanded in v3.5 via `db/migrations/004_v35_impact_metrics.sql` and is now surfaced by `/regions/*`.
+- API endpoint inventory is stable (no new route paths), while request/response behavior changed for `/chat` (mode-switched prompting, best-effort `programs` lookup, and optional no-region fallback).
+- Gemini integration path changed in `api/intel/llm_client.py` from `google.generativeai` model wrapper style to `google.genai` client calls (`models.generate_content`).
 - Some base schema tables exist but are not directly exposed by current API endpoints (`schools`, `trainings`, `outcomes`, `needs_signals`, `regional_nat_trends`).

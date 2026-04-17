@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom"
 
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
 import Dashboard from "@/pages/Dashboard"
-import ReportGenerator from "@/pages/ReportGenerator"
+import ConsultantPage from "@/pages/ConsultantPage"
 import TeacherAssignment from "@/pages/TeacherAssignment"
 
 export function App() {
@@ -14,7 +14,7 @@ export function App() {
           path="teacher-assignment"
           element={<TeacherAssignment onAssignTeachers={() => undefined} />}
         />
-        <Route path="reports" element={<ReportGenerator />} />
+        <Route path="reports" element={<ConsultantPage />} />
       </Route>
     </Routes>
   )

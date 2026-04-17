@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -21,9 +21,10 @@ class RegionalScoreContext(BaseModel):
     specialization_pct: float
     star_coverage_pct: float
     avg_nat_score: float
-    student_pop: int
-    economic_loss: float
-    lays_score: float
+    total_teachers: int | None = None
+    student_pop: int | None = None
+    economic_loss: float | None = None
+    lays_score: float | None = None
     ppst_content_knowledge: float
     ppst_curriculum_planning: float
     ppst_research_based_practice: float
@@ -40,7 +41,13 @@ class DashboardAiReportsResponse(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str = Field(..., max_length=500)
-    region_context: RegionalScoreContext | None = None
+    mode: Literal[
+        "advisor",
+        "drafting_accomplishment",
+        "drafting_intervention",
+        "drafting_needs_assessment",
+    ] = "advisor"
+    region_context: Optional[RegionalScoreContext] = None
 
 
 class ChatResponse(BaseModel):

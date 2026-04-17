@@ -89,11 +89,7 @@ export function EffectOverviewCard() {
 
   return (
     <section
-      className="w-full rounded-[24px] border border-white/40 bg-white/75 px-[24px] py-[20px] font-sans backdrop-blur-[24px]"
-      style={{
-        boxShadow:
-          "0 10px 25px -5px rgba(26, 94, 168, 0.1), 0 8px 10px -6px rgba(26, 94, 168, 0.1)",
-      }}
+      className="polaris-glass-default w-full px-[24px] py-[20px] font-sans"
     >
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-2">

@@ -2,6 +2,8 @@ import { useState } from "react"
 
 import { DemandView } from "@/components/dashboard/detail-views/DemandView"
 import { ImpactView } from "@/components/dashboard/detail-views/ImpactView"
+import { buildRegionalTabData } from "@/components/dashboard/detail-views/regionalTabData"
+import { SupplyView } from "@/components/dashboard/detail-views/SupplyView"
 import { SummaryView } from "@/components/dashboard/detail-views/SummaryView"
 import type { RegionHealth, RegionalScore } from "@/types/polaris"
 
@@ -50,12 +52,13 @@ function pillClass(trafficLight: RegionHealth["traffic_light"]): string {
   return "bg-signal-good text-text-primary"
 }
 
-export function RegionalHealthCard({ selectedRegion }: { selectedRegion: RegionalScore }) {
-  const region = toRegionHealth(selectedRegion)
-  const [activeTab, setActiveTab] = useState<"summary" | "demand" | "impact">("summary")
+export function RegionalHealthCardContent({ regionData }: { regionData: RegionalScore }) {
+  const region = toRegionHealth(regionData)
+  const tabData = buildRegionalTabData(regionData)
+  const [activeTab, setActiveTab] = useState<"summary" | "supply" | "demand" | "impact">("summary")
 
   return (
-    <section className="rounded-glass p-4 polaris-glass-card">
+    <section className="rounded-glass p-3 polaris-glass-card">
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-heading text-section-title font-extrabold text-text-primary">{region.region}</h2>
         <span
@@ -65,34 +68,41 @@ export function RegionalHealthCard({ selectedRegion }: { selectedRegion: Regiona
         </span>
       </div>
       <p className="mt-1 text-metric font-semibold text-text-primary">Score: {Math.round(region.score)}</p>
-      <p className="mt-3 text-content text-text-secondary">{keyInsight(region)}</p>
+      <p className="mt-2 text-content text-text-secondary">{keyInsight(region)}</p>
 
-      <div className="mt-4 flex gap-2">
-        {(["summary", "demand", "impact"] as const).map((tab) => {
-          const active = activeTab === tab
-          return (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={[
-                "rounded-full border px-3 py-1 text-label font-semibold uppercase tracking-wide transition",
-                active
-                  ? "border-indigo-500/30 bg-indigo-500/10 text-slate-900"
-                  : "border-white/20 bg-white/40 text-text-secondary",
-              ].join(" ")}
-            >
-              {tab}
-            </button>
-          )
-        })}
+      <div className="mt-3 rounded-full border border-[#7ea3d7] bg-white/35 p-1">
+        <div className="grid grid-cols-4 gap-1">
+          {(["summary", "supply", "impact", "demand"] as const).map((tab) => {
+            const active = activeTab === tab
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={[
+                  "capitalize rounded-full px-3 py-1 text-label font-semibold tracking-wide transition",
+                  active
+                    ? "bg-[#8ec8ff] text-[#1e2a3b]"
+                    : "bg-transparent text-[#1f62ac]",
+                ].join(" ")}
+              >
+                {tab}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      <div className="mt-3">
-        {activeTab === "summary" ? <SummaryView regionHealth={region} /> : null}
-        {activeTab === "demand" ? <DemandView selectedRegion={selectedRegion} /> : null}
-        {activeTab === "impact" ? <ImpactView selectedRegion={selectedRegion} /> : null}
+      <div className="mt-2.5">
+        {activeTab === "summary" ? <SummaryView regionHealth={region} summaryData={tabData.summary} /> : null}
+        {activeTab === "supply" ? <SupplyView selectedRegion={regionData} supplyData={tabData.supply} /> : null}
+        {activeTab === "demand" ? <DemandView selectedRegion={regionData} demandData={tabData.demand} /> : null}
+        {activeTab === "impact" ? <ImpactView selectedRegion={regionData} impactData={tabData.impact} /> : null}
       </div>
     </section>
   )
+}
+
+export function RegionalHealthCard({ selectedRegion }: { selectedRegion: RegionalScore }) {
+  return <RegionalHealthCardContent regionData={selectedRegion} />
 }
