@@ -622,7 +622,7 @@ const DEFAULT_FILTERS: AssignmentFilters = {
   selectedSubjects: [],
   selectedRegion: "all",
   schoolQuery: "",
-  sortMode: "highToLow",
+  sortMode: "lowToHigh",
   randomSeed: 0,
 }
 
