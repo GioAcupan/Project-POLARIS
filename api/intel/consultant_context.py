@@ -57,9 +57,15 @@ async def fetch_active_programs(
 
 def build_region_fact_block(ctx: RegionalScoreContext) -> str:
     """The CONTEXT block injected verbatim into system prompts. Ground truth for the LLM."""
+    total_teachers = int(ctx.total_teachers or 0)
+    student_pop = int(ctx.student_pop or 0)
     # Prefer pre-computed stored values; fall back to live computation
-    eoc = ctx.economic_loss if getattr(ctx, "economic_loss", 0) else compute_eoc(ctx.student_pop, ctx.avg_nat_score)
-    lays = ctx.lays_score if getattr(ctx, "lays_score", 0) else compute_lays(ctx.avg_nat_score)
+    eoc = (
+        float(ctx.economic_loss)
+        if getattr(ctx, "economic_loss", 0)
+        else compute_eoc(student_pop, ctx.avg_nat_score)
+    )
+    lays = float(ctx.lays_score) if getattr(ctx, "lays_score", 0) else compute_lays(ctx.avg_nat_score)
     tax = compute_tax_leak(eoc)
 
     ppst = {
@@ -86,12 +92,12 @@ COMPOSITE SCORES:
   Demand Subscore:        {ctx.demand_subscore:.1f}/100
 
 WORKFORCE TELEMETRY:
-  Total Teachers:         {ctx.total_teachers:,}
+  Total Teachers:         {total_teachers:,}
   Teacher-Student Ratio:  1:{ctx.teacher_student_ratio:.0f}
   Specialization Rate:    {ctx.specialization_pct:.1f}%
   STAR Coverage:          {ctx.star_coverage_pct:.1f}%
   Avg NAT Score:          {ctx.avg_nat_score:.1f}%
-  Total Student Pop:      {ctx.student_pop:,}
+  Total Student Pop:      {student_pop:,}
 
 ECONOMIC IMPACT (cite these exactly):
   Annual Economic Loss (EOC): PHP {eoc}B
