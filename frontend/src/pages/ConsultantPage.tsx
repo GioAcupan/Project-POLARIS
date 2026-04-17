@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 
+import { EffectOverviewCard } from "@/components/dashboard/EffectOverviewCard"
+import { PPSTRadarCard } from "@/components/dashboard/PPSTRadarCard"
 import { RegionalHealthCardContent } from "@/components/dashboard/RegionalHealthCard"
+import { useNationalRadar } from "@/hooks/useNationalRadar"
 import { useRegions } from "@/hooks/useRegions"
 import { chat } from "@/lib/api"
+import { dashboardStore } from "@/stores/dashboardStore"
 import type { ChatRequest, RegionalScore } from "@/types/polaris"
 
 const MODES: Array<{
@@ -44,18 +49,6 @@ function computeEOC(studentPop?: number, avgNatScore?: number): string | null {
   return (nonProficient * 290000 / 1e9).toFixed(1)
 }
 
-function computeLAYS(avgNatScore?: number): string | null {
-  if (avgNatScore == null) return null
-  return (12 * (avgNatScore / 100)).toFixed(1)
-}
-
-function computeTaxLeak(eoc: string | number | null): string | null {
-  if (eoc == null) return null
-  const numeric = typeof eoc === "number" ? eoc : Number.parseFloat(eoc)
-  if (!Number.isFinite(numeric)) return null
-  return (numeric * 0.144).toFixed(1)
-}
-
 type Message = {
   role: "user" | "assistant"
   content: string
@@ -64,7 +57,9 @@ type Message = {
 
 export default function ConsultantPage() {
   const { data: regions = [] } = useRegions()
+  const { data: nationalRadar = null } = useNationalRadar()
   const [selectedRegion, setSelectedRegion] = useState<RegionalScore | null>(null)
+  const [leftPage, setLeftPage] = useState(0)
   const [activeMode, setActiveMode] = useState<ChatRequest["mode"]>("advisor")
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState("")
@@ -82,14 +77,76 @@ export default function ConsultantPage() {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
+  useEffect(() => {
+    setLeftPage(0)
+  }, [selectedRegion?.region])
+
+  useEffect(() => {
+    dashboardStore.setActiveRegion(selectedRegion?.region ?? null)
+  }, [selectedRegion?.region])
+
+  useEffect(() => {
+    return () => {
+      dashboardStore.setActiveRegion(null)
+    }
+  }, [])
+
   const eoc = selectedRegion
     ? (selectedRegion.economic_loss?.toFixed(1) ??
       computeEOC(selectedRegion.student_pop, selectedRegion.avg_nat_score))
     : null
-  const lays = selectedRegion
-    ? (selectedRegion.lays_score?.toFixed(1) ?? computeLAYS(selectedRegion.avg_nat_score))
-    : null
-  const taxLeak = computeTaxLeak(eoc)
+  const leftPages = [
+    {
+      key: "economic-impact",
+      label: "Economic Impact",
+      render: () => (
+        <div className="space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Economic Impact
+          </h3>
+          <EffectOverviewCard />
+        </div>
+      ),
+    },
+    {
+      key: "regional-health",
+      label: "Regional Health",
+      render: () => (
+        <div className="space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Regional Health
+          </h3>
+          {selectedRegion ? <RegionalHealthCardContent regionData={selectedRegion} /> : null}
+        </div>
+      ),
+    },
+    {
+      key: "ppst-radar",
+      label: "PPST Skill Radar",
+      render: () => (
+        <div className="space-y-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            PPST Skill Radar
+          </h3>
+          <div className="mx-auto w-full max-w-[420px]">
+            {/* Uses national benchmark radar data for now; regional radar mapping is out of scope. */}
+            <PPSTRadarCard radar={nationalRadar} />
+          </div>
+        </div>
+      ),
+    },
+  ] as const
+
+  const pageCount = leftPages.length
+  const activeLeftPage = leftPages[leftPage] ?? leftPages[0]
+
+  function handlePrevLeftPage() {
+    setLeftPage((current) => (current - 1 + pageCount) % pageCount)
+  }
+
+  function handleNextLeftPage() {
+    setLeftPage((current) => (current + 1) % pageCount)
+  }
 
   async function handleSend() {
     if (!inputValue.trim() || isStreaming) return
@@ -133,9 +190,9 @@ export default function ConsultantPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
-      <div className="flex min-w-[320px] w-1/3 flex-col overflow-y-auto border-r border-gray-200 bg-white">
-        <div className="border-b border-gray-100 p-4">
+    <div className="flex h-full min-h-0 gap-4 md:gap-5">
+      <section className="flex min-h-0 w-1/3 min-w-[320px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-200 p-4">
           <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
             Region
           </label>
@@ -145,6 +202,7 @@ export default function ConsultantPage() {
             onChange={(e) => {
               const nextRegion = regions.find((rg) => rg.region === e.target.value) ?? null
               setSelectedRegion(nextRegion)
+              setLeftPage(0)
               setMessages([])
             }}
           >
@@ -156,47 +214,61 @@ export default function ConsultantPage() {
           </select>
         </div>
 
-        {selectedRegion ? (
-          <>
-            <div className="space-y-3 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-                Economic Impact
-              </h3>
-              <ImpactCard
-                label="Annual Economic Loss (EOC)"
-                value={eoc ? `PHP ${eoc}B` : "N/A"}
-                subtext="GDP lost to non-proficiency"
-                severity="critical"
-              />
-              <ImpactCard
-                label="Annual Tax Revenue Leak"
-                value={taxLeak ? `PHP ${taxLeak}B` : "N/A"}
-                subtext="14.4% of regional EOC"
-                severity="warning"
-              />
-              <ImpactCard
-                label="Learning-Adjusted Years"
-                value={lays ? `${lays} / 12 yrs` : "N/A"}
-                subtext="Actual learning vs. expected"
-                severity="info"
-              />
-            </div>
-            <div className="px-4 pb-4">
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                Regional Health
-              </h3>
-              <RegionalHealthCardContent regionData={selectedRegion} />
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-1 items-center justify-center p-8 text-center text-sm text-gray-400">
-            Select a region to see intelligence data
+        <div className="flex min-h-0 flex-1 flex-col p-4">
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
+            {selectedRegion ? (
+              <div className="flex min-h-0 flex-1 flex-col">{activeLeftPage.render()}</div>
+            ) : (
+              <div className="flex flex-1 items-center justify-center p-8 text-center text-sm text-gray-400">
+                Select a region to see intelligence data
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
 
-      <div className="flex flex-1 flex-col">
-        <div className="border-b border-gray-200 bg-white px-6 py-4">
+        <div className="border-t border-slate-200 p-3">
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handlePrevLeftPage}
+              className="rounded-full p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="Previous page"
+              disabled={!selectedRegion}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <div className="flex items-center gap-2">
+              {leftPages.map((page, index) => {
+                const active = index === leftPage
+                return (
+                  <button
+                    key={page.key}
+                    type="button"
+                    onClick={() => setLeftPage(index)}
+                    aria-label={`Show ${page.label}`}
+                    className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                      active ? "bg-slate-800" : "bg-slate-300 hover:bg-slate-400"
+                    }`}
+                    disabled={!selectedRegion}
+                  />
+                )
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={handleNextLeftPage}
+              className="rounded-full p-1.5 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="Next page"
+              disabled={!selectedRegion}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-200 px-6 py-4">
           <div className="mb-3 flex items-center justify-between">
             <div>
               <h1 className="text-lg font-bold text-gray-900">Strategic Consultant</h1>
@@ -228,7 +300,7 @@ export default function ConsultantPage() {
           </p>
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto px-6 py-4">
+        <div className="flex-1 min-h-0 space-y-4 overflow-y-auto px-6 py-4">
           {messages.length === 0 ? (
             <StarterPrompts
               mode={activeMode}
@@ -279,10 +351,10 @@ export default function ConsultantPage() {
           <div ref={chatEndRef} />
         </div>
 
-        <div className="border-t border-gray-200 bg-white px-6 py-4">
+        <div className="border-t border-slate-200 px-6 py-4">
           <div className="flex gap-3">
             <textarea
-              className="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 resize-none rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-50"
               placeholder={
                 activeMode === "advisor"
                   ? `Ask about ${selectedRegion?.region || "a region"}... (e.g. "How do we stop the economic loss?")`
@@ -303,29 +375,7 @@ export default function ConsultantPage() {
             </button>
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-type ImpactCardProps = {
-  label: string
-  value: string
-  subtext: string
-  severity: "critical" | "warning" | "info"
-}
-
-function ImpactCard({ label, value, subtext, severity }: ImpactCardProps) {
-  const colors: Record<ImpactCardProps["severity"], string> = {
-    critical: "border-red-200 bg-red-50 text-red-700",
-    warning: "border-amber-200 bg-amber-50 text-amber-700",
-    info: "border-blue-200 bg-blue-50 text-blue-700",
-  }
-  return (
-    <div className={`rounded-xl border p-3 ${colors[severity]}`}>
-      <div className="text-xl font-bold">{value}</div>
-      <div className="mt-0.5 text-xs font-semibold">{label}</div>
-      <div className="text-xs opacity-70">{subtext}</div>
+      </section>
     </div>
   )
 }
