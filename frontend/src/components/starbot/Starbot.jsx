@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
-import { Bot, Copy, MessageSquare, Minimize2, RefreshCw, Send, X } from "lucide-react"
+import { Copy, MessageSquare, Minimize2, RefreshCw, Send, X } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 
 import { chat } from "@/lib/api"
@@ -335,7 +335,15 @@ export default function Starbot() {
         aria-label="Toggle STARBOT"
         title="STARBOT"
       >
-        <Bot className="size-6" aria-hidden />
+        <span className="flex h-full w-full items-center justify-center">
+          <img
+            src="/assets/sidebar/logos/STARBOT Logo transparent.png"
+            alt="STARBOT"
+            className="block h-9 w-9 object-contain object-center"
+            loading="lazy"
+            decoding="async"
+          />
+        </span>
       </button>
     </div>
   )

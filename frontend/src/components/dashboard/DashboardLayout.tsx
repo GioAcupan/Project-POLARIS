@@ -7,6 +7,7 @@ import Starbot from "@/components/starbot/Starbot"
 export function DashboardLayout() {
   const { pathname } = useLocation()
   const usesFlatWhiteSurface = pathname.startsWith("/teacher-assignment")
+  const showStarbot = pathname === "/"
 
   return (
     <div className={cn("flex h-screen overflow-hidden", usesFlatWhiteSurface ? "bg-white" : "polaris-app-shell")}>
@@ -16,7 +17,7 @@ export function DashboardLayout() {
           <Outlet />
         </div>
       </main>
-      <Starbot />
+      {showStarbot ? <Starbot /> : null}
     </div>
   )
 }
