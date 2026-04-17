@@ -37,7 +37,7 @@ class GeminiClient:
             None,
             lambda: self._client.models.generate_content(
                 model=_MODEL_NAME,
-                contents=user_content,
+                contents={"role": "user", "parts": [{"text": user_content}]},
                 config=config,
             ),
         )

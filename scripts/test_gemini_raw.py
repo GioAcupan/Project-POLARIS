@@ -7,34 +7,40 @@ from pathlib import Path
 from dotenv import load_dotenv
 from google import genai
 
-load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-key = os.getenv("GOOGLE_GEMINI_API_KEY", "").strip()
-print(f"Key prefix: {key[:6]}...")
-print(f"Key length: {len(key)}")
-print()
+def main() -> None:
+    load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-client = genai.Client(api_key=key)
+    key = os.getenv("GOOGLE_GEMINI_API_KEY", "").strip()
+    print(f"Key prefix: {key[:6]}...")
+    print(f"Key length: {len(key)}")
+    print()
 
-# Try to list models first
-print("=== List models ===")
-try:
-    for m in client.models.list():
-        actions = m.supported_actions if hasattr(m, "supported_actions") else "(no action info)"
-        print(f"  {m.name}: {actions}")
-except Exception as e:
-    print(f"LIST FAILED: {type(e).__name__}")
-    traceback.print_exc()
+    client = genai.Client(api_key=key)
 
-print()
-print("=== Generate content test ===")
-for model_name in ["gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash"]:
+    # Try to list models first
+    print("=== List models ===")
     try:
-        resp = client.models.generate_content(
-            model=model_name,
-            contents="Say hi in 3 words.",
-        )
-        print(f"  {model_name}: OK -> {resp.text!r}")
-        break
+        for m in client.models.list():
+            actions = m.supported_actions if hasattr(m, "supported_actions") else "(no action info)"
+            print(f"  {m.name}: {actions}")
     except Exception as e:
-        print(f"  {model_name}: FAIL -> {type(e).__name__}: {str(e)[:300]}")
+        print(f"LIST FAILED: {type(e).__name__}")
+        traceback.print_exc()
+
+    print()
+    print("=== Generate content test ===")
+    for model_name in ["gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash"]:
+        try:
+            resp = client.models.generate_content(
+                model=model_name,
+                contents="Say hi in 3 words.",
+            )
+            print(f"  {model_name}: OK -> {resp.text!r}")
+            break
+        except Exception as e:
+            print(f"  {model_name}: FAIL -> {type(e).__name__}: {str(e)[:300]}")
+
+
+if __name__ == "__main__":
+    main()

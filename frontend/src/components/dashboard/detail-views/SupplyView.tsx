@@ -29,6 +29,14 @@ function polygonPoints(values: number[], centerX = 110, centerY = 100, radius = 
     .join(" ")
 }
 
+function splitLabel(label: string): [string, string?] {
+  if (label.length <= 14) return [label]
+  const words = label.split(" ")
+  if (words.length < 2) return [label]
+  const midpoint = Math.ceil(words.length / 2)
+  return [words.slice(0, midpoint).join(" "), words.slice(midpoint).join(" ")]
+}
+
 export function SupplyView({
   selectedRegion,
   supplyData,
@@ -69,7 +77,7 @@ export function SupplyView({
         </div>
 
         <div className="mx-auto w-full rounded-glass p-0">
-          <svg viewBox="0 16 220 172" className="mx-auto h-[168px] w-full">
+          <svg viewBox="-18 8 256 196" className="mx-auto h-[168px] w-full overflow-visible">
             {ringLevels.map((level) => (
               <polygon
                 key={level}
@@ -115,9 +123,10 @@ export function SupplyView({
             })}
 
             {metrics.map((metric, index) => {
-              const labelPoint = polarPoint(index, metrics.length, 1.06, centerX, centerY, radius)
+              const labelPoint = polarPoint(index, metrics.length, 1.1, centerX, centerY, radius)
               const anchor =
                 labelPoint.x < centerX - 10 ? "end" : labelPoint.x > centerX + 10 ? "start" : "middle"
+              const [firstLine, secondLine] = splitLabel(metric.label)
               return (
                 <text
                   key={`label-${metric.label}`}
@@ -125,10 +134,22 @@ export function SupplyView({
                   y={labelPoint.y}
                   textAnchor={anchor}
                   dominantBaseline="middle"
-                  fontSize="10"
-                  fill="#4e596d"
+                  fontSize="10.5"
+                  fontWeight="600"
+                  fill="#2d3f5b"
+                  stroke="rgba(255,255,255,0.9)"
+                  strokeWidth="2"
+                  paintOrder="stroke"
+                  strokeLinejoin="round"
                 >
-                  {`${metric.label} ${metric.value}`}
+                  <tspan x={labelPoint.x} dy={0}>
+                    {firstLine}
+                  </tspan>
+                  {secondLine ? (
+                    <tspan x={labelPoint.x} dy="11">
+                      {secondLine}
+                    </tspan>
+                  ) : null}
                 </text>
               )
             })}

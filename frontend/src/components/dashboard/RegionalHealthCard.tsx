@@ -52,9 +52,9 @@ function pillClass(trafficLight: RegionHealth["traffic_light"]): string {
   return "bg-signal-good text-text-primary"
 }
 
-export function RegionalHealthCard({ selectedRegion }: { selectedRegion: RegionalScore }) {
-  const region = toRegionHealth(selectedRegion)
-  const tabData = buildRegionalTabData(selectedRegion)
+export function RegionalHealthCardContent({ regionData }: { regionData: RegionalScore }) {
+  const region = toRegionHealth(regionData)
+  const tabData = buildRegionalTabData(regionData)
   const [activeTab, setActiveTab] = useState<"summary" | "supply" | "demand" | "impact">("summary")
 
   return (
@@ -95,10 +95,14 @@ export function RegionalHealthCard({ selectedRegion }: { selectedRegion: Regiona
 
       <div className="mt-2.5">
         {activeTab === "summary" ? <SummaryView regionHealth={region} summaryData={tabData.summary} /> : null}
-        {activeTab === "supply" ? <SupplyView selectedRegion={selectedRegion} supplyData={tabData.supply} /> : null}
-        {activeTab === "demand" ? <DemandView selectedRegion={selectedRegion} demandData={tabData.demand} /> : null}
-        {activeTab === "impact" ? <ImpactView selectedRegion={selectedRegion} impactData={tabData.impact} /> : null}
+        {activeTab === "supply" ? <SupplyView selectedRegion={regionData} supplyData={tabData.supply} /> : null}
+        {activeTab === "demand" ? <DemandView selectedRegion={regionData} demandData={tabData.demand} /> : null}
+        {activeTab === "impact" ? <ImpactView selectedRegion={regionData} impactData={tabData.impact} /> : null}
       </div>
     </section>
   )
+}
+
+export function RegionalHealthCard({ selectedRegion }: { selectedRegion: RegionalScore }) {
+  return <RegionalHealthCardContent regionData={selectedRegion} />
 }

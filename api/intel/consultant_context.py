@@ -62,10 +62,14 @@ def build_region_fact_block(ctx: RegionalScoreContext) -> str:
     # Prefer pre-computed stored values; fall back to live computation
     eoc = (
         float(ctx.economic_loss)
-        if getattr(ctx, "economic_loss", 0)
+        if getattr(ctx, "economic_loss", None) is not None
         else compute_eoc(student_pop, ctx.avg_nat_score)
     )
-    lays = float(ctx.lays_score) if getattr(ctx, "lays_score", 0) else compute_lays(ctx.avg_nat_score)
+    lays = (
+        float(ctx.lays_score)
+        if getattr(ctx, "lays_score", None) is not None
+        else compute_lays(ctx.avg_nat_score)
+    )
     tax = compute_tax_leak(eoc)
 
     ppst = {

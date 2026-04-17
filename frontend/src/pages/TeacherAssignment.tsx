@@ -679,6 +679,7 @@ export default function TeacherAssignment({
   const [appliedFilters, setAppliedFilters] = useState(DEFAULT_FILTERS)
   const [selectedTeacherIds, setSelectedTeacherIds] = useState<Set<number>>(new Set())
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
+  const [assignModalInstanceKey, setAssignModalInstanceKey] = useState(0)
   const [modalTeacherIds, setModalTeacherIds] = useState<number[]>([])
   const [statusBanner, setStatusBanner] = useState<null | { tone: "success" | "error"; message: string }>(
     null,
@@ -857,6 +858,7 @@ export default function TeacherAssignment({
   const handleAssignSelected = () => {
     if (activeSelectedIds.length === 0) return
     setModalTeacherIds(activeSelectedIds)
+    setAssignModalInstanceKey((current) => current + 1)
     setIsAssignModalOpen(true)
   }
 
@@ -867,6 +869,7 @@ export default function TeacherAssignment({
       return next
     })
     setModalTeacherIds([teacherId])
+    setAssignModalInstanceKey((current) => current + 1)
     setIsAssignModalOpen(true)
   }
 
@@ -882,7 +885,7 @@ export default function TeacherAssignment({
   }
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col gap-6 bg-white pb-0">
+    <div className="relative flex h-full min-h-0 flex-col gap-6 bg-transparent pb-0">
       {statusBanner ? (
         <div
           className={cn(
@@ -1260,6 +1263,7 @@ export default function TeacherAssignment({
       </footer>
 
       <TrainingModuleAssignmentModal
+        key={`assign-modal-${assignModalInstanceKey}`}
         open={isAssignModalOpen}
         selectedCount={modalTeacherIds.length}
         initialLevels={modalInitialLevels}

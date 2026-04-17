@@ -1,4 +1,4 @@
-@config "../tailwind.config.js";
+﻿@config "../tailwind.config.js";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -164,7 +164,13 @@
     @apply font-sans;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: #ece8f3;
+    background-image: url("/assets/backgrounds/main-background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
   }
   h1,
   h2,
@@ -258,17 +264,18 @@
   }
 
   .polaris-app-shell {
-    background: var(--polaris-app-background);
+    background-color: #ece8f3;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08)),
+      url("/assets/backgrounds/main-background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
   }
 
   .polaris-main-aura-background {
     background-color: #ece8f3;
-    background-image:
-      radial-gradient(42% 36% at 20% 48%, rgba(103, 139, 241, 0.52) 0%, rgba(103, 139, 241, 0) 100%),
-      radial-gradient(52% 44% at 18% 82%, rgba(160, 194, 227, 0.82) 0%, rgba(160, 194, 227, 0) 100%),
-      radial-gradient(44% 36% at 74% 84%, rgba(204, 146, 205, 0.72) 0%, rgba(204, 146, 205, 0) 100%),
-      radial-gradient(46% 38% at 61% 28%, rgba(189, 168, 233, 0.52) 0%, rgba(189, 168, 233, 0) 100%),
-      linear-gradient(130deg, #d5dde9 0%, #d4c5ef 52%, #f0e8f0 100%);
+    background-image: url("/assets/backgrounds/main-background.png");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
