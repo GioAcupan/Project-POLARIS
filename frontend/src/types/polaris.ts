@@ -18,6 +18,9 @@ export interface RegionalScore {
   specialization_pct: number;
   star_coverage_pct: number;
   avg_nat_score: number;
+  student_pop?: number;
+  economic_loss?: number;
+  lays_score?: number;
   /** Optional period-over-period deltas (% points); used when BASELINE_TREND_SOURCE=backend */
   teacher_student_ratio_delta_pct?: number;
   specialization_pct_delta_pct?: number;

@@ -104,7 +104,28 @@ npm run dev
 
 Vite defaults to **http://localhost:5173**. Ensure `VITE_API_BASE_URL` matches your API (e.g. `http://localhost:8000`).
 
-Other scripts: `npm run build`, `npm run preview`, `npm run lint`, `npm run typecheck`.
+Other scripts: `npm run build`, `npm run start` (preview), `npm run preview`, `npm run lint`, `npm run typecheck`.
+
+## One-command fullstack run (persistent)
+
+From the **repository root**, run:
+
+```bash
+npm run start:fullstack
+```
+
+What this does:
+
+1. Starts the FastAPI backend at `http://127.0.0.1:8000`
+2. Runs `frontend` production build (`npm run build`)
+3. Starts frontend preview server at `http://127.0.0.1:4173`
+4. Keeps both servers running until you stop the command (`Ctrl+C`)
+
+Notes:
+
+- This command is intended for app runtime (not tests).
+- It prefers `.venv\Scripts\python.exe` for backend startup when available, otherwise falls back to `python` on PATH.
+- `VITE_API_BASE_URL` should point to your backend (e.g. `http://127.0.0.1:8000`).
 
 ## One-command E2E tests
 
@@ -120,6 +141,8 @@ This command uses Playwright `webServer` orchestration to:
 2. Wait for backend health at `http://127.0.0.1:8000/health`
 3. Start the Vite frontend at `http://127.0.0.1:5173`
 4. Run browser E2E smoke tests and stop managed servers automatically
+
+Important: `npm run test:e2e` is for test execution only. It is expected to shut down managed servers after tests complete.
 
 Additional variants:
 

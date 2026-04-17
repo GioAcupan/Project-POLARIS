@@ -1,0 +1,7 @@
+{
+  "name": "polaris-root",
+  "private": true,
+  "scripts": {
+    "start:fullstack": "powershell -ExecutionPolicy Bypass -File ./scripts/run-fullstack.ps1"
+  }
+}
