@@ -96,12 +96,12 @@ export function EffectOverviewCard() {
       }}
     >
       <div className="space-y-3">
-        <div className="space-y-0.5">
+        <div className="flex items-center justify-between gap-2">
           <p className="text-[12px] font-semibold tracking-wide" style={{ color: "#1A5EA8" }}>
             {cardData.contextLabel}
           </p>
           {isDataLoading ? (
-            <p className="text-sm font-medium" style={{ color: "#1A5EA8" }}>
+            <p className="text-sm font-medium text-right" style={{ color: "#1A5EA8" }}>
               Loading impact data...
             </p>
           ) : null}
