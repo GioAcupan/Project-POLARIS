@@ -27,14 +27,8 @@ export function DemandView({ selectedRegion }: { selectedRegion: RegionalScore }
     <div className="space-y-2" aria-label={`Demand details for ${regionLabel}`}>
       <section className="rounded-glass border border-white/20 bg-white/40 p-2.5">
         <div className="mb-1.5 flex items-center justify-between gap-3">
-          <div>
-            <h3 className="text-section-title font-bold text-text-primary">Demands by Bar Chart</h3>
-            <div className="mt-1 flex items-center gap-2 text-label font-medium text-[#4f6077]">
-              <span className="inline-block h-2.5 w-2.5 rounded-[2px] bg-[#3495db]" aria-hidden="true" />
-              Requests
-            </div>
-          </div>
           <div className="flex items-center gap-2">
+            <h3 className="text-content font-semibold text-text-primary">Demands by Bar Chart</h3>
             <Tooltip>
               <TooltipTrigger
                 type="button"
@@ -47,6 +41,12 @@ export function DemandView({ selectedRegion }: { selectedRegion: RegionalScore }
                 Summarizes teacher demand for resource or training material by category.
               </TooltipContent>
             </Tooltip>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-[11px] font-medium text-[#4b5563]">
+              <span className="inline-block h-2.5 w-2.5 rounded-[2px] bg-[#3495db]" aria-hidden="true" />
+              Requests
+            </div>
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f2aa24] text-lg font-bold text-white">
               {DEMAND_SCORE_BADGE}
             </div>
@@ -76,7 +76,7 @@ export function DemandView({ selectedRegion }: { selectedRegion: RegionalScore }
       </section>
 
       <section className="space-y-1.5">
-        <header className="rounded-xl border border-[#2f73b9] bg-[#b9d4f2] px-3 py-1.5 text-content font-bold text-[#1f2a3d]">
+        <header className="rounded-xl border border-[#2f73b9] bg-[#b9d4f2] px-3 py-1 text-label font-bold leading-tight text-[#1f2a3d]">
           TOP 3 TRAINING DEMANDS IN THIS REGION
         </header>
         {topThree.map((entry, index) => (
@@ -91,7 +91,7 @@ export function DemandView({ selectedRegion }: { selectedRegion: RegionalScore }
         ))}
       </section>
 
-      <aside className="rounded-glass border border-[#d0def1] bg-[#cdddf1] px-3 py-1.5 text-[12px] leading-snug italic text-[#3b4658]">
+      <aside className="rounded-glass border border-[#d0def1] bg-[#cdddf1] px-2 py-1 text-[10px] leading-tight italic text-[#3b4658]">
         Note: Red on the map = high volume of demand; more bars = more types of demands
       </aside>
     </div>

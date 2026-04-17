@@ -57,7 +57,7 @@ export function SupplyView({ selectedRegion }: { selectedRegion: RegionalScore }
       <section className="rounded-glass border border-white/20 bg-white/40 p-2.5">
         <div className="mb-1.5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <h3 className="text-section-title font-bold text-text-primary">Supply Radar Chart</h3>
+            <h3 className="text-content font-semibold text-text-primary">Supply Radar Chart</h3>
             <Tooltip>
               <TooltipTrigger
                 type="button"

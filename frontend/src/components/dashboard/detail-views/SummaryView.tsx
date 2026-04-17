@@ -1,9 +1,5 @@
 import type { RegionHealth } from "@/types/polaris"
-import { ArrowDown, ArrowUp } from "lucide-react"
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-
-const TREND_GOOD = "#2ecc71"
-const TREND_BAD = "#ff5e78"
 
 type ScoreTrendPoint = {
   label: string
@@ -94,35 +90,26 @@ export function SummaryView({ regionHealth }: { regionHealth: RegionHealth }) {
         </div>
       </section>
       <div>
-        <div className="mb-2 flex justify-between px-0.5 text-[11px] font-semibold tracking-wide text-[#8b95b3]">
-          {(["2021", "2022", "2023", "2024", "2025"] as const).map((y) => (
-            <span key={y}>{y}</span>
-          ))}
-        </div>
         <div className="grid grid-cols-2 gap-2.5">
           {factorCards.map((factor) => {
             const { trend } = factor
-            const color = trend.favorable ? TREND_GOOD : TREND_BAD
-            const Arrow = trend.direction === "up" ? ArrowUp : ArrowDown
+            const trendClass = trend.favorable
+              ? "text-emerald-500 dark:text-emerald-400"
+              : "text-rose-600 dark:text-rose-400"
+            const trendArrow = trend.direction === "up" ? "↑" : "↓"
             return (
-              <article
+              <div
                 key={factor.key}
-                className="relative flex min-h-[118px] min-w-0 flex-col rounded-[22px] border border-slate-200/90 bg-white px-3 pb-9 pt-2.5 shadow-[0_2px_14px_rgba(15,23,42,0.06)]"
+                className="flex min-h-[100px] min-w-0 flex-col justify-between rounded-lg border border-white/20 bg-white/40 px-2.5 py-2 shadow-sm md:min-h-[108px]"
               >
-                <p className="text-[0.78rem] font-medium leading-snug text-[#8b95b3]">
-                  {factor.label}
-                </p>
-                <div className="flex flex-1 items-center justify-center py-1">
-                  <p className="text-[1.85rem] font-bold leading-none tracking-tight text-[#1f2028]">{factor.value}</p>
+                <p className="text-xs font-medium leading-snug text-slate-500 dark:text-slate-400 sm:text-sm">{factor.label}</p>
+                <div className="flex min-h-[2.5rem] flex-wrap items-baseline justify-end gap-1.5">
+                  <span className="text-3xl font-bold leading-none tracking-tight text-text-primary sm:text-4xl">{factor.value}</span>
+                  <span className={`text-sm font-semibold tabular-nums ${trendClass}`}>
+                    {trendArrow} {trend.pct}%
+                  </span>
                 </div>
-                <div
-                  className="absolute bottom-2.5 right-3 flex items-center gap-0.5 text-[12px] font-semibold tabular-nums"
-                  style={{ color }}
-                >
-                  <Arrow className="h-3.5 w-3.5 shrink-0 stroke-[2.5]" aria-hidden />
-                  <span>{trend.pct}%</span>
-                </div>
-              </article>
+              </div>
             )
           })}
         </div>
