@@ -1,8 +1,10 @@
 import logging
 import os
+import json
+import time
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -22,6 +24,28 @@ if not logging.root.handlers:
     logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger("polaris")
+DEBUG_LOG_PATH = Path("debug-180a45.log")
+
+
+def _debug_log(
+    *,
+    hypothesis_id: str,
+    location: str,
+    message: str,
+    data: dict[str, object],
+    run_id: str = "initial",
+) -> None:
+    payload = {
+        "sessionId": "180a45",
+        "runId": run_id,
+        "hypothesisId": hypothesis_id,
+        "location": location,
+        "message": message,
+        "data": data,
+        "timestamp": int(time.time() * 1000),
+    }
+    with DEBUG_LOG_PATH.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(payload, separators=(",", ":")) + "\n")
 
 
 def _read_pitch_mode() -> bool:
@@ -57,7 +81,23 @@ def _read_cors_origins() -> list[str]:
             ]
         ),
     )
+    # region agent log
+    _debug_log(
+        hypothesis_id="H1",
+        location="api/main.py:_read_cors_origins",
+        message="Raw CORS origins env value",
+        data={"rawOrigins": raw},
+    )
+    # endregion
     origins = [origin.strip().rstrip("/") for origin in raw.split(",") if origin.strip()]
+    # region agent log
+    _debug_log(
+        hypothesis_id="H2",
+        location="api/main.py:_read_cors_origins",
+        message="Parsed CORS origins list",
+        data={"parsedOrigins": origins, "count": len(origins)},
+    )
+    # endregion
     if origins:
         return origins
     return ["http://localhost:5173", "http://127.0.0.1:5173"]
@@ -90,6 +130,33 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def debug_request_origin(request: Request, call_next):
+    origin = request.headers.get("origin")
+    # region agent log
+    _debug_log(
+        hypothesis_id="H3",
+        location="api/main.py:debug_request_origin",
+        message="Incoming request origin",
+        data={"path": request.url.path, "method": request.method, "origin": origin},
+    )
+    # endregion
+    response = await call_next(request)
+    # region agent log
+    _debug_log(
+        hypothesis_id="H4",
+        location="api/main.py:debug_request_origin",
+        message="Outgoing CORS response header",
+        data={
+            "path": request.url.path,
+            "allowOriginHeader": response.headers.get("access-control-allow-origin"),
+            "status": response.status_code,
+        },
+    )
+    # endregion
+    return response
 
 DOWNLOADS_DIR = str(ensure_output_dir())
 
