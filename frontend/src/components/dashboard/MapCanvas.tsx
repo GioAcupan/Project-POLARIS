@@ -55,6 +55,20 @@ function fillForScore(score: number): string {
   return "var(--color-signal-good)"
 }
 
+function fillForTrafficLight(trafficLight: RegionalScore["traffic_light"]): string {
+  if (trafficLight === "red") return "var(--color-signal-critical)"
+  if (trafficLight === "yellow") return "var(--color-signal-warning)"
+  return "var(--color-signal-good)"
+}
+
+function fillForRegion(region: RegionalScore, lens: "overall" | "supply" | "demand" | "impact"): string {
+  if (lens === "overall") {
+    // "overall" is the canonical backend category (traffic_light), not a local threshold.
+    return fillForTrafficLight(region.traffic_light)
+  }
+  return fillForScore(scoreForLens(region, lens))
+}
+
 type RegionBoundaryState = "default" | "hover" | "active"
 
 function boundaryStyleForState(state: RegionBoundaryState): L.PathOptions {
@@ -334,9 +348,8 @@ export function MapCanvas({ regions }: { regions: RegionalScore[] }) {
             style={(feature) => {
               const regionName = regionNameFromFeature(feature ?? undefined)
               const regionData = regionName ? regionByName.get(regionName) : null
-              const score = regionData ? scoreForLens(regionData, activeLens) : 50
               return {
-                fillColor: fillForScore(score),
+                fillColor: regionData ? fillForRegion(regionData, activeLens) : fillForScore(50),
                 fillOpacity: mapFillOpacity,
                 ...boundaryStyleForState(activeRegion && regionName === activeRegion ? "active" : "default"),
               }
