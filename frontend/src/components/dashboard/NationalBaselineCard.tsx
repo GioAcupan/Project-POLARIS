@@ -95,7 +95,13 @@ const FACTORS_CONFIG: Array<{
 
 export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) {
   const [query, setQuery] = useState("")
+  const [isSuggestOpen, setIsSuggestOpen] = useState(false)
   const searchableRegions = useMemo(() => regions.map((region) => region.region), [regions])
+  const filteredRegions = useMemo(() => {
+    const normalized = query.trim().toLowerCase()
+    if (!normalized) return searchableRegions
+    return searchableRegions.filter((regionName) => regionName.toLowerCase().includes(normalized))
+  }, [query, searchableRegions])
   const regionalCounts = useMemo(() => {
     return regions.reduce(
       (counts, region) => {
@@ -136,16 +142,18 @@ export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) 
     })
   }, [regions])
 
+  const activateRegion = (regionName: string) => {
+    setQuery(regionName)
+    setIsSuggestOpen(false)
+    dashboardStore.setActiveRegion(regionName)
+    dashboardStore.setTriggerFlyTo(!dashboardStore.getState().triggerFlyTo)
+  }
+
   const handleSearch = () => {
+    if (filteredRegions.length === 0) return
     const normalized = query.trim().toLowerCase()
-    if (!normalized) return
-    const matchedRegion = searchableRegions.find((regionName) =>
-      regionName.toLowerCase().includes(normalized),
-    )
-    if (matchedRegion) {
-      dashboardStore.setActiveRegion(matchedRegion)
-      dashboardStore.setTriggerFlyTo(!dashboardStore.getState().triggerFlyTo)
-    }
+    const exactMatch = filteredRegions.find((regionName) => regionName.toLowerCase() === normalized)
+    activateRegion(exactMatch ?? filteredRegions[0])
   }
 
   return (
@@ -153,12 +161,21 @@ export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) 
       <label className="sr-only" htmlFor="region-search">
         Search by Region
       </label>
-      <div className="shrink-0 flex items-center gap-2 rounded-glass border border-white/20 bg-white/40 px-3 py-2">
+      <div className="relative shrink-0">
+        <div className="flex items-center gap-2 rounded-glass border border-white/20 bg-white/40 px-3 py-2">
         <input
           id="region-search"
           type="text"
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => {
+            setQuery(event.target.value)
+            setIsSuggestOpen(true)
+          }}
+          onFocus={() => setIsSuggestOpen(true)}
+          onBlur={() => {
+            // Delay close so option click can fire first.
+            window.setTimeout(() => setIsSuggestOpen(false), 120)
+          }}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               event.preventDefault()
@@ -175,6 +192,23 @@ export function NationalBaselineCard({ regions }: { regions: RegionalScore[] }) 
         >
           Find
         </button>
+        </div>
+        {isSuggestOpen && filteredRegions.length > 0 ? (
+          <ul className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-glass border border-white/25 bg-white/95 p-1 shadow-lg backdrop-blur-md">
+            {filteredRegions.map((regionName) => (
+              <li key={regionName}>
+                <button
+                  type="button"
+                  className="w-full rounded-md px-3 py-2 text-left text-content font-medium text-text-primary transition hover:bg-brand-baby-pink/60"
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => activateRegion(regionName)}
+                >
+                  {regionName}
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
       <h2 className="mt-4 shrink-0 font-heading text-section-title font-extrabold text-text-primary">
         National Baseline View

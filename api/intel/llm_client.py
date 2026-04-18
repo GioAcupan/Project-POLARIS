@@ -7,7 +7,11 @@ import os
 from google import genai
 from google.genai import types
 
-_MODEL_NAME = "gemini-flash-latest"  # stable alias; also works: "gemini-2.5-flash"
+_MODEL_CANDIDATES = (
+    "gemini-flash-latest",
+    "gemini-2.5-flash",
+    "gemini-2.0-flash",
+)
 
 
 class GeminiClient:
@@ -31,14 +35,27 @@ class GeminiClient:
         Uses the sync SDK call wrapped in an executor so the event loop is not blocked.
         """
         config = types.GenerateContentConfig(system_instruction=system_prompt)
-
         loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(
-            None,
-            lambda: self._client.models.generate_content(
-                model=_MODEL_NAME,
-                contents={"role": "user", "parts": [{"text": user_content}]},
-                config=config,
-            ),
-        )
-        return response.text
+        last_error: Exception | None = None
+        for model_name in _MODEL_CANDIDATES:
+            try:
+                response = await loop.run_in_executor(
+                    None,
+                    lambda: self._client.models.generate_content(
+                        model=model_name,
+                        contents={"role": "user", "parts": [{"text": user_content}]},
+                        config=config,
+                    ),
+                )
+                return response.text
+            except Exception as e:
+                last_error = e
+                # Fallback on provider-throttling and unavailable model errors.
+                text = str(e).upper()
+                if "RESOURCE_EXHAUSTED" in text or "429" in text or "NOT_FOUND" in text or "404" in text:
+                    continue
+                raise
+
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError("Gemini call failed without a captured exception.")
