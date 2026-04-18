@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db import get_db
 from api.intel.consultant_context import build_source_citations, fetch_active_programs
+from api.intel.chat_response_cache import chat_gemini_cache
 from api.intel.llm_client import GeminiClient
 from api.intel.system_prompts import (
     get_advisor_prompt,
@@ -51,6 +52,15 @@ DO NOT fabricate statistics. DO NOT cite any policy document numbers.
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
     ctx: RegionalScoreContext | None = request.region_context
+    region_name = getattr(ctx, "region", None)
+
+    cached = await chat_gemini_cache.get(
+        region=region_name,
+        mode=request.mode,
+        message=request.message,
+    )
+    if cached is not None:
+        return ChatResponse(response=cached.response, sources=cached.sources)
 
     if ctx:
         try:
@@ -67,6 +77,19 @@ async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
         sources = ["POLARIS system knowledge base"]
 
     try:
+        waited_for_slot = await chat_gemini_cache.wait_for_region_cooldown(region_name)
+        # Re-check in case another concurrent request filled cache while waiting.
+        cached_after_wait = await chat_gemini_cache.get(
+            region=region_name,
+            mode=request.mode,
+            message=request.message,
+        )
+        if cached_after_wait is not None:
+            return ChatResponse(
+                response=cached_after_wait.response,
+                sources=cached_after_wait.sources,
+            )
+
         client = GeminiClient()
         raw_response = await client.complete(
             system_prompt=system_prompt,
@@ -80,5 +103,13 @@ async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
         )
 
     clean_response = _CITATION_HALLUCINATION_PATTERN.sub("", raw_response).strip()
+
+    await chat_gemini_cache.set(
+        region=region_name,
+        mode=request.mode,
+        message=request.message,
+        response=clean_response,
+        sources=sources,
+    )
 
     return ChatResponse(response=clean_response, sources=sources)

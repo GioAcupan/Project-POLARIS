@@ -92,6 +92,7 @@ export interface RegionalScore {
   star_coverage_pct: number;
   avg_nat_score: number;
   student_pop?: number;
+  /** Annual economic opportunity cost in billions of PHP */
   economic_loss?: number;
   lays_score?: number;
   /** Optional period-over-period deltas (% points); used when BASELINE_TREND_SOURCE=backend */

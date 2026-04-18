@@ -1,7 +1,7 @@
 ﻿import { useMemo } from "react"
 
 import { useRegions } from "@/hooks/useRegions"
-import { formatPesoBillions, formatYears } from "@/lib/formatNumber"
+import { formatPesoBillions, formatYears, pesosFromEconomicLossBillions } from "@/lib/formatNumber"
 import { useDashboardStore } from "@/stores/dashboardStore"
 import type { RegionalScore } from "@/types/polaris"
 
@@ -54,7 +54,7 @@ export function EffectOverviewCard() {
       : null
 
     if (!selectedRegion) {
-      const aggregateEconomicLoss = regions.reduce(
+      const aggregateEconomicLossBillions = regions.reduce(
         (sum, region) => sum + toFiniteNumber(region.economic_loss),
         0,
       )
@@ -64,21 +64,21 @@ export function EffectOverviewCard() {
 
       return {
         contextLabel: "NATIONAL AGGREGATE",
-        economicLoss: aggregateEconomicLoss,
-        taxLoss: aggregateEconomicLoss * TAX_LOSS_FACTOR,
+        economicLoss: aggregateEconomicLossBillions,
+        taxLoss: aggregateEconomicLossBillions * TAX_LOSS_FACTOR,
         lays,
         learningGap,
       }
     }
 
-    const economicLoss = toFiniteNumber(selectedRegion.economic_loss)
+    const economicLossBillions = toFiniteNumber(selectedRegion.economic_loss)
     const lays = clamp(toFiniteNumber(selectedRegion.lays_score), 0, MAX_SCHOOL_YEARS)
     const learningGap = clamp(MAX_SCHOOL_YEARS - lays, 0, MAX_SCHOOL_YEARS)
 
     return {
       contextLabel: selectedRegion.region.toUpperCase(),
-      economicLoss,
-      taxLoss: economicLoss * TAX_LOSS_FACTOR,
+      economicLoss: economicLossBillions,
+      taxLoss: economicLossBillions * TAX_LOSS_FACTOR,
       lays,
       learningGap,
     }
@@ -105,7 +105,7 @@ export function EffectOverviewCard() {
 
         <div className="space-y-0.5">
           <p className={HEADLINE_METRIC_CLASS} style={{ color: "#E8532A" }}>
-            {formatPesoBillions(cardData.economicLoss)}
+            {formatPesoBillions(pesosFromEconomicLossBillions(cardData.economicLoss))}
           </p>
           <p className="text-sm font-medium" style={{ color: "#1B1B1B" }}>
             Annual GDP Opportunity Cost
@@ -114,7 +114,7 @@ export function EffectOverviewCard() {
 
         <div className="space-y-0.5">
           <p className={HEADLINE_METRIC_CLASS} style={{ color: "#F5A623" }}>
-            {formatPesoBillions(cardData.taxLoss)}
+            {formatPesoBillions(pesosFromEconomicLossBillions(cardData.taxLoss))}
           </p>
           <p className="text-sm font-medium" style={{ color: "#1A5EA8" }}>
             Annual Tax Leak

@@ -21,6 +21,13 @@ export function formatPesoBillions(
   return `\u20B1${numericValue.toLocaleString("en-PH", { maximumFractionDigits: 0 })}`
 }
 
+/** `regional_scores.economic_loss` is stored in billions of PHP; converts to pesos for {@link formatPesoBillions}. */
+export function pesosFromEconomicLossBillions(
+  billions: number | null | undefined,
+): number {
+  return Number(billions ?? 0) * 1e9
+}
+
 export function formatYears(value: number, digits = 1): string {
   const suffix = Math.abs(value - 1) < 0.05 ? "" : "s"
   return `${value.toFixed(digits)} yr${suffix}`

@@ -3,7 +3,7 @@ api/intel/consultant_context.py
 Builds the full context payload for the Consultant Page's /chat endpoint.
 """
 from __future__ import annotations
-from typing import Optional
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -36,6 +36,16 @@ def compute_tax_leak(eoc_b: float) -> float:
     return round(eoc_b * _TAX_REVENUE_RATE, 1)
 
 
+def _economic_loss_billions(stored: float | None) -> float:
+    """Normalize DB `economic_loss` to billions of PHP (accepts legacy raw-peso rows)."""
+    if stored is None:
+        return 0.0
+    v = float(stored)
+    if v >= 1_000_000.0:
+        return round(v / 1_000_000_000.0, 1)
+    return round(v, 1)
+
+
 async def fetch_active_programs(
     db: AsyncSession,
     region: str,
@@ -61,7 +71,7 @@ def build_region_fact_block(ctx: RegionalScoreContext) -> str:
     student_pop = int(ctx.student_pop or 0)
     # Prefer pre-computed stored values; fall back to live computation
     eoc = (
-        float(ctx.economic_loss)
+        _economic_loss_billions(ctx.economic_loss)
         if getattr(ctx, "economic_loss", None) is not None
         else compute_eoc(student_pop, ctx.avg_nat_score)
     )
